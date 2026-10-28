@@ -65,7 +65,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1d3a5c; fon
 .tool.on { border-color: #ff6b4a; background: #fff1ec; }
 .tool .sw { width: 26px; height: 18px; border-radius: 4px; }
 .tool img { width: 26px; height: 26px; }
-.tool-group { display: flex; gap: 6px; padding-right: 8px; margin-right: 2px; border-right: 2px solid #eee; }
+.tool-group { display: flex; flex: none; gap: 6px; padding-right: 8px; margin-right: 2px; border-right: 2px solid #eee; }
 .ed-panel { align-self: center; background: #fff; border-radius: 14px; padding: 12px; max-width: min(420px, 94vw); box-shadow: 0 4px 16px rgba(0,0,0,.35); font-size: 14px; }
 .ed-panel h3 { margin: 0 0 8px; font-size: 16px; }
 .ed-panel .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }

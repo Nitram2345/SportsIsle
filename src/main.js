@@ -19,9 +19,8 @@ export function show(name) {
   document.querySelectorAll('[data-screen]').forEach(s => s.classList.toggle('active', s.dataset.screen === name));
   if (name === 'start') $('btn-continue').hidden = !loadGame();
   if (name === 'new') openNewGame();
-  if (name === 'editor') openEditor();
 }
-document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => show(b.dataset.go)));
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => b.dataset.go === 'editor' ? openEditor() : show(b.dataset.go)));
 
 // ---------- maps ----------
 let bundled = [];
@@ -145,9 +144,6 @@ async function openEditor(map = null) {
     onTestPlay: m => { saveLocalMap(editorModule.toJson(m)); ng.preselect = 'local:' + m.meta.id; show('new'); },
   });
 }
-function openEditorWith(map) {
-  document.querySelectorAll('[data-screen]').forEach(s => s.classList.toggle('active', s.dataset.screen === 'editor'));
-  openEditor(map);
-}
+const openEditorWith = map => openEditor(map);
 
 show('start');
