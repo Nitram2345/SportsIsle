@@ -3,6 +3,7 @@ import { UNITS, BUILDINGS, SKINS, TERRAIN } from '../config.js';
 import { distance } from './hex.js';
 import { random } from './rng.js';
 import { effective, updateMemory } from './vision.js';
+import { doMove } from './movement.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
 
@@ -74,9 +75,12 @@ export function startTurn(state, pid, events) {
   updateMemory(state, pid);
 }
 
+const getUnit = (s, id) => s.units[id] ?? (() => { throw new Error('Einheit nicht gefunden.'); })();
+
 export function apply(state, action) {
   const s = structuredClone(state), events = [];
   switch (action?.type) {
+    case 'move': doMove(s, getUnit(s, action.unitId), action.path, events); break;
     default: throw new Error(`Unbekannte Aktion: ${action?.type}`);
   }
   return { state: s, events };
