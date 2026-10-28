@@ -14,7 +14,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1d3a5c; fon
 .menu h2 { margin: 0 0 8px; }
 .menu label { display: flex; flex-direction: column; gap: 4px; width: min(360px, 100%); font-weight: 600; }
 .menu select, .menu input[type=text] { font: inherit; padding: 10px; border-radius: 10px; border: 0; }
-.menu .hint { margin: 0; opacity: .8; font-size: 14px; text-align: center; }
+.menu .hint { margin: 0; opacity: .8; font-size: 14px; text-align: center; white-space: pre-line; max-width: 360px; }
 .menu .msg { white-space: pre-line; color: #ffd0c8; max-width: 360px; font-size: 14px; }
 .menu .big { font-size: 28px; font-weight: 700; margin: 0 0 12px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -57,6 +57,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #1d3a5c; fon
 .handoff-box { background: #fff; border-radius: 22px; padding: 28px 36px; text-align: center; box-shadow: 0 8px 0 rgba(0,0,0,.25); }
 .handoff-box h2 { font-size: 30px; margin: 4px 0; }
 .handoff-box p { margin: 4px 0; }
+.handoff-box .note { color: #c44a2e; font-weight: 700; white-space: pre-line; }
+.handoff-box .note:empty { display: none; }
 
 /* editor */
 .editor .name { font: inherit; font-weight: 700; border: 0; border-bottom: 2px solid #ddd; padding: 4px; min-width: 0; flex: 1; }

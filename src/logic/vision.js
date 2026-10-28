@@ -23,3 +23,7 @@ export function updateMemory(state, pid) {
     if (state.facilities[k]) state.lastSeen[pid][k] = state.facilities[k].owner;
   }
 }
+
+// Owner as the player knows it: live if the tile is in sight, else last seen.
+export const knownOwner = (state, pid, k) =>
+  visibleTiles(state, pid).has(k) ? state.facilities[k]?.owner ?? null : state.lastSeen[pid][k] ?? null;

@@ -1,12 +1,12 @@
 // App shell: screens, menus, new game setup, routing to game/editor views.
-import { loadMap } from './logic/map.js';
+import { loadMap, saveMap, validateMap, uniqueMapId } from './logic/map.js';
 import { createGame, suggestStarts } from './logic/game.js';
 import { parseKey, hexToPixel } from './logic/hex.js';
 import { PLAYER_COLORS, RULES } from './config.js';
 import { createRenderer } from './render/renderer.js';
 import { preloadSvgs } from './render/sprites.js';
 import { startGameView } from './ui/game-view.js';
-import { loadGame, listLocalMaps, saveLocalMap } from './storage.js';
+import { loadGame, clearGame, listLocalMaps, saveLocalMap } from './storage.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('board');
@@ -45,7 +45,7 @@ let ng = { entries: [], map: null, slots: [], seed: 1, preselect: null };
 async function openNewGame() {
   ng.entries = (await allMaps()).filter(e => e.players.max >= 2);
   const sel = $('new-map');
-  sel.innerHTML = ng.entries.map((e, i) => `<option value="${i}">${e.name} (${e.players.max} Spieler, ${e.width}×${e.height})</option>`).join('');
+  sel.replaceChildren(...ng.entries.map((e, i) => new Option(`${e.name} (${e.players.max} Spieler, ${e.width}×${e.height})`, i)));
   if (ng.preselect) { const i = ng.entries.findIndex(e => e.id === ng.preselect); if (i >= 0) sel.value = i; ng.preselect = null; }
   await pickMap();
 }
@@ -53,7 +53,11 @@ async function openNewGame() {
 async function pickMap() {
   const entry = ng.entries[$('new-map').value];
   if (!entry) { $('new-map-info').textContent = 'Keine Maps gefunden.'; return; }
+  $('new-start').disabled = true;
   try { ng.map = await fetchMap(entry); } catch (e) { $('new-map-info').textContent = e.message; ng.map = null; return; }
+  const errs = validateMap(ng.map);
+  if (errs.length) { $('new-map-info').textContent = 'Diese Map ist nicht spielbar:\n' + errs.join('\n'); ng.map = null; return; }
+  $('new-start').disabled = false;
   const max = Math.min(ng.map.starts.length, RULES.maxPlayers);
   $('new-map-info').textContent = ng.map.meta.author ? `von ${ng.map.meta.author}` : '';
   const count = $('new-count'), prev = Number(count.value) || 2;
@@ -69,8 +73,9 @@ function playerRows() {
   for (let i = 0; i < n; i++) {
     const row = document.createElement('div'); row.className = 'player-row';
     const color = old[i]?.color ?? PLAYER_COLORS[i];
-    row.innerHTML = `<span class="swatch" style="background:${color}"></span><input type="text" maxlength="16" value="${old[i]?.name ?? `Spieler ${i + 1}`}">`
+    row.innerHTML = `<span class="swatch" style="background:${color}"></span><input type="text" maxlength="16">`
       + `<select aria-label="Farbe">${PLAYER_COLORS.map((c, j) => `<option value="${c}" ${c === color ? 'selected' : ''} style="background:${c}">${j + 1}</option>`).join('')}</select>`;
+    row.querySelector('input').value = old[i]?.name ?? `Spieler ${i + 1}`;
     row.querySelector('select').onchange = e => { row.querySelector('.swatch').style.background = e.target.value; };
     box.append(row);
   }
@@ -112,14 +117,19 @@ $('new-start').onclick = () => {
   if (!ng.map) return;
   const players = [...$('new-players').querySelectorAll('.player-row')].map((r, i) => ({ name: r.querySelector('input').value.trim() || `Spieler ${i + 1}`, color: r.querySelector('select').value }));
   if (new Set(players.map(p => p.color)).size !== players.length) { alert('Jeder Spieler braucht eine eigene Farbe.'); return; }
-  play(createGame(ng.map, players, { seed: ng.seed, startSlots: ng.slots }));
+  try { play(createGame(ng.map, players, { seed: ng.seed, startSlots: ng.slots })); }
+  catch (err) { $('new-map-info').textContent = err.message; }
 };
 
 function play(state) {
   startGameView(state, { renderer, canvas, show, onExit: () => show('start') });
 }
 
-$('btn-continue').onclick = () => { const s = loadGame(); if (s) play(s); };
+$('btn-continue').onclick = () => {
+  const s = loadGame();
+  if (s?.version !== 1 || !s.players || !s.units) { clearGame(); $('start-msg').textContent = 'Der Spielstand war beschädigt und wurde verworfen.'; show('start'); return; }
+  play(s);
+};
 
 // ---------- import / editor ----------
 $('import-file').onchange = async e => {
@@ -127,10 +137,12 @@ $('import-file').onchange = async e => {
   if (!file) return;
   try {
     const json = JSON.parse(await file.text());
-    loadMap(json);
-    saveLocalMap(json);
-    $('start-msg').textContent = `Map „${json.name}" importiert.`;
-    openEditorWith(loadMap(json));
+    const map = loadMap(json);
+    map.meta.id = uniqueMapId(map.meta.id, listLocalMaps().map(m => m.id));
+    saveLocalMap(saveMap(map));
+    const errs = validateMap(map);
+    $('start-msg').textContent = `Map „${map.meta.name}" importiert.` + (errs.length ? '\nNoch nicht spielbar:\n' + errs.join('\n') : '');
+    openEditorWith(map);
   } catch (err) { $('start-msg').textContent = 'Import fehlgeschlagen:\n' + err.message; }
 };
 

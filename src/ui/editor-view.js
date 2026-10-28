@@ -1,10 +1,10 @@
 // Map editor: paint layers, start points with line-ups, import/export, test play.
-import { createEmptyMap, loadMap, saveMap, validateMap, canPlace } from '../logic/map.js';
+import { createEmptyMap, loadMap, saveMap, validateMap, canPlace, uniqueMapId } from '../logic/map.js';
 import { pixelToHex, parseKey, hexToPixel } from '../logic/hex.js';
 import { TERRAIN, BUILDINGS, SPECIALS, UNITS, RULES } from '../config.js';
 import { HEX_SIZE } from '../render/renderer.js';
 import { createCamera, screenToWorld, zoomAt, centerOn } from '../render/camera.js';
-import { saveLocalMap } from '../storage.js';
+import { saveLocalMap, listLocalMaps } from '../storage.js';
 import { attachInput } from './input.js';
 
 const $ = id => document.getElementById(id);
@@ -36,7 +36,8 @@ export function startEditorView(initial, { renderer, canvas, show, onExit, onTes
     ok.onclick = () => {
       const clamp = v => Math.min(40, Math.max(6, Math.round(Number(v) || 12)));
       const name = $('nm-name').value.trim() || 'Meine Insel';
-      map = createEmptyMap({ id: slug(name), name, author: '', width: clamp($('nm-w').value), height: clamp($('nm-h').value) });
+      const id = uniqueMapId(slug(name), listLocalMaps().map(m => m.id));
+      map = createEmptyMap({ id, name, author: '', width: clamp($('nm-w').value), height: clamp($('nm-h').value) });
       d.close(); begin();
     };
     d.showModal();
@@ -45,7 +46,8 @@ export function startEditorView(initial, { renderer, canvas, show, onExit, onTes
   function begin() {
     show('editor');
     $('ed-name').value = map.meta.name;
-    $('ed-name').oninput = () => { map.meta.name = $('ed-name').value; map.meta.id = slug(map.meta.name); changed(false); };
+    // id stays stable on rename (it is the storage key); export file name uses it too
+    $('ed-name').oninput = () => { map.meta.name = $('ed-name').value; changed(false); };
     renderer.setMap(map.tiles, map.meta.width, map.meta.height);
     const { w, h } = renderer.worldSize();
     camera.zoom = Math.max(0.4, Math.min(1.2, canvas.clientWidth / w, (canvas.clientHeight - 140) / h));
@@ -57,7 +59,7 @@ export function startEditorView(initial, { renderer, canvas, show, onExit, onTes
       onPaint: (x, y) => paint(x, y, false),
       onPan: (dx, dy) => { camera.x -= dx / camera.zoom; camera.y -= dy / camera.zoom; redraw(); },
       onZoom: (f, x, y) => { zoomAt(camera, f, x, y); redraw(); },
-      mode: () => (tool && ['terrain', 'road', 'building', 'special', 'erase'].includes(tool.layer) ? 'paint' : 'pan'),
+      mode: () => (tool && ['terrain', 'road', 'building', 'special'].includes(tool.layer) ? 'paint' : 'pan'),
     });
     redraw();
   }
@@ -231,7 +233,8 @@ export function startEditorView(initial, { renderer, canvas, show, onExit, onTes
     try {
       const json = JSON.parse(await file.text());
       const m = loadMap(json);
-      saveLocalMap(json);
+      m.meta.id = uniqueMapId(m.meta.id, listLocalMaps().map(x => x.id));
+      saveLocalMap(saveMap(m));
       finish();
       startEditorView(m, { renderer, canvas, show, onExit, onTestPlay });
     } catch (err) { alert('Import fehlgeschlagen:\n' + err.message); }

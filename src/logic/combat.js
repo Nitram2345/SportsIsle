@@ -5,7 +5,7 @@ import { visibleUnits, effective } from './vision.js';
 
 export function attackRange(state, unit, targetAt) {
   const cfg = UNITS[unit.type];
-  let range = cfg.range + (effective(unit, 'range') - cfg.range);
+  let range = effective(unit, 'range');
   const own = TERRAIN[state.tiles[unit.at].terrain];
   if (cfg.rangeOnFlag && own.flags.includes(cfg.rangeOnFlag.flag)) range = cfg.rangeOnFlag.range;
   if (range > 0 && state.tiles[targetAt]?.road) range += cfg.roadBonus;

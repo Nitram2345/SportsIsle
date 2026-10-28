@@ -2,7 +2,7 @@
 import { apply, productionTime } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
 import { attackTargets } from '../logic/combat.js';
-import { visibleUnits } from '../logic/vision.js';
+import { visibleUnits, knownOwner, effective } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
 import { UNITS, BUILDINGS, SPECIALS } from '../config.js';
 import { HEX_SIZE } from '../render/renderer.js';
@@ -13,7 +13,7 @@ import { attachInput } from './input.js';
 const $ = id => document.getElementById(id);
 
 export function startGameView(initial, { renderer, canvas, show, onExit }) {
-  let state = initial, sel = null, pending = null, detach = null;
+  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '';
   const camera = createCamera();
   const view = { camera, state, viewer: null, selected: null, reach: [], targets: [] };
 
@@ -46,7 +46,11 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       const r = apply(state, action);
       state = r.state;
       saveGame(state);
-      describe(r.events);
+      // end of turn: nothing of the previous player may leak past the hand-over;
+      // eliminations are shown on the hand-over screen instead
+      if (action.type === 'endTurn') {
+        eliminatedNote = r.events.filter(e => e.type === 'eliminated').map(e => `${state.players[e.player].name} ist ausgeschieden`).join('\n');
+      } else describe(r.events);
       if (state.winner !== null) return victory();
       return r.events;
     } catch (err) { toast(err.message); return null; }
@@ -72,21 +76,24 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     const box = $('hud-info');
     box.innerHTML = '';
     if (!sel) { box.innerHTML = `<span class="hint">Einheit oder Sportstätte antippen</span>`; return; }
+    const div = document.createElement('div'), title = document.createElement('div'), line = document.createElement('div');
+    title.className = 'title'; div.append(title, line); box.append(div);
     if (sel.kind === 'unit') {
       const u = state.units[sel.id], cfg = UNITS[u.type], mine = u.owner === state.current;
       const buffs = u.buffs.map(b => `${SPECIALS[b.special].icon}${b.turns}`).join(' ');
-      box.innerHTML = `<div><div class="title">${cfg.name}${mine ? '' : ` (${state.players[u.owner].name})`}</div>`
-        + `❤ ${u.hp}/${cfg.hp} · ⚔ ${cfg.atk} · 🛡 ${cfg.def} · 👟 ${mine ? u.movesLeft + '/' : ''}${cfg.move}${cfg.range ? ` · 🎯 ${cfg.range}` : ''} ${buffs}`
-        + (mine && pending ? `<br><b>Nochmal tippen zum Bewegen</b>` : '') + '</div>';
+      const range = effective(u, 'range');
+      title.textContent = cfg.name + (mine ? '' : ` (${state.players[u.owner].name})`);
+      line.textContent = `❤ ${u.hp}/${cfg.hp} · ⚔ ${effective(u, 'atk')} · 🛡 ${effective(u, 'def')} · 👟 ${mine ? u.movesLeft + '/' : ''}${effective(u, 'move')}${range ? ` · 🎯 ${range}` : ''} ${buffs}`;
+      if (mine && pending) { const b = document.createElement('b'); b.textContent = 'Nochmal tippen zum Bewegen'; div.append(b); }
       return;
     }
     const f = state.facilities[sel.id], b = BUILDINGS[f.type], mine = f.owner === state.current;
-    const div = document.createElement('div');
-    div.innerHTML = `<div class="title">${b.name}</div>`;
-    if (!mine) div.innerHTML += f.owner === null ? 'Neutral – mit einer Einheit erobern' : `Gehört ${state.players[f.owner].name}`;
-    else if (!b.produces.length) div.innerHTML += 'Stellt im Moment nichts her';
+    const owner = knownOwner(state, state.current, sel.id);
+    title.textContent = b.name;
+    if (!mine) line.textContent = owner === null ? 'Neutral – mit einer Einheit erobern' : `Gehört ${state.players[owner].name}`;
+    else if (!b.produces.length) line.textContent = 'Stellt im Moment nichts her';
     else {
-      div.innerHTML += f.producing ? `Baut ${UNITS[f.producing].name}: ${f.progress}/${f.needed}` : 'Keine Produktion';
+      line.textContent = f.producing ? `Baut ${UNITS[f.producing].name}: ${f.progress}/${f.needed}` : 'Keine Produktion';
       const chips = document.createElement('div'); chips.className = 'chips';
       for (const type of b.produces) {
         const t = productionTime(state, state.current, type);
@@ -103,7 +110,6 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       }
       div.append(chips);
     }
-    box.append(div);
   }
 
   // ---------- taps ----------
@@ -153,6 +159,8 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     $('handoff').style.background = p.color;
     $('handoff-name').textContent = p.name;
     $('handoff-round').textContent = state.round;
+    $('handoff-note').textContent = eliminatedNote; eliminatedNote = '';
+    clearTimeout(toast.timer); $('toast').classList.remove('show');
     view.viewer = state.current; view.state = null;  // never draw the map behind the hand-over
     renderer.draw({ ...view, state: null });
     show('handoff');

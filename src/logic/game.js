@@ -21,6 +21,9 @@ export function spawnUnit(state, type, owner, at) {
 }
 
 export function createGame(map, players, { seed, startSlots }) {
+  // only what would corrupt the state; full playability check is validateMap (UI)
+  for (const slot of startSlots) for (const k of map.starts[slot].facilities)
+    if (!BUILDINGS[map.tiles[k]?.building]?.capturable) throw new Error(`Startpunkt ${slot + 1}: Feld ${k} ist keine Sportstätte.`);
   const { width, height } = map.meta;
   const state = {
     version: 1, rng: seed | 0, mapId: map.meta.id, width, height,
@@ -114,6 +117,7 @@ function doProduce(state, at, unitType) {
   if (!f || f.owner !== state.current) throw new Error('Das ist nicht deine Sportstätte.');
   if (unitType === null) { Object.assign(f, { producing: null, progress: 0, needed: 0 }); return; }
   if (!BUILDINGS[f.type].produces.includes(unitType)) throw new Error('Diese Sportstätte stellt das nicht her.');
+  if (f.producing === unitType) return;
   Object.assign(f, { producing: unitType, progress: 0, needed: productionTime(state, f.owner, unitType) ?? 0 });
 }
 

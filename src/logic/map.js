@@ -29,6 +29,8 @@ function validateFile(f) {
   });
   const inMap = at => Array.isArray(at) && at.length === 2 && Number.isInteger(at[0]) && Number.isInteger(at[1])
     && at[0] >= 0 && at[1] >= 0 && at[0] < width && at[1] < height;
+  for (const name of ['roads', 'buildings', 'specials']) if (f[name] !== undefined && !Array.isArray(f[name])) errs.push(`${name} muss eine Liste sein.`);
+  if (errs.length) return errs;
   for (const at of f.roads ?? []) if (!inMap(at)) errs.push(`Straße außerhalb der Karte: ${JSON.stringify(at)}.`);
   for (const x of f.buildings ?? []) {
     if (!inMap(x?.at)) errs.push(`Bebauung außerhalb der Karte: ${JSON.stringify(x?.at)}.`);
@@ -40,6 +42,7 @@ function validateFile(f) {
   }
   if (!Array.isArray(f.starts)) errs.push('Startpunkte fehlen.');
   else for (const s of f.starts) {
+    if (!Array.isArray(s?.units ?? []) || !Array.isArray(s?.facilities ?? [])) { errs.push('Startpunkt: units/facilities müssen Listen sein.'); continue; }
     if (!inMap(s?.at)) errs.push(`Startpunkt außerhalb der Karte: ${JSON.stringify(s?.at)}.`);
     for (const u of s?.units ?? []) if (!UNITS[u]) errs.push(`Unbekannte Einheit "${u}".`);
     for (const at of s?.facilities ?? []) if (!inMap(at)) errs.push(`Start-Sportstätte außerhalb der Karte: ${JSON.stringify(at)}.`);
@@ -86,6 +89,7 @@ export function validateMap(m) {
   const errs = [];
   if (m.starts.length < 2) errs.push('Mindestens 2 Startpunkte nötig.');
   m.starts.forEach((s, i) => {
+    if (!TERRAIN[m.tiles[s.at]?.terrain]?.passable) errs.push(`Startpunkt ${i + 1} muss auf begehbarem Gelände liegen.`);
     if (!s.units.length && !s.facilities.length) errs.push(`Startpunkt ${i + 1} braucht mindestens eine Einheit oder Sportstätte.`);
     for (const u of s.units) if (!UNITS[u]) errs.push(`Startpunkt ${i + 1}: unbekannte Einheit "${u}".`);
     for (const k of s.facilities) {
@@ -96,4 +100,12 @@ export function validateMap(m) {
   for (const [k, t] of Object.entries(m.tiles))
     if (t.building && !canPlace(t, t.building)) errs.push(`Feld ${k}: ${BUILDINGS[t.building]?.name ?? t.building} ist auf ${TERRAIN[t.terrain].name} nicht erlaubt.`);
   return errs;
+}
+
+// id not in taken; appends -2, -3, ...
+export function uniqueMapId(id, taken) {
+  if (!taken.includes(id)) return id;
+  let n = 2;
+  while (taken.includes(`${id}-${n}`)) n++;
+  return `${id}-${n}`;
 }
