@@ -1,0 +1,135 @@
+<h2>Entwurf A, Version 3: Figuren ohne Kreis, Spielerfarbe auf der Kleidung</h2>
+<p class="subtitle">Das Gelände bleibt unter den Figuren sichtbar. Die Kleidung trägt die Farbe des Spielers. Schatten (dunkel, halbtransparent) und Glanz (hell, halbtransparent) liegen darüber und passen sich jeder Farbe an. Oben: alle vier Einheiten in 8 von 16 Spielerfarben. Unten: auf der Karte.</p>
+
+<style>
+  .row { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; background:#6f9440; border-radius:12px; padding:10px; margin-bottom:22px; }
+  .wrap { display:flex; gap:28px; flex-wrap:wrap; justify-content:center; align-items:flex-start; }
+  .phone { width:300px; height:600px; border-radius:30px; border:8px solid #222; overflow:hidden; display:flex; flex-direction:column; background:#1d3a5c; font-family:system-ui, sans-serif; }
+  .phone svg { flex:1; width:100%; }
+  .bar { display:flex; justify-content:space-between; align-items:center; padding:9px 14px; background:#fff; color:#333; font-weight:700; font-size:14px; }
+  .bottom { display:flex; gap:10px; align-items:center; padding:10px 12px; background:#fff; color:#333; font-size:12px; }
+  .btn { padding:9px 12px; border-radius:12px; background:#ff6b4a; color:#fff; font-weight:700; box-shadow:0 3px 0 #c44a2e; text-align:center; }
+  .dot { display:inline-block; width:13px; height:13px; border-radius:50%; background:#e63946; margin-right:6px; vertical-align:middle; }
+  .zoom { width:440px; max-width:100%; border-radius:12px; overflow:hidden; border:3px solid #222; background:#1d3a5c; }
+</style>
+
+<svg id="pal" class="row" viewBox="0 0 640 200" style="width:100%;max-width:760px;display:block;margin:0 auto 22px"></svg>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="bar"><span><span class="dot"></span>Rot · Runde 4</span><span>☰</span></div>
+    <svg id="full"></svg>
+    <div class="bottom"><svg width="34" height="40" viewBox="-20 -44 40 48" id="mini"></svg><div style="flex:1"><b>Golfer</b><br>❤ 6/8 · Reichweite 3</div><div class="btn">Zug<br>beenden</div></div>
+  </div>
+  <div class="zoom"><svg id="zoom" style="width:100%;display:block"></svg></div>
+</div>
+
+<script>
+// ---------- Figuren: fester Teil + Teamfarbe mit Schatten/Glanz ----------
+const SKIN="#f1c27d", SKIN_D="#c9955a", OL="#1b1b1b";
+function shirt(col, d, shade, gloss){
+  return `<path d="${d}" fill="${col}" stroke="${OL}" stroke-width="1"/>`+
+         `<path d="${shade}" fill="rgba(0,0,0,.32)"/>`+
+         `<path d="${gloss}" fill="rgba(255,255,255,.38)"/>`;
+}
+function figure(type, col){
+  const legs = (a=0)=>`<path d="M-5 -16 L${-6-a} -1 L${-2-a} -1 L-1 -12 L1 -12 L${2+a} -1 L${6+a} -1 L5 -16 Z" fill="#3b3f4a" stroke="${OL}" stroke-width="1"/>`+
+                      `<path d="M${-7-a} -2 h6 v2.5 h-7z M${1+a} -2 h6 v2.5 h-6z" fill="#f5f5f5" stroke="${OL}" stroke-width=".8"/>`;
+  const head = (hat)=>`<circle cx="0" cy="-32" r="5.6" fill="${SKIN}" stroke="${OL}" stroke-width="1"/><path d="M0 -32 a5.6 5.6 0 0 0 5.6 0 a5.6 5.6 0 0 1 -5.6 5.6z" fill="${SKIN_D}" opacity=".6"/>`+hat;
+  const torso = "M-7 -26 Q0 -29 7 -26 L6 -15 Q0 -13 -6 -15 Z";
+  const tShade = "M1 -27.5 Q5 -27 7 -26 L6 -15 Q3 -14 1 -14 Z";
+  const tGloss = "M-5.5 -25 Q-3 -26.5 -1.5 -26 L-2.5 -18 Q-4.5 -18.5 -5.5 -19 Z";
+  if(type==="golf") return legs()+
+    `<line x1="5" y1="-20" x2="13" y2="-1" stroke="#9a9a9a" stroke-width="1.6"/><path d="M12 -2 l5 1 l-1 2 l-5 -1z" fill="#cfcfcf" stroke="${OL}" stroke-width=".6"/>`+
+    shirt(col,torso,tShade,tGloss)+
+    `<path d="M6 -25 L9 -19 L5 -18" fill="none" stroke="${SKIN}" stroke-width="2.6" stroke-linecap="round"/>`+
+    head(`<path d="M-6 -34 Q0 -41 6 -34 Z" fill="${col}" stroke="${OL}" stroke-width=".9"/><path d="M1 -38.5 Q4 -37 6 -34 L1 -34Z" fill="rgba(0,0,0,.3)"/><path d="M4 -34 h6 v1.6 h-6z" fill="${col}" stroke="${OL}" stroke-width=".7"/>`);
+  if(type==="tennis") return legs(1)+
+    shirt(col,torso,tShade,tGloss)+
+    `<path d="M6 -25 L11 -30" stroke="${SKIN}" stroke-width="2.6" stroke-linecap="round"/><line x1="11" y1="-30" x2="13" y2="-34" stroke="#333" stroke-width="1.8"/>`+
+    `<ellipse cx="15.5" cy="-39" rx="4.6" ry="6" transform="rotate(25 15.5 -39)" fill="rgba(255,255,255,.25)" stroke="${OL}" stroke-width="1.6"/>`+
+    `<path d="M13 -43 l5 7 M17.5 -43 l-4 8 M12 -40 l7 1" stroke="rgba(0,0,0,.4)" stroke-width=".5"/>`+
+    `<path d="M-6 -25 L-9 -18" stroke="${SKIN}" stroke-width="2.6" stroke-linecap="round"/>`+
+    head(`<path d="M-5.8 -34 h11.6 v2.2 h-11.6z" fill="${col}" stroke="${OL}" stroke-width=".7"/><path d="M0 -34 h5.8 v2.2 h-5.8z" fill="rgba(0,0,0,.3)"/>`);
+  if(type==="hockey") return legs(2)+
+    `<path d="M-3 -24 L-13 -2 L-19 -2 L-19 0 L-12 0" fill="none" stroke="#7a4a22" stroke-width="2.2" stroke-linejoin="round"/>`+
+    shirt(col,torso,tShade,tGloss)+
+    `<path d="M-6 -24 L-6 -18 L-4 -17 M6 -24 L2 -20 L-3 -21" fill="none" stroke="${SKIN}" stroke-width="2.6" stroke-linecap="round"/>`+
+    head(`<path d="M-6 -32 Q-6 -40 0 -40 Q6 -40 6 -32 Z" fill="#ddd" stroke="${OL}" stroke-width=".9"/><path d="M-6 -33 h12 v1.8 h-12z" fill="${col}"/><path d="M1 -40 Q6 -40 6 -32 L1 -32Z" fill="rgba(0,0,0,.25)"/>`);
+  if(type==="jog") return `<path d="M-2 -16 L-9 -6 L-11 -1 L-7 -1 L-5 -6 L1 -13 Z" fill="#3b3f4a" stroke="${OL}" stroke-width="1"/><path d="M2 -16 L7 -9 L4 -1 L8 -1 L11 -9 L5 -16Z" fill="#3b3f4a" stroke="${OL}" stroke-width="1"/>`+
+    `<path d="M-12 -2 h6 v2.5 h-7z M3 -2 h6 v2.5 h-6z" fill="#f5f5f5" stroke="${OL}" stroke-width=".8"/>`+
+    shirt(col,"M-6 -27 Q1 -29 7 -26 L5 -15 Q0 -14 -5 -15 Z","M1 -28 Q5 -27.5 7 -26 L5 -15 Q3 -14.5 1 -14.5 Z","M-4.5 -26 Q-2.5 -27.5 -1 -27 L-2 -19 Q-4 -19.5 -4.5 -20 Z")+
+    `<path d="M-5 -25 L-10 -20 L-7 -15 M6 -25 L10 -20 L13 -24" fill="none" stroke="${SKIN}" stroke-width="2.6" stroke-linecap="round"/>`+
+    head(`<path d="M-5.8 -34.5 h11.6 v2.4 h-11.6z" fill="${col}" stroke="${OL}" stroke-width=".7"/><path d="M-5.8 -33.5 l-4 3 l1 1 l3.5 -2.5z" fill="${col}" stroke="${OL}" stroke-width=".5"/>`);
+}
+function unitAt(x,y,type,col,k=1){
+  return `<ellipse cx="${x}" cy="${y}" rx="${11*k}" ry="${3.2*k}" fill="rgba(0,0,0,.38)"/>`+
+         `<g transform="translate(${x} ${y}) scale(${k})" filter="url(#ol)">${figure(type,col)}</g>`;
+}
+const DEFS = `<defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.5" flood-opacity=".45"/></filter>
+ <filter id="ol" x="-30%" y="-30%" width="160%" height="160%"><feMorphology in="SourceAlpha" operator="dilate" radius=".7" result="d"/><feFlood flood-color="#000" flood-opacity=".55"/><feComposite in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+
+// ---------- Palette: 8 von 16 Farben ----------
+const COLORS = ["#e63946","#2f6fd6","#f4c20d","#2a9d4b","#8e44ad","#f28c28","#16b5c4","#ececec"];
+{ let s=DEFS; const types=["golf","tennis","hockey","jog"];
+  COLORS.forEach((c,i)=>types.forEach((t,j)=>{ s+=unitAt(40+i*80, 46+j*48 - (j?0:0), t, c, .95); }));
+  ["Golfer","Tennis","Hockey","Jogger"].forEach((n,j)=>{ s+=`<text x="4" y="${30+j*48}" font-size="9" fill="#fff" font-family="system-ui">${n}</text>`; });
+  document.getElementById("pal").innerHTML=s; }
+document.getElementById("mini").innerHTML = DEFS + figure("golf","#e63946");
+
+// ---------- Karte (Gelände wie Version 2) ----------
+(function(){
+  const map = ["MMHhfSW","MHhfGSW","HhGGGSW","hGGTGDW","fGGGGDS","ffGPGGS","fGGGLGS","GGgGHhW","GNGGhMW","mmGGGMW"];
+  const road = [[0,4],[1,4],[2,4],[3,4],[3,3],[4,2],[4,1],[4,0]];
+  const road2 = [[3,4],[3,5],[4,6],[3,7],[3,8],[3,9]];
+  const R = 19, W = Math.sqrt(3)*R;
+  const C = (c,r) => [W*c + (r%2 ? W/2 : 0) + W/2 + 3, R*1.5*r + R + 3];
+  const pts = (x,y,s=1) => { let p=[]; for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-30); p.push((x+R*s*Math.cos(a)).toFixed(1)+","+(y+R*s*Math.sin(a)).toFixed(1));} return p.join(" "); };
+  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+  const toCube = (c,r) => { const q = c - (r - (r&1))/2; return [q, r, -q-r]; };
+  const dist = (a,b) => { const A=toCube(...a), B=toCube(...b); return Math.max(Math.abs(A[0]-B[0]),Math.abs(A[1]-B[1]),Math.abs(A[2]-B[2])); };
+  const base = {M:"#8b8170",H:"#8d9a4c",h:"#4f6e2f",f:"#4b6b2c",G:"#6f9440",S:"#d9c78e",W:"#2b5d8c",D:"#dcc27a",T:"#6f9440",P:"#6f9440",L:"#6f9440",g:"#6f9440",N:"#6f9440",m:"#5d6b45"};
+  let s = DEFS;
+  map.forEach((line,r)=>[...line].forEach((ch,c)=>{
+    const [x,y] = C(c,r);
+    s += `<polygon points="${pts(x,y)}" fill="${base[ch]}" stroke="rgba(0,0,0,.18)" stroke-width=".8"/>`;
+    if ("GTPLgNHh".includes(ch)) for(let i=0;i<9;i++){ const a=rnd()*6.28, d=rnd()*R*.75; s+=`<circle cx="${x+Math.cos(a)*d}" cy="${y+Math.sin(a)*d}" r="1.1" fill="${rnd()>.5?'#86ad52':'#5a7d33'}"/>`; }
+    if (ch==="S"||ch==="D") for(let i=0;i<10;i++){ const a=rnd()*6.28, d=rnd()*R*.75; s+=`<circle cx="${x+Math.cos(a)*d}" cy="${y+Math.sin(a)*d}" r=".9" fill="#b9a46a"/>`; }
+    if (ch==="D") for(let k=-1;k<=1;k++) s+=`<path d="M${x-10} ${y+k*6+2} q5 -6 10 0 t10 0" fill="none" stroke="#b8963f" stroke-width="1.6"/>`;
+    if (ch==="W") for(let i=0;i<3;i++){ const ox=(rnd()-.5)*R, oy=(rnd()-.5)*R; s+=`<path d="M${x+ox-5} ${y+oy} q2.5 -3 5 0 t5 0" fill="none" stroke="#5b8dbd" stroke-width="1.3"/>`; }
+    if (ch==="m") for(let i=0;i<6;i++){ const ox=(rnd()-.5)*R*1.2, oy=(rnd()-.5)*R*1.1; s+=`<ellipse cx="${x+ox}" cy="${y+oy}" rx="4" ry="1.6" fill="#3c5a5a"/><line x1="${x+ox-1}" y1="${y+oy}" x2="${x+ox-2}" y2="${y+oy-4}" stroke="#7a8a3a"/>`; }
+    if (ch==="H"||ch==="h") [[-6,4],[6,2],[0,-5]].forEach(([dx,dy])=>{ s+=`<ellipse cx="${x+dx}" cy="${y+dy}" rx="8" ry="5" fill="#a3ae5c"/><ellipse cx="${x+dx+2}" cy="${y+dy+1.5}" rx="6" ry="3.2" fill="#6f7c35"/>`; });
+    if (ch==="f"||ch==="h") for(let i=0;i<(ch==="f"?7:4);i++){ const ox=(rnd()-.5)*R*1.2, oy=(rnd()-.5)*R*1.1; s+=`<circle cx="${x+ox+1}" cy="${y+oy+1.5}" r="4.6" fill="#22361a"/><circle cx="${x+ox}" cy="${y+oy}" r="4.4" fill="#2f5022"/><circle cx="${x+ox-1.3}" cy="${y+oy-1.3}" r="2" fill="#5b8a38"/>`; }
+    if (ch==="M") { s+=`<polygon points="${x-14},${y+9} ${x-3},${y-12} ${x+6},${y+9}" fill="#9b917f"/><polygon points="${x-3},${y-12} ${x+6},${y+9} ${x-1},${y+9}" fill="#6a6152"/><polygon points="${x-3},${y-12} ${x-6},${y-6} ${x-1},${y-7}" fill="#f2f2f2"/><polygon points="${x},${y+10} ${x+8},${y-5} ${x+15},${y+10}" fill="#8f8573"/><polygon points="${x+8},${y-5} ${x+15},${y+10} ${x+10},${y+10}" fill="#5f5747"/>`; }
+  }));
+  [road, road2].forEach(path=>{ const d = path.map(([c,r],i)=>{const [x,y]=C(c,r); return (i?"L":"M")+x+" "+y;}).join(" ");
+    s += `<path d="${d}" fill="none" stroke="#5a4c38" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#b5a17a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>`; });
+  map.forEach((line,r)=>[...line].forEach((ch,c)=>{ if (dist([2,4],[c,r])<=3){ const [x,y]=C(c,r); s+=`<polygon points="${pts(x,y)}" fill="rgba(255,225,60,.22)"/>`; } }));
+  const facility = (c,r,col,art) => { const [x,y]=C(c,r); s += `<polygon points="${pts(x,y,.84)}" fill="none" stroke="${col}" stroke-width="3.2"/>` + art(x,y); };
+  facility(3,3,"#e63946",(x,y)=>`<g filter="url(#sh)" transform="rotate(-18 ${x} ${y})"><rect x="${x-17}" y="${y-10}" width="34" height="20" rx="1.5" fill="#3d8c5c" stroke="#fff" stroke-width="1.4"/><line x1="${x}" y1="${y-10}" x2="${x}" y2="${y+10}" stroke="#fff" stroke-width="1.6"/><line x1="${x-17}" y1="${y-6}" x2="${x+17}" y2="${y-6}" stroke="#fff" stroke-width=".8"/><line x1="${x-17}" y1="${y+6}" x2="${x+17}" y2="${y+6}" stroke="#fff" stroke-width=".8"/></g>`);
+  facility(4,6,"#2f6fd6",(x,y)=>`<g filter="url(#sh)"><path d="M${x-16} ${y+3} q2 -13 16 -12 q15 1 15 11 q-2 11 -16 10 q-15 0 -15 -9z" fill="#8cc761"/><ellipse cx="${x+5}" cy="${y+3}" rx="4" ry="2.2" fill="#e4d49a"/><circle cx="${x-4}" cy="${y+1}" r="1.6" fill="#222"/><line x1="${x-4}" y1="${y+1}" x2="${x-4}" y2="${y-16}" stroke="#333" stroke-width="1.4"/><polygon points="${x-4},${y-16} ${x+7},${y-12.5} ${x-4},${y-9}" fill="#e63946"/></g>`);
+  facility(1,8,"#d8d8d8",(x,y)=>`<g filter="url(#sh)"><rect x="${x-13}" y="${y-5}" width="26" height="15" fill="#d9d2c3" stroke="#6b5e4a"/><polygon points="${x-16},${y-4} ${x},${y-15} ${x+16},${y-4}" fill="#a84a32" stroke="#6b2e20"/><text x="${x}" y="${y+7}" font-size="10" text-anchor="middle">🏓</text></g>`);
+  { const [x,y]=C(3,5); s+=`<path d="M${x-14} ${y+6} q10 -3 14 -6 t14 -6" fill="none" stroke="#d6c79a" stroke-width="2.5"/>`; [[-8,-6],[7,5],[-4,7],[9,-7]].forEach(([dx,dy])=>{ s+=`<circle cx="${x+dx}" cy="${y+dy}" r="5" fill="#4f8a35" filter="url(#sh)"/><circle cx="${x+dx-1.5}" cy="${y+dy-1.5}" r="2" fill="#7dbb55"/>`; }); }
+  { const [x,y]=C(2,7); s+=`<circle cx="${x}" cy="${y}" r="11" fill="rgba(255,230,80,.35)" stroke="#ffd84a" stroke-width="2" stroke-dasharray="3 2"/><text x="${x}" y="${y+5}" font-size="13" text-anchor="middle">⚡</text>`; }
+
+  // Einheiten: keine Scheibe, Teamfarbe auf Kleidung
+  const units = [
+    {c:2,r:4,t:"golf",col:"#e63946",sel:true,hp:.75},
+    {c:1,r:6,t:"jog",col:"#e63946",hp:1},
+    {c:3,r:3,t:"tennis",col:"#e63946",hp:.5},
+    {c:4,r:5,t:"hockey",col:"#2f6fd6",hp:1},
+    {c:1,r:2,t:"golf",col:"#2a9d4b",hp:1},
+  ];
+  units.forEach(u=>{
+    const [x,y0]=C(u.c,u.r), feet=y0+R*.55;
+    if (u.sel) s+=`<polygon points="${pts(x,y0)}" fill="none" stroke="#ffd700" stroke-width="3"/>`;
+    s+=unitAt(x,feet,u.t,u.col,1.08);
+    s+=`<rect x="${x-11}" y="${feet+3}" width="22" height="3.6" rx="1.8" fill="#222"/><rect x="${x-11}" y="${feet+3}" width="${22*u.hp}" height="3.6" rx="1.8" fill="${u.hp>.6?'#4cd964':u.hp>.3?'#ffcc00':'#ff3b30'}"/>`;
+  });
+  { const [x,y]=C(4,5); s+=`<polygon points="${pts(x,y,1.08)}" fill="none" stroke="#ff3b30" stroke-width="2" stroke-dasharray="5 3"/>`; }
+  map.forEach((line,r)=>[...line].forEach((ch,c)=>{ if (dist([2,4],[c,r])>5 || (c>=6 && r>4)) { const [x,y]=C(c,r); s+=`<polygon points="${pts(x,y)}" fill="rgba(20,30,50,.55)"/>`; } }));
+  const VW = W*7.5+6, VH = R*1.5*10+R+6;
+  const full = document.getElementById("full"); full.setAttribute("viewBox",`0 0 ${VW} ${VH}`); full.innerHTML = s;
+  const zoom = document.getElementById("zoom"); const [zx,zy] = C(0,1); zoom.setAttribute("viewBox",`${zx-W/2} ${zy-R} ${W*5} ${R*1.5*6}`); zoom.innerHTML = s;
+})();
+</script>
