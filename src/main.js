@@ -147,3 +147,6 @@ async function openEditor(map = null) {
 const openEditorWith = map => openEditor(map);
 
 show('start');
+
+// ponytail: no SW on localhost?debug so scripted checks always see fresh files
+if ('serviceWorker' in navigator && !location.search.includes('debug')) navigator.serviceWorker.register('sw.js').catch(() => {});

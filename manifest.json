@@ -1,0 +1,15 @@
+{
+  "name": "Sports Battle Isle",
+  "short_name": "SportsIsle",
+  "description": "Rundenbasiertes Hex-Strategiespiel mit Sportlern – Hot-Seat für 2 bis 16 Spieler.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#1d3a5c",
+  "theme_color": "#1d3a5c",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
