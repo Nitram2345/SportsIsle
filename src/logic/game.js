@@ -4,6 +4,7 @@ import { distance } from './hex.js';
 import { random } from './rng.js';
 import { effective, updateMemory } from './vision.js';
 import { doMove } from './movement.js';
+import { doAttack } from './combat.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
 
@@ -81,7 +82,20 @@ export function apply(state, action) {
   const s = structuredClone(state), events = [];
   switch (action?.type) {
     case 'move': doMove(s, getUnit(s, action.unitId), action.path, events); break;
+    case 'attack': doAttack(s, getUnit(s, action.unitId), action.targetId, events); break;
     default: throw new Error(`Unbekannte Aktion: ${action?.type}`);
   }
+  checkElimination(s, events);
   return { state: s, events };
+}
+
+export function checkElimination(state, events) {
+  state.players.forEach((p, pid) => {
+    if (!p.alive) return;
+    const hasUnit = Object.values(state.units).some(u => u.owner === pid);
+    const hasFacility = Object.values(state.facilities).some(f => f.owner === pid);
+    if (!hasUnit && !hasFacility) { p.alive = false; events.push({ type: 'eliminated', player: pid }); }
+  });
+  const alive = state.players.map((p, i) => p.alive ? i : -1).filter(i => i >= 0);
+  if (alive.length === 1 && state.winner === null) { state.winner = alive[0]; events.push({ type: 'won', player: alive[0] }); }
 }
