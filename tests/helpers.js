@@ -14,3 +14,18 @@ export function mapFrom(rows, { roads = [], buildings = {}, specials = {}, start
   ];
   return { meta: { format: 1, id: 'test', name: 'Test', author: 'test', width, height, players: { min: 2, max: starts.length } }, tiles, starts };
 }
+
+import { createGame, spawnUnit } from '../src/logic/game.js';
+import { PLAYER_COLORS } from '../src/config.js';
+
+// Game from char rows. Default: n start points without units (tests place their own).
+export function gameFrom(rows, opts = {}, { players = 2, seed = 1 } = {}) {
+  const w = rows[0].length;
+  const starts = opts.starts ?? Array.from({ length: players }, (_, i) => ({ at: key(i % w, Math.floor(i / w)), units: [], facilities: [] }));
+  const m = mapFrom(rows, { ...opts, starts });
+  const ps = Array.from({ length: players }, (_, i) => ({ name: `P${i}`, color: PLAYER_COLORS[i] }));
+  return createGame(m, ps, { seed, startSlots: ps.map((_, i) => i) });
+}
+
+// Put a unit directly into the state (full movesLeft).
+export const place = (state, type, owner, at) => spawnUnit(state, type, owner, at);
