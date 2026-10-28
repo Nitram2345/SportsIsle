@@ -8,6 +8,66 @@
 </head>
 <body>
   <canvas id="board"></canvas>
+
+  <section data-screen="start" class="screen menu">
+    <h1>Sports<br>Battle Isle</h1>
+    <button class="btn" data-go="new">Neues Spiel</button>
+    <button class="btn" id="btn-continue" hidden>Spiel fortsetzen</button>
+    <button class="btn alt" data-go="editor">Map-Editor</button>
+    <label class="btn alt">Map importieren<input type="file" id="import-file" accept=".json,application/json" hidden></label>
+    <p class="msg" id="start-msg"></p>
+  </section>
+
+  <section data-screen="new" class="screen menu wide">
+    <h2>Neues Spiel</h2>
+    <label>Map <select id="new-map"></select></label>
+    <p class="hint" id="new-map-info"></p>
+    <label>Spieler <select id="new-count"></select></label>
+    <div id="new-players"></div>
+    <div class="row"><button class="btn alt small" id="new-reroll">Startpunkte neu würfeln</button></div>
+    <canvas id="new-preview" width="320" height="200"></canvas>
+    <div class="row"><button class="btn alt" data-go="start">Zurück</button><button class="btn" id="new-start">Los geht's</button></div>
+  </section>
+
+  <section data-screen="handoff" class="screen handoff" id="handoff">
+    <div class="handoff-box">
+      <p>Gerät an</p>
+      <h2 id="handoff-name"></h2>
+      <p>geben</p>
+      <p class="hint">Runde <span id="handoff-round"></span> · tippen zum Start</p>
+    </div>
+  </section>
+
+  <section data-screen="game" class="screen hud">
+    <header class="bar top">
+      <span><span class="dot" id="hud-dot"></span><b id="hud-name"></b> · Runde <span id="hud-round"></span></span>
+      <button class="icon" id="hud-menu" aria-label="Menü">☰</button>
+    </header>
+    <div class="toast" id="toast"></div>
+    <footer class="bar bottom">
+      <div id="hud-info" class="info"></div>
+      <button class="btn" id="hud-end">Zug<br>beenden</button>
+    </footer>
+  </section>
+
+  <section data-screen="victory" class="screen menu">
+    <h2>🏆 Sieg!</h2>
+    <p class="big" id="victory-name"></p>
+    <button class="btn" data-go="start">Zum Start</button>
+  </section>
+
+  <section data-screen="editor" class="screen hud editor">
+    <header class="bar top">
+      <input id="ed-name" class="name" aria-label="Map-Name">
+      <button class="icon" id="ed-menu" aria-label="Menü">☰</button>
+    </header>
+    <div class="toast" id="ed-toast"></div>
+    <div class="ed-panel" id="ed-panel" hidden></div>
+    <footer class="bar bottom tools" id="ed-tools"></footer>
+  </section>
+
+  <dialog id="menu-dialog"><div id="menu-body"></div></dialog>
+
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

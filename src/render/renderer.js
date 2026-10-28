@@ -83,6 +83,12 @@ export function createRenderer(canvas) {
 
     // markings
     if (view.reach?.length) fill(view.reach, 'rgba(80,170,255,.30)', 0.96);
+    if (view.path?.length && view.selected) {
+      ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 4; ctx.setLineDash([2, 6]); ctx.lineCap = 'round';
+      ctx.beginPath(); [view.selected, ...view.path].forEach((k, i) => { const { x, y } = px(k); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+      ctx.setLineDash([]);
+      const end = px(view.path[view.path.length - 1]); hexPath(ctx, end.x, end.y, HEX_SIZE, 0.9); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+    }
     if (view.selected) { const { x, y } = px(view.selected); hexPath(ctx, x, y, HEX_SIZE, 0.95); ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3; ctx.stroke(); }
 
     // units

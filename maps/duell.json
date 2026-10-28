@@ -1,0 +1,21 @@
+{
+  "format": 1, "id": "duell", "name": "Insel-Duell", "author": "Sports Battle Isle", "width": 10, "height": 8,
+  "players": { "min": 2, "max": 2 },
+  "terrain": [
+    "WWWWWWWWWW",
+    "WSGGFGGGSW",
+    "WGGHGGFGGW",
+    "WGFGGgGHGW",
+    "WGHGgGGFGW",
+    "WGGFGGHGGW",
+    "WSGGGFGGSW",
+    "WWWWWWWWWW"
+  ],
+  "roads": [[2,1],[3,2],[3,3],[4,4],[5,4],[6,5],[7,6]],
+  "buildings": [{ "at": [2,2], "type": "tennis" }, { "at": [7,5], "type": "tennis" }, { "at": [5,3], "type": "park" }],
+  "specials": [{ "at": [4,3], "type": "sprint" }],
+  "starts": [
+    { "at": [1,1], "units": ["golfer", "tennis", "jogger"], "facilities": [[2,2]] },
+    { "at": [8,6], "units": ["golfer", "hockey", "jogger"], "facilities": [[7,5]] }
+  ]
+}

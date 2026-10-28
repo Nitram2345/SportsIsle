@@ -1,0 +1,1 @@
+[{ "id": "duell", "name": "Insel-Duell", "file": "duell.json", "players": { "min": 2, "max": 2 }, "width": 10, "height": 8 }]
