@@ -1,29 +1,18 @@
 # Projekt: Sports Battle Isle (MVP)
 
+Verbindliche Beschreibung: `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
+
 ## Kernkonzept
-Ein rundenbasiertes Strategiespiel (TBS) für mobile Endgeräte (PWA), das taktische Tiefe (ähnlich Battle Isle/Polytopia) mit einem Sport-Thema kombiniert. Es nutzt ein duales System aus Aufbau (Sportstätten) und taktischen Kämpfen (Sportler als Einheiten).
+Ein rundenbasiertes Strategiespiel (TBS) für mobile Endgeräte (PWA), das taktische Tiefe (ähnlich Battle Isle/Polytopia) mit einem Sport-Thema kombiniert. Sportstätten stellen Sportler her, Sportler kämpfen und erobern.
 
 ## Technische Zielsetzung
-- **Plattform:** Progressive Web App (PWA) für iOS und Android.
-- **Architektur:** Data-Driven Design (Einheiten-Eigenschaften werden über Config-Files gesteuert).
-- **Multiplayer:** 
-    - Phase 1: Hot-Seat (lokal am selben Gerät).
-    - Phase 2: Online-Multiplayer (via WebSockets/Socket.io).
-- **Engine:** HTML5 Canvas / JavaScript.
+- **Plattform:** Progressive Web App (PWA) für iOS und Android, offline spielbar.
+- **Architektur:** Data-Driven Design (Werte in Config-Files).
+- **Multiplayer:**
+    - Phase 1: Hot-Seat (2–16 Spieler an einem Gerät).
+    - Phase 2: Online-Multiplayer über einen Server.
+- **Engine:** HTML5 Canvas / JavaScript, keine Frameworks.
+- **Raster:** Hexagonal.
 
-## Spielmechanik (Combat)
-- **Raster:** Quadratisch oder Hexagonal.
-- **Einheiten-Attribute:** Name, HP, Attacke, Verteidigung, Bewegung (Move), Reichweite (Range), Symbol.
-- **Bewegungs-Logik:** 
-    - Standard: `Move` Felder weit laufen.
-    - Alternative: Ein Feld gehen, aber Angriff für diesen Zug aussetzen.
-- **Spezialfähigkeiten (Abilities):**
-    - `HEAL`: Heilt befreundete Einheiten in Reichweite.
-    - `REPAIR`: Repariert Ausrüstung/Verteidigung.
-
-## Aktueller Stand (MVP)
-- [x] Grundlegendes Grid-System.
-- [x] Data-Driven Unit Config.
-- [x] Hot-Seat Multiplayer Logik.
-- [x] Basis-Kampfsystem (Damage Calculation).
-- [x] Implementierung der Heil-Fähigkeit (Physiotherapeut).
+## Aktueller Stand
+- [ ] MVP in Arbeit, siehe Umsetzungsplan `docs/superpowers/plans/2026-10-28-sports-battle-isle-mvp.md`.

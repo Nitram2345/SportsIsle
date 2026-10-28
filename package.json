@@ -1,0 +1,8 @@
+{
+  "name": "sports-battle-isle",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
