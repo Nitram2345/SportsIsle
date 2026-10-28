@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { SKINS } from '../src/config.js';
 import { createGame, suggestStarts, apply } from '../src/logic/game.js';
 import { distance } from '../src/logic/hex.js';
-import { mapFrom, gameFrom } from './helpers.js';
+import { mapFrom, gameFrom, place } from './helpers.js';
 
 const two = [{ name: 'A', color: '#e63946' }, { name: 'B', color: '#2f6fd6' }];
 const bigMap = () => mapFrom(['GGGGGGGGG', 'GGGGGGGGG', 'GGGGGGGGG', 'GGGGGGGGG', 'GGGGGGGGG'], {
@@ -43,8 +43,9 @@ test('suggestStarts returns n distinct slots', () => {
 });
 test('apply rejects unknown action', () => assert.throws(() => apply(gameFrom(['GG']), { type: 'dance' })));
 // Review Focus: Speichern/Laden (endTurn arrives in Task 6)
-test('state survives JSON round trip and still plays', { todo: 'endTurn in Task 6' }, () => {
-  const s = gameFrom(['GGGG']); const copy = JSON.parse(JSON.stringify(s));
+test('state survives JSON round trip and still plays', () => {
+  const s = gameFrom(['GGGG']); place(s, 'jogger', 0, '0,0'); place(s, 'jogger', 1, '3,0');
+  const copy = JSON.parse(JSON.stringify(s));
   assert.deepEqual(copy, s);
   assert.equal(apply(copy, { type: 'endTurn' }).state.current, 1);
 });

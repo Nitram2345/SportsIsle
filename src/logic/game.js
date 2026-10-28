@@ -1,6 +1,6 @@
 // Game state and the single entry point for changes: apply(state, action).
-import { UNITS, BUILDINGS, SKINS, TERRAIN } from '../config.js';
-import { distance } from './hex.js';
+import { UNITS, BUILDINGS, SKINS, TERRAIN, RULES } from '../config.js';
+import { distance, neighbors } from './hex.js';
 import { random } from './rng.js';
 import { effective, updateMemory } from './vision.js';
 import { doMove } from './movement.js';
@@ -70,18 +70,85 @@ export function suggestStarts(map, n, seed) {
 }
 
 export function startTurn(state, pid, events) {
+  for (const [at, f] of Object.entries(state.facilities)) if (f.owner === pid) tickProduction(state, at, f, events);
   for (const u of Object.values(state.units)) if (u.owner === pid) {
     u.movesLeft = effective(u, 'move'); u.hasMoved = false; u.hasAttacked = false;
   }
   updateMemory(state, pid);
 }
 
+const countUnits = (state, pid) => Object.values(state.units).filter(u => u.owner === pid).length;
+
+export function productionTime(state, pid, unitType) {
+  const n = countUnits(state, pid);
+  if (n >= RULES.unitCap) return null;
+  const extra = n < RULES.slowdownFrom ? 0 : Math.floor((n - RULES.slowdownFrom) / RULES.slowdownStep) + 1;
+  return UNITS[unitType].build + extra;
+}
+
+function tickProduction(state, at, f, events) {
+  if (!f.producing) return;
+  if (!f.needed) { f.needed = productionTime(state, f.owner, f.producing); if (f.needed === null) { f.needed = 0; return; } }
+  if (countUnits(state, f.owner) >= RULES.unitCap) return;
+  if (f.progress < f.needed) f.progress++;
+  if (f.progress < f.needed) return;
+  const occupied = new Set(Object.values(state.units).map(u => u.at));
+  const spot = [at, ...neighbors(at, state.width, state.height)].find(k => !occupied.has(k) && isPassable(state, k));
+  if (!spot) return;  // wait, progress stays
+  const u = spawnUnit(state, f.producing, f.owner, spot);
+  events.push({ type: 'produced', unitId: u.id, at: spot });
+  f.progress = 0;
+  f.needed = productionTime(state, f.owner, f.producing) ?? 0;
+}
+
+function capture(state, at, pid, events) {
+  const f = state.facilities[at];
+  if (!f || f.owner === pid) return;
+  Object.assign(f, { owner: pid, producing: null, progress: 0, needed: 0 });
+  events.push({ type: 'captured', at, player: pid });
+  updateMemory(state, pid);
+}
+
+function doProduce(state, at, unitType) {
+  const f = state.facilities[at];
+  if (!f || f.owner !== state.current) throw new Error('Das ist nicht deine Sportstätte.');
+  if (unitType === null) { Object.assign(f, { producing: null, progress: 0, needed: 0 }); return; }
+  if (!BUILDINGS[f.type].produces.includes(unitType)) throw new Error('Diese Sportstätte stellt das nicht her.');
+  Object.assign(f, { producing: unitType, progress: 0, needed: productionTime(state, f.owner, unitType) ?? 0 });
+}
+
+function endTurn(state, events) {
+  const pid = state.current;
+  for (const u of Object.values(state.units)) if (u.owner === pid) {
+    capture(state, u.at, pid, events);
+    for (const b of u.buffs) if (b.fresh) b.fresh = false; else b.turns--;
+    u.buffs = u.buffs.filter(b => b.turns > 0);
+  }
+  checkElimination(state, events);
+  if (state.winner !== null || !state.players.some(p => p.alive)) return;
+  let next = pid;
+  do {
+    next = (next + 1) % state.players.length;
+    if (next === 0) state.round++;
+  } while (!state.players[next].alive);
+  state.current = next;
+  startTurn(state, next, events);
+}
+
 const getUnit = (s, id) => s.units[id] ?? (() => { throw new Error('Einheit nicht gefunden.'); })();
 
 export function apply(state, action) {
+  if (state.winner !== null) throw new Error('Das Spiel ist vorbei.');
   const s = structuredClone(state), events = [];
   switch (action?.type) {
-    case 'move': doMove(s, getUnit(s, action.unitId), action.path, events); break;
+    case 'move': {
+      const u = getUnit(s, action.unitId);
+      doMove(s, u, action.path, events);
+      capture(s, u.at, u.owner, events);
+      break;
+    }
+    case 'produce': doProduce(s, action.at, action.unitType); break;
+    case 'endTurn': endTurn(s, events); break;
     case 'attack': doAttack(s, getUnit(s, action.unitId), action.targetId, events); break;
     default: throw new Error(`Unbekannte Aktion: ${action?.type}`);
   }
