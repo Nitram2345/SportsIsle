@@ -1,0 +1,35 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { loadMap, validateMap } from '../src/logic/map.js';
+import { createGame, suggestStarts } from '../src/logic/game.js';
+import { reachable } from '../src/logic/movement.js';
+import { PLAYER_COLORS } from '../src/config.js';
+
+const index = JSON.parse(readFileSync('maps/index.json', 'utf8'));
+const load = e => loadMap(JSON.parse(readFileSync(`maps/${e.file}`, 'utf8')));
+
+test('every indexed map loads, validates and matches index', () => {
+  assert.equal(index.length, 3);
+  for (const e of index) {
+    const m = load(e);
+    assert.deepEqual(validateMap(m), [], e.id);
+    assert.equal(m.meta.id, e.id); assert.equal(m.starts.length, e.players.max);
+    assert.equal(m.meta.width, e.width); assert.equal(m.meta.height, e.height);
+  }
+});
+test('player counts 2 / 4 / 16', () => assert.deepEqual(index.map(e => e.players.max), [2, 4, 16]));
+test('archipel supports 16 players: game starts, every player has units', () => {
+  const m = load(index.find(e => e.id === 'archipel'));
+  const players = PLAYER_COLORS.map((color, i) => ({ name: 'P' + i, color }));
+  const s = createGame(m, players, { seed: 1, startSlots: suggestStarts(m, 16, 1) });
+  for (let p = 0; p < 16; p++) assert.ok(Object.values(s.units).some(u => u.owner === p), 'player ' + p);
+});
+test('every start can move somewhere (not walled in)', () => {
+  for (const e of index) {
+    const m = load(e);
+    const players = m.starts.map((_, i) => ({ name: 'P' + i, color: PLAYER_COLORS[i] }));
+    const s = createGame(m, players, { seed: 1, startSlots: m.starts.map((_, i) => i) });
+    for (const u of Object.values(s.units)) { s.current = u.owner; assert.ok(Object.keys(reachable(s, u.id)).length, `${e.id} ${u.type}@${u.at}`); }
+  }
+});

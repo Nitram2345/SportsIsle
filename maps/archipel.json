@@ -1,0 +1,386 @@
+{
+ "format": 1,
+ "id": "archipel",
+ "name": "Archipel",
+ "author": "Sports Battle Isle",
+ "width": 40,
+ "height": 36,
+ "players": {
+  "min": 2,
+  "max": 16
+ },
+ "terrain": [
+  "WWWWWWWWWWWWWWWSWWWWWWWWWWWWWWWWWSWWSWWW",
+  "WWWWWWWWWWWWSSSWWWWWWWWWSWGWWWWWWSGSSSWW",
+  "WWWWWWWWSWWSSWSSSWWWWWWWWSGWWWWWWWGGWWWW",
+  "WWSWSWWGWWWWWSGSSWWWWWWWSGFWWWWWWGGGWWWW",
+  "SSSWSGGGGSDDDGDGGRRRRRRRGGGSDDDDDDGGGHWW",
+  "SSSSGGWWWWWWWGGGGWWWWWWWhGWWWWWWSSGGWSWW",
+  "SWSSSSSWWWWWWSGSGSWWWWWWSSWWWWWWWWGDSSWW",
+  "SSWWSSWWWWWWWWSDWWWWWWSSSSWWWWWWWWWSWWWW",
+  "WSWWWSRWWWWWWWWSDWWWWSSWSSRWWWWWWWWSDWSW",
+  "WWWSWRWWWWWWWSSSWWWWWWWSSGWWWWWWWWWDSSSW",
+  "WWWWSWSWWWWWWWWSDWWWWWWWSGGWWWWWWWWWDSWW",
+  "WWWWSSRWWWWWWWSSDSSWWWWSSSGWSSWWWWSSGGWS",
+  "WWWWWWGWGWWWWWSSGGWWWWWWSGGGGSWWWWSGGGGS",
+  "WWWWSSGGRRRRRSSGGGSDDDDDSDGRGSRRRRRGGGGW",
+  "WWWWWGGGgWWWWWWWSGWWWWWSSSGGGWWWSSSSGWGS",
+  "WWWWSWGWWWWWWWWGRWWWWWWSWWGWWWWWWWWGRWWW",
+  "WWWWWSSSWWWWWWWSSWWWWWWSSWSWWWWWWWWWRWWW",
+  "WWWWWSWWWWWWWWWRWWWMWWWWWDWWWWWWWWWRWWWW",
+  "WWWWWWSSWWWWWWWWRWWWMWWWWWDWWWWWWWWWRWWW",
+  "WWWWSSWSWWWWWWGGSWWWWWWWWDWWWWWWWWWRWWWW",
+  "WWWWSSWGGSWSWWWGGWWWWWWWWDWWWWWWWWWRWWWW",
+  "WSWGWGFWSWSSWSSGSWWWWWWWGDWWWWWWWWWRWWWW",
+  "WWSSGGGGDDDDSSGGGSRRRRSSSGDSDDDDDDSGGWWW",
+  "WWWWGRSWWWWSSSGGSSWWWWSSGRWSWWWWWGhGGWWW",
+  "WWWWWGWWWWWWSSSDSSWSWWWSSSGSSSWWSGGGGSSS",
+  "WWWWSSWWWWWWWWWDSSSWWWWSSRWWSSWSGWGGGWWW",
+  "WWWWWWRWWWWWWWWWDWSSWWWWSSSSWWWWSWSSGWWW",
+  "WWWWWRWWWWWWWWWDWSSWWWWWSRSWWWWWSWSDWWWW",
+  "WWWSSWRWWWWWWWSWDWSWWWWWSGRWWWWWWSSWDWWW",
+  "WWWGSWSWWWWWWWSShGSWWWWSGgRWWWWWSWSSDGGW",
+  "WWWGWGHGSWWWWWWWDGGWWWWWGGhGGGWWWSSSSGSW",
+  "WWWWGGGGRRSRRRRRGGSDDDDSSHGRRSRRSSSGGGGW",
+  "WWWWWWWGGSSSWWWWWGWWWWWWWGGSWWSWSSSWWWTS",
+  "WWWWWWhGSSSWWWWWSGWWWWWWWSGSSWWWWWSWWSWW",
+  "WWWWWWWWWWSWWWWWGWWWWWWWWSWGSSWWWWWWWWWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWSWWWWWWWWWWWWW"
+ ],
+ "roads": [
+  [5,4],
+  [15,4],
+  [25,4],
+  [35,4],
+  [6,13],
+  [16,13],
+  [26,13],
+  [36,13],
+  [5,22],
+  [15,22],
+  [25,22],
+  [35,22],
+  [6,31],
+  [16,31],
+  [26,31],
+  [36,31]
+ ],
+ "buildings": [
+  {
+   "at": [6,4],
+   "type": "park"
+  },
+  {
+   "at": [4,5],
+   "type": "golf"
+  },
+  {
+   "at": [16,4],
+   "type": "park"
+  },
+  {
+   "at": [14,5],
+   "type": "tennis"
+  },
+  {
+   "at": [26,4],
+   "type": "park"
+  },
+  {
+   "at": [24,4],
+   "type": "hockey"
+  },
+  {
+   "at": [36,4],
+   "type": "park"
+  },
+  {
+   "at": [34,4],
+   "type": "tabletennis"
+  },
+  {
+   "at": [7,13],
+   "type": "park"
+  },
+  {
+   "at": [6,14],
+   "type": "golf"
+  },
+  {
+   "at": [17,13],
+   "type": "park"
+  },
+  {
+   "at": [15,13],
+   "type": "tennis"
+  },
+  {
+   "at": [27,12],
+   "type": "park"
+  },
+  {
+   "at": [27,14],
+   "type": "hockey"
+  },
+  {
+   "at": [37,13],
+   "type": "park"
+  },
+  {
+   "at": [35,13],
+   "type": "tabletennis"
+  },
+  {
+   "at": [6,22],
+   "type": "park"
+  },
+  {
+   "at": [4,23],
+   "type": "golf"
+  },
+  {
+   "at": [16,22],
+   "type": "park"
+  },
+  {
+   "at": [14,22],
+   "type": "tennis"
+  },
+  {
+   "at": [24,21],
+   "type": "park"
+  },
+  {
+   "at": [24,23],
+   "type": "hockey"
+  },
+  {
+   "at": [36,22],
+   "type": "park"
+  },
+  {
+   "at": [35,23],
+   "type": "tabletennis"
+  },
+  {
+   "at": [7,31],
+   "type": "park"
+  },
+  {
+   "at": [5,31],
+   "type": "golf"
+  },
+  {
+   "at": [17,31],
+   "type": "park"
+  },
+  {
+   "at": [17,32],
+   "type": "tennis"
+  },
+  {
+   "at": [27,30],
+   "type": "park"
+  },
+  {
+   "at": [26,32],
+   "type": "hockey"
+  },
+  {
+   "at": [37,31],
+   "type": "park"
+  },
+  {
+   "at": [35,31],
+   "type": "tabletennis"
+  }
+ ],
+ "specials": [
+  {
+   "at": [10,4],
+   "type": "sprint"
+  },
+  {
+   "at": [21,13],
+   "type": "power"
+  },
+  {
+   "at": [30,22],
+   "type": "shield"
+  },
+  {
+   "at": [25,9],
+   "type": "sprint"
+  },
+  {
+   "at": [15,27],
+   "type": "power"
+  },
+  {
+   "at": [36,18],
+   "type": "shield"
+  }
+ ],
+ "starts": [
+  {
+   "at": [5,4],
+   "units": [
+    "jogger",
+    "golfer"
+   ],
+   "facilities": [
+    [6,4]
+   ]
+  },
+  {
+   "at": [15,4],
+   "units": [
+    "jogger",
+    "tennis"
+   ],
+   "facilities": [
+    [16,4]
+   ]
+  },
+  {
+   "at": [25,4],
+   "units": [
+    "jogger",
+    "hockey"
+   ],
+   "facilities": [
+    [26,4]
+   ]
+  },
+  {
+   "at": [35,4],
+   "units": [
+    "jogger",
+    "golfer"
+   ],
+   "facilities": [
+    [36,4]
+   ]
+  },
+  {
+   "at": [6,13],
+   "units": [
+    "jogger",
+    "tennis"
+   ],
+   "facilities": [
+    [7,13]
+   ]
+  },
+  {
+   "at": [16,13],
+   "units": [
+    "jogger",
+    "hockey"
+   ],
+   "facilities": [
+    [17,13]
+   ]
+  },
+  {
+   "at": [26,13],
+   "units": [
+    "jogger",
+    "golfer"
+   ],
+   "facilities": [
+    [27,12]
+   ]
+  },
+  {
+   "at": [36,13],
+   "units": [
+    "jogger",
+    "tennis"
+   ],
+   "facilities": [
+    [37,13]
+   ]
+  },
+  {
+   "at": [5,22],
+   "units": [
+    "jogger",
+    "hockey"
+   ],
+   "facilities": [
+    [6,22]
+   ]
+  },
+  {
+   "at": [15,22],
+   "units": [
+    "jogger",
+    "golfer"
+   ],
+   "facilities": [
+    [16,22]
+   ]
+  },
+  {
+   "at": [25,22],
+   "units": [
+    "jogger",
+    "tennis"
+   ],
+   "facilities": [
+    [24,21]
+   ]
+  },
+  {
+   "at": [35,22],
+   "units": [
+    "jogger",
+    "hockey"
+   ],
+   "facilities": [
+    [36,22]
+   ]
+  },
+  {
+   "at": [6,31],
+   "units": [
+    "jogger",
+    "golfer"
+   ],
+   "facilities": [
+    [7,31]
+   ]
+  },
+  {
+   "at": [16,31],
+   "units": [
+    "jogger",
+    "tennis"
+   ],
+   "facilities": [
+    [17,31]
+   ]
+  },
+  {
+   "at": [26,31],
+   "units": [
+    "jogger",
+    "hockey"
+   ],
+   "facilities": [
+    [27,30]
+   ]
+  },
+  {
+   "at": [36,31],
+   "units": [
+    "jogger",
+    "golfer"
+   ],
+   "facilities": [
+    [37,31]
+   ]
+  }
+ ]
+}

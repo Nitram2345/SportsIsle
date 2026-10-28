@@ -1,1 +1,35 @@
-[{ "id": "duell", "name": "Insel-Duell", "file": "duell.json", "players": { "min": 2, "max": 2 }, "width": 10, "height": 8 }]
+[
+ {
+  "id": "duell",
+  "name": "Insel-Duell",
+  "file": "duell.json",
+  "players": {
+   "min": 2,
+   "max": 2
+  },
+  "width": 14,
+  "height": 12
+ },
+ {
+  "id": "vierland",
+  "name": "Vierland",
+  "file": "vierland.json",
+  "players": {
+   "min": 2,
+   "max": 4
+  },
+  "width": 22,
+  "height": 18
+ },
+ {
+  "id": "archipel",
+  "name": "Archipel",
+  "file": "archipel.json",
+  "players": {
+   "min": 2,
+   "max": 16
+  },
+  "width": 40,
+  "height": 36
+ }
+]
