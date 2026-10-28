@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56" width="112" height="112">
+  <!-- hockey. Centre = hex centre, hex radius 24. Owner ring is drawn by the game. -->
+  <defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.5" flood-opacity=".45"/></filter></defs>
+  <g filter="url(#sh)" transform="rotate(12)"><rect x="-21" y="-13" width="42" height="26" rx="1.5" fill="#2e7fc4" stroke="#fff" stroke-width="1.5"/><line x1="0" y1="-13" x2="0" y2="13" stroke="#fff" stroke-width="1"/><path d="M-21 -7 a8 7 0 0 1 0 14 M21 -7 a8 7 0 0 0 0 14" fill="none" stroke="#fff" stroke-width="1"/><rect x="-23" y="-3" width="2" height="6" fill="#fff"/><rect x="21" y="-3" width="2" height="6" fill="#fff"/></g>
+</svg>

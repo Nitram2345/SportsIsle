@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56" width="112" height="112">
+  <!-- park. Centre = hex centre, hex radius 24. Owner ring is drawn by the game. -->
+  <defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.5" flood-opacity=".45"/></filter></defs>
+  <path d="M-20 8 q12 -4 18 -8 t20 -8" fill="none" stroke="#d6c79a" stroke-width="3"/><circle cx="-11" cy="-8" r="6.5" fill="#4f8a35" filter="url(#sh)"/><circle cx="-13" cy="-10" r="2.6" fill="#7dbb55"/><circle cx="9" cy="7" r="6.5" fill="#4f8a35" filter="url(#sh)"/><circle cx="7" cy="5" r="2.6" fill="#7dbb55"/><circle cx="-5" cy="10" r="6.5" fill="#4f8a35" filter="url(#sh)"/><circle cx="-7" cy="8" r="2.6" fill="#7dbb55"/><circle cx="12" cy="-9" r="6.5" fill="#4f8a35" filter="url(#sh)"/><circle cx="10" cy="-11" r="2.6" fill="#7dbb55"/><circle cx="-15" cy="3" r="6.5" fill="#4f8a35" filter="url(#sh)"/><circle cx="-17" cy="1" r="2.6" fill="#7dbb55"/><rect x="1" y="-2" width="7" height="2" fill="#7a4a22"/>
+</svg>

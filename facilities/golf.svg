@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56" width="112" height="112">
+  <!-- golf. Centre = hex centre, hex radius 24. Owner ring is drawn by the game. -->
+  <defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.5" flood-opacity=".45"/></filter></defs>
+  <g filter="url(#sh)"><path d="M-19 4 q2 -16 19 -15 q18 1 18 13 q-2 13 -19 12 q-18 0 -18 -10z" fill="#8cc761"/><path d="M-12 2 q4 -8 12 -7 q9 1 8 7 q-2 7 -10 6 q-11 -1 -10 -6z" fill="#a6d97a"/><ellipse cx="7" cy="5" rx="5" ry="2.6" fill="#e4d49a"/><circle cx="-4" cy="1" r="1.8" fill="#222"/><line x1="-4" y1="1" x2="-4" y2="-19" stroke="#333" stroke-width="1.5"/><polygon points="-4,-19 8,-15 -4,-11" fill="#f4f4f4" stroke="#333" stroke-width=".6"/></g>
+</svg>
