@@ -33,6 +33,8 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'discovered') out.push('Feind entdeckt!');
       if (e.type === 'captured') out.push(`${BUILDINGS[state.tiles[e.at].building].name} erobert`);
       if (e.type === 'damage') out.push(`Treffer: -${e.amount} ❤`);
+      if (e.type === 'counter') out.push('🥋 Gegenschlag!');
+      if (e.type === 'zone') out.push('Zone des Gegners – Halt!');
       if (e.type === 'killed') out.push('Einheit ausgeschaltet');
       if (e.type === 'eliminated') out.push(`${name(e.player)} ist ausgeschieden`);
       if (e.type === 'buff') out.push(`${SPECIALS[e.special].icon} ${SPECIALS[e.special].name}!`);
@@ -85,6 +87,10 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       title.textContent = cfg.name + (mine ? '' : ` (${state.players[u.owner].name})`);
       line.textContent = `❤ ${u.hp}/${cfg.hp} · ⚔ ${effective(u, 'atk')} · 🛡 ${effective(u, 'def')} · 👟 ${mine ? u.movesLeft + '/' : ''}${effective(u, 'move')}${range ? ` · 🎯 ${range}` : ''} ${buffs}`;
       if (cfg.multiMove) line.textContent += ' · 🔁 kann mehrmals ziehen';
+      if (cfg.zoc) line.textContent += ' · 🧱 blockiert Nachbarfelder';
+      if (cfg.counter) line.textContent += ' · 🥋 schlägt zurück';
+      if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
+      if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = 'Nochmal tippen zum Bewegen'; div.append(b); }
       return;
     }

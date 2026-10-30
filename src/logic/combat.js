@@ -30,7 +30,7 @@ export const damage = (state, attacker, target) =>
 
 export function attackTargets(state, unitId) {
   const unit = state.units[unitId];
-  if (!UNITS[unit.type].range) return [];
+  if (!UNITS[unit.type].range || unit.dazedNow) return [];
   return visibleUnits(state, unit.owner)
     .filter(t => t.owner !== unit.owner
       && distance(unit.at, t.at) <= attackRange(state, unit, t.at)
@@ -40,12 +40,24 @@ export function attackTargets(state, unitId) {
 
 export function doAttack(state, unit, targetId, events) {
   if (unit.owner !== state.current) throw new Error('Diese Einheit gehört nicht dir.');
+  if (unit.dazedNow) throw new Error('Diese Einheit ist angeschlagen und kann diese Runde nicht angreifen.');
   if (unit.hasMoved) throw new Error('Wer sich bewegt hat, kann nicht mehr schlagen.');
   if (unit.hasAttacked) throw new Error('Diese Einheit hat schon geschlagen.');
   if (!attackTargets(state, unit.id).includes(targetId)) throw new Error('Ziel nicht erreichbar.');
-  const target = state.units[targetId], amount = damage(state, unit, target);
-  target.hp -= amount;
+  const target = state.units[targetId];
   unit.hasAttacked = true; unit.movesLeft = 0;
-  events.push({ type: 'damage', targetId, amount });
-  if (target.hp <= 0) { delete state.units[targetId]; events.push({ type: 'killed', unitId: targetId }); }
+  hit(state, unit, target, events);
+  // Active defence: survivor with counter strikes back at an adjacent attacker (free, once).
+  if (state.units[targetId] && UNITS[target.type].counter && distance(unit.at, target.at) === 1) {
+    events.push({ type: 'counter', unitId: targetId, targetId: unit.id });
+    hit(state, target, unit, events);
+  }
+}
+
+function hit(state, attacker, target, events) {
+  const amount = damage(state, attacker, target);
+  target.hp -= amount;
+  events.push({ type: 'damage', targetId: target.id, amount });
+  if (target.hp <= 0) { delete state.units[target.id]; events.push({ type: 'killed', unitId: target.id }); return; }
+  if (UNITS[target.type].dazeOnHit) target.dazed = true;
 }

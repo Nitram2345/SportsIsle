@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56" width="112" height="112">
+  <!-- dojo. Centre = hex centre, hex radius 24. Owner ring is drawn by the game. -->
+  <defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.5" flood-opacity=".45"/></filter></defs>
+  <g filter="url(#sh)"><rect x="-15" y="-4" width="30" height="16" fill="#e9dcc2" stroke="#5b4630"/><rect x="-4" y="2" width="8" height="10" fill="#6b3b1f"/><rect x="-12" y="0" width="5" height="5" fill="#f6efe0" stroke="#5b4630" stroke-width=".6"/><rect x="7" y="0" width="5" height="5" fill="#f6efe0" stroke="#5b4630" stroke-width=".6"/><path d="M-21 -3 Q0 -9 21 -3 L18 -6 Q0 -12 -18 -6Z" fill="#3a3f47" stroke="#22252a"/><path d="M-15 -8 Q0 -13 15 -8 L12 -11 Q0 -17 -12 -11Z" fill="#3a3f47" stroke="#22252a"/><circle cx="0" cy="-12.5" r="2" fill="#c0392b"/></g>
+</svg>

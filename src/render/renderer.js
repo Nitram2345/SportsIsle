@@ -107,7 +107,8 @@ export function createRenderer(canvas) {
         const hp = u.hp / UNITS[u.type].hp, bw = 22 * k / 1.08;
         ctx.fillStyle = '#222'; ctx.fillRect(p.x - bw / 2, feet + 3, bw, 4);
         ctx.fillStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffcc00' : '#ff3b30'; ctx.fillRect(p.x - bw / 2, feet + 3, bw * hp, 4);
-        if (u.buffs.length) { ctx.font = `${Math.round(HEX_SIZE * 0.4)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(u.buffs.map(b => SPECIALS[b.special].icon).join(''), p.x + HEX_SIZE * 0.55, feet - HEX_SIZE * 1.1); }
+        const icons = u.buffs.map(b => SPECIALS[b.special].icon).join('') + (u.dazed || u.dazedNow ? '🤕' : '');
+        if (icons) { ctx.font = `${Math.round(HEX_SIZE * 0.4)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icons, p.x + HEX_SIZE * 0.55, feet - HEX_SIZE * 1.1); }
         if (u.owner === state.current && fog && !u.hasMoved && !u.hasAttacked) { ctx.fillStyle = '#ffd700'; ctx.beginPath(); ctx.arc(p.x - HEX_SIZE * 0.5, feet - HEX_SIZE * 1.1, 3.5, 0, 6.2832); ctx.fill(); }
       }
     }

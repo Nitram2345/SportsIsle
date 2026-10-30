@@ -10,26 +10,34 @@ export function moveCost(tile) {
 }
 
 // Unit positions split into own and foreign-but-visible (hidden enemies are ignored).
+// zone = tiles next to a visible enemy with zone of control.
 function occupancy(state, unit) {
-  const own = new Set(), enemy = new Set(), vis = visibleTiles(state, unit.owner);
+  const own = new Set(), enemy = new Set(), zone = new Set(), vis = visibleTiles(state, unit.owner);
   for (const u of Object.values(state.units)) {
     if (u.id === unit.id) continue;
     if (u.owner === unit.owner) own.add(u.at);
-    else if (vis.has(u.at)) enemy.add(u.at);
+    else if (vis.has(u.at)) {
+      enemy.add(u.at);
+      if (UNITS[u.type].zoc) for (const n of neighbors(u.at, state.width, state.height)) zone.add(n);
+    }
   }
-  return { own, enemy };
+  return { own, enemy, zone };
 }
 
 // Destination -> path (excluding start). Dijkstra over movesLeft.
+// Zone tiles are destinations but never passed through; a jogger stopped in a zone
+// (retreatTo) must take its first step straight back.
 export function reachable(state, unitId) {
-  const unit = state.units[unitId], { own, enemy } = occupancy(state, unit);
+  const unit = state.units[unitId], { own, enemy, zone } = occupancy(state, unit);
   const best = { [unit.at]: 0 }, prev = {}, queue = [[0, unit.at]];
   while (queue.length) {
     queue.sort((a, b) => a[0] - b[0]);
     const [cost, at] = queue.shift();
     if (cost > best[at]) continue;
+    if (at !== unit.at && zone.has(at)) continue;
     for (const n of neighbors(at, state.width, state.height)) {
       if (enemy.has(n) || !state.explored[unit.owner][n]) continue;
+      if (at === unit.at && unit.retreatTo && n !== unit.retreatTo) continue;
       const c = cost + moveCost(state.tiles[n]);
       if (c > unit.movesLeft || c >= (best[n] ?? Infinity)) continue;
       best[n] = c; prev[n] = at; queue.push([c, n]);
@@ -49,12 +57,14 @@ export function doMove(state, unit, path, events) {
   if (unit.owner !== state.current) throw new Error('Diese Einheit gehört nicht dir.');
   if (unit.hasAttacked) throw new Error('Diese Einheit hat schon geschlagen.');
   if (!Array.isArray(path) || !path.length) throw new Error('Kein Weg angegeben.');
-  const { own, enemy } = occupancy(state, unit);
+  const { own, enemy, zone } = occupancy(state, unit);
+  if (unit.retreatTo && path[0] !== unit.retreatTo) throw new Error('In der Zone kann der Jogger nur genau zurück, woher er kam.');
   let at = unit.at, total = 0;
-  for (const k of path) {
+  for (const [i, k] of path.entries()) {
     if (!state.tiles[k] || !neighbors(at, state.width, state.height).includes(k)) throw new Error('Ungültiger Weg.');
     if (!state.explored[unit.owner][k]) throw new Error('Dieses Feld ist noch unerkundet.');
     if (enemy.has(k)) throw new Error('Dort steht eine gegnerische Einheit.');
+    if (zone.has(k) && i < path.length - 1) throw new Error('Durch die Zone eines Gegners kommt man nicht hindurch.');
     total += moveCost(state.tiles[k]);
     at = k;
   }
@@ -87,8 +97,15 @@ export function doMove(state, unit, path, events) {
     const seen = [...new Set([...stopped, ...visibleUnits(state, unit.owner).filter(u => u.owner !== unit.owner && !seenBefore.has(u.id)).map(u => u.id)])];
     events.push({ type: 'discovered', unitId: unit.id, seen });
   }
+  unit.retreatTo = null;
+  if (!stopped && zone.has(unit.at)) {
+    // Entered an enemy zone: stop. Jogger keeps its points but may only go back.
+    events.push({ type: 'zone', unitId: unit.id });
+    if (UNITS[unit.type].multiMove && unit.movesLeft > 0) unit.retreatTo = walked[walked.length - 1].from;
+    else unit.movesLeft = 0;
+  }
   // Leftover points stay usable only after a discovery stop (spec) or for units
   // with the multiMove ability (jogger); everyone else is done for this turn.
-  else if (!UNITS[unit.type].multiMove) unit.movesLeft = 0;
+  else if (!stopped && !UNITS[unit.type].multiMove) unit.movesLeft = 0;
   unit.hasMoved = true;
 }

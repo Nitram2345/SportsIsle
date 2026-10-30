@@ -75,7 +75,11 @@ export function suggestStarts(map, n, seed) {
 export function startTurn(state, pid, events) {
   for (const [at, f] of Object.entries(state.facilities)) if (f.owner === pid) tickProduction(state, at, f, events);
   for (const u of Object.values(state.units)) if (u.owner === pid) {
-    u.movesLeft = effective(u, 'move'); u.hasMoved = false; u.hasAttacked = false;
+    const move = effective(u, 'move');
+    // dazed (hit since last turn) -> this turn: half move, no attack
+    u.dazedNow = !!u.dazed; u.dazed = false;
+    u.movesLeft = u.dazedNow ? Math.floor(move / 2) : move;
+    u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null;
   }
   updateMemory(state, pid);
 }
@@ -125,6 +129,7 @@ function endTurn(state, events) {
   const pid = state.current;
   for (const u of Object.values(state.units)) if (u.owner === pid) {
     capture(state, u.at, pid, events);
+    u.dazedNow = false;  // the dazed turn is over; a hit taken this turn stays pending in u.dazed
     for (const b of u.buffs) if (b.fresh) b.fresh = false; else b.turns--;
     u.buffs = u.buffs.filter(b => b.turns > 0);
   }

@@ -25,10 +25,14 @@ Dann `http://localhost:8080` öffnen.
 |---|---|---|
 | Golfer | 3 | schlägt über Hügel, nicht über Berge |
 | Tennisspieler | 2 | Hügel und Gebäude blockieren |
-| Hockeyspieler | 2 (im Wald 1) | viel Schaden, alles Bodennahe blockiert |
+| Hockeyspieler | 2 (im Wald 1) | viel Schaden, alles Bodennahe blockiert; 🧱 Kontrollzone |
 | Jogger | – | schnell, sieht weit, erobert; darf Restbewegung für weitere Züge nutzen |
+| Fußballer | 2 | 🧱 Kontrollzone; nach einem Treffer im nächsten Zug 🤕 angeschlagen (kein Angriff, halbe Bewegung) |
+| Karateka | 1 | viel HP und Verteidigung; 🥋 schlägt zurück, wenn direkt daneben angegriffen |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
+
+**Kontrollzone (🧱):** Wer ein Nachbarfeld eines gegnerischen Hockeyspielers oder Fußballers betritt, muss dort stehen bleiben. Der Jogger behält seine Restpunkte, darf aber nur genau zurück.
 
 ## Map-Editor
 
