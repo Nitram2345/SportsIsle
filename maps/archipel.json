@@ -107,6 +107,14 @@
    "type": "tennis"
   },
   {
+   "at": [15,9],
+   "type": "rugby"
+  },
+  {
+   "at": [26,10],
+   "type": "rugby"
+  },
+  {
    "at": [27,12],
    "type": "park"
   },
@@ -177,6 +185,14 @@
   {
    "at": [35,23],
    "type": "tabletennis"
+  },
+  {
+   "at": [16,26],
+   "type": "rugby"
+  },
+  {
+   "at": [26,27],
+   "type": "rugby"
   },
   {
    "at": [27,30],

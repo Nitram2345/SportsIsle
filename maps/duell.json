@@ -47,6 +47,10 @@
    "type": "tennis"
   },
   {
+   "at": [7,3],
+   "type": "rugby"
+  },
+  {
    "at": [7,4],
    "type": "park"
   },
@@ -61,6 +65,10 @@
   {
    "at": [6,6],
    "type": "golf"
+  },
+  {
+   "at": [6,8],
+   "type": "rugby"
   },
   {
    "at": [11,8],
