@@ -5,7 +5,10 @@
  "author": "Sports Battle Isle",
  "width": 14,
  "height": 12,
- "players": { "min": 2, "max": 2 },
+ "players": {
+  "min": 2,
+  "max": 2
+ },
  "terrain": [
   "WWWWWWWWWWWWWW",
   "WWSSGGFFGGSSWW",
@@ -20,18 +23,86 @@
   "WWSSGGFFGGSSWW",
   "WWWWWWWWWWWWWW"
  ],
- "roads": [[2,2],[3,3],[3,4],[4,5],[5,5],[6,5],[7,5],[8,6],[9,6],[10,7],[10,8],[11,9]],
- "buildings": [
-  { "at": [2,3], "type": "tennis" },
-  { "at": [11,8], "type": "tennis" },
-  { "at": [6,6], "type": "golf" },
-  { "at": [7,4], "type": "park" },
-  { "at": [4,9], "type": "hockey" },
-  { "at": [9,2], "type": "hockey" }
+ "roads": [
+  [2,2],
+  [3,3],
+  [3,4],
+  [4,5],
+  [5,5],
+  [6,5],
+  [7,5],
+  [8,6],
+  [9,6],
+  [10,7],
+  [10,8],
+  [11,9]
  ],
- "specials": [{ "at": [8,5], "type": "sprint" }, { "at": [5,6], "type": "power" }],
+ "buildings": [
+  {
+   "at": [9,2],
+   "type": "hockey"
+  },
+  {
+   "at": [2,3],
+   "type": "tennis"
+  },
+  {
+   "at": [7,4],
+   "type": "park"
+  },
+  {
+   "at": [9,5],
+   "type": "dojo"
+  },
+  {
+   "at": [4,6],
+   "type": "soccer"
+  },
+  {
+   "at": [6,6],
+   "type": "golf"
+  },
+  {
+   "at": [11,8],
+   "type": "tennis"
+  },
+  {
+   "at": [4,9],
+   "type": "hockey"
+  }
+ ],
+ "specials": [
+  {
+   "at": [8,5],
+   "type": "sprint"
+  },
+  {
+   "at": [5,6],
+   "type": "power"
+  }
+ ],
  "starts": [
-  { "at": [2,2], "units": ["golfer", "tennis", "jogger"], "facilities": [[2,3]] },
-  { "at": [11,9], "units": ["golfer", "tennis", "jogger"], "facilities": [[11,8]] }
+  {
+   "at": [2,2],
+   "units": [
+    "golfer",
+    "tennis",
+    "jogger"
+   ],
+   "facilities": [
+    [2,3]
+   ]
+  },
+  {
+   "at": [11,9],
+   "units": [
+    "golfer",
+    "tennis",
+    "jogger"
+   ],
+   "facilities": [
+    [11,8]
+   ]
+  }
  ]
 }

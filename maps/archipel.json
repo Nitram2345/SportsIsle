@@ -71,19 +71,11 @@
    "type": "park"
   },
   {
-   "at": [4,5],
-   "type": "golf"
+   "at": [11,4],
+   "type": "soccer"
   },
   {
    "at": [16,4],
-   "type": "park"
-  },
-  {
-   "at": [14,5],
-   "type": "tennis"
-  },
-  {
-   "at": [26,4],
    "type": "park"
   },
   {
@@ -91,27 +83,27 @@
    "type": "hockey"
   },
   {
-   "at": [36,4],
+   "at": [26,4],
    "type": "park"
+  },
+  {
+   "at": [30,4],
+   "type": "dojo"
   },
   {
    "at": [34,4],
    "type": "tabletennis"
   },
   {
-   "at": [7,13],
+   "at": [36,4],
    "type": "park"
   },
   {
-   "at": [6,14],
+   "at": [4,5],
    "type": "golf"
   },
   {
-   "at": [17,13],
-   "type": "park"
-  },
-  {
-   "at": [15,13],
+   "at": [14,5],
    "type": "tennis"
   },
   {
@@ -119,11 +111,15 @@
    "type": "park"
   },
   {
-   "at": [27,14],
-   "type": "hockey"
+   "at": [7,13],
+   "type": "park"
   },
   {
-   "at": [37,13],
+   "at": [15,13],
+   "type": "tennis"
+  },
+  {
+   "at": [17,13],
    "type": "park"
   },
   {
@@ -131,15 +127,31 @@
    "type": "tabletennis"
   },
   {
-   "at": [6,22],
+   "at": [37,13],
    "type": "park"
   },
   {
-   "at": [4,23],
+   "at": [6,14],
    "type": "golf"
   },
   {
-   "at": [16,22],
+   "at": [27,14],
+   "type": "hockey"
+  },
+  {
+   "at": [35,15],
+   "type": "dojo"
+  },
+  {
+   "at": [6,18],
+   "type": "soccer"
+  },
+  {
+   "at": [24,21],
+   "type": "park"
+  },
+  {
+   "at": [6,22],
    "type": "park"
   },
   {
@@ -147,23 +159,27 @@
    "type": "tennis"
   },
   {
-   "at": [24,21],
+   "at": [16,22],
    "type": "park"
-  },
-  {
-   "at": [24,23],
-   "type": "hockey"
   },
   {
    "at": [36,22],
    "type": "park"
   },
   {
+   "at": [4,23],
+   "type": "golf"
+  },
+  {
+   "at": [24,23],
+   "type": "hockey"
+  },
+  {
    "at": [35,23],
    "type": "tabletennis"
   },
   {
-   "at": [7,31],
+   "at": [27,30],
    "type": "park"
   },
   {
@@ -171,7 +187,27 @@
    "type": "golf"
   },
   {
+   "at": [7,31],
+   "type": "park"
+  },
+  {
+   "at": [10,31],
+   "type": "soccer"
+  },
+  {
    "at": [17,31],
+   "type": "park"
+  },
+  {
+   "at": [32,31],
+   "type": "dojo"
+  },
+  {
+   "at": [35,31],
+   "type": "tabletennis"
+  },
+  {
+   "at": [37,31],
    "type": "park"
   },
   {
@@ -179,20 +215,8 @@
    "type": "tennis"
   },
   {
-   "at": [27,30],
-   "type": "park"
-  },
-  {
    "at": [26,32],
    "type": "hockey"
-  },
-  {
-   "at": [37,31],
-   "type": "park"
-  },
-  {
-   "at": [35,31],
-   "type": "tabletennis"
   }
  ],
  "specials": [
@@ -201,24 +225,24 @@
    "type": "sprint"
   },
   {
+   "at": [25,9],
+   "type": "sprint"
+  },
+  {
    "at": [21,13],
    "type": "power"
+  },
+  {
+   "at": [36,18],
+   "type": "shield"
   },
   {
    "at": [30,22],
    "type": "shield"
   },
   {
-   "at": [25,9],
-   "type": "sprint"
-  },
-  {
    "at": [15,27],
    "type": "power"
-  },
-  {
-   "at": [36,18],
-   "type": "shield"
   }
  ],
  "starts": [
