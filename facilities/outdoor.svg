@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56" width="112" height="112">
+  <!-- outdoor. Centre = hex centre, hex radius 24. Owner ring is drawn by the game. -->
+  <defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.5" flood-opacity=".45"/></filter></defs>
+  <g filter="url(#sh)"><rect x="-16" y="-6" width="32" height="18" fill="#d9cbb0" stroke="#5b4630"/><path d="M-19 -5 L-16 -12 L16 -12 L19 -5 Z" fill="#3d5a3a" stroke="#22331f"/><path d="M-16 -12 h4 l-1 7 h-5z M-4 -12 h4 l0 7 h-4.5z M8 -12 h4 l2 7 h-5z" fill="#e8e0cc"/><rect x="-13" y="0" width="10" height="8" fill="#a9c9dd" stroke="#5b4630" stroke-width=".6"/><path d="M-12 7 l3 -5 l3 5z" fill="#5b7d4b"/><rect x="3" y="-1" width="7" height="13" fill="#6b3b1f"/><polygon points="0,-24 -6,-14 6,-14" fill="#8e8a82" stroke="#5b5750" stroke-width=".8"/><polygon points="0,-24 -2,-20 2,-20" fill="#fff"/></g>
+</svg>

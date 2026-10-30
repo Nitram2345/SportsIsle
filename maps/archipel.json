@@ -131,6 +131,10 @@
    "type": "park"
   },
   {
+   "at": [20,13],
+   "type": "outdoor"
+  },
+  {
    "at": [35,13],
    "type": "tabletennis"
   },
@@ -185,6 +189,10 @@
   {
    "at": [35,23],
    "type": "tabletennis"
+  },
+  {
+   "at": [19,24],
+   "type": "outdoor"
   },
   {
    "at": [16,26],

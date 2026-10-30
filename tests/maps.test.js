@@ -34,11 +34,12 @@ test('every start can move somewhere (not walled in)', () => {
     for (const u of Object.values(s.units)) { s.current = u.owner; updateMemory(s, u.owner); assert.ok(Object.keys(reachable(s, u.id)).length, `${e.id} ${u.type}@${u.at}`); }
   }
 });
-test('every bundled map offers a soccer field, a dojo and a rugby field', () => {
+test('every bundled map offers soccer field, dojo, rugby field and outdoor shop', () => {
   for (const e of index) {
     const types = Object.values(load(e).tiles).map(t => t.building);
     assert.ok(types.includes('soccer'), `${e.id}: Fußballplatz fehlt`);
     assert.ok(types.includes('dojo'), `${e.id}: Dojo fehlt`);
     assert.ok(types.includes('rugby'), `${e.id}: Rugbyplatz fehlt`);
+    assert.ok(types.includes('outdoor'), `${e.id}: Outdoor-Geschäft fehlt`);
   }
 });

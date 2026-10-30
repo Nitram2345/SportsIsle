@@ -96,6 +96,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (cfg.zoc) line.textContent += ' · 🧱 blockiert Nachbarfelder';
       if (cfg.counter) line.textContent += ' · 🥋 schlägt zurück';
       if (cfg.ram) line.textContent += ' · 🏉 rammt (mind. 2 Felder Anlauf)';
+      if (cfg.climb) line.textContent += ' · 🧗 klettert; auf dem Berg +2 Sicht; bergab +1 Angriff/Reichweite';
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = rams && Object.values(rams).some(p => p[p.length - 1] === pending) ? 'Nochmal tippen zum Rammen' : 'Nochmal tippen zum Bewegen'; div.append(b); }

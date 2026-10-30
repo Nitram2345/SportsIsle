@@ -132,6 +132,10 @@
    "type": "dojo"
   },
   {
+   "at": [8,7],
+   "type": "outdoor"
+  },
+  {
    "at": [2,8],
    "type": "tabletennis"
   },
@@ -146,6 +150,10 @@
   {
    "at": [19,9],
    "type": "hockey"
+  },
+  {
+   "at": [13,10],
+   "type": "outdoor"
   },
   {
    "at": [3,11],

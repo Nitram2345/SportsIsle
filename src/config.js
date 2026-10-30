@@ -21,6 +21,9 @@ export const TERRAIN = {
 
 export const TERRAIN_BY_CHAR = Object.fromEntries(Object.entries(TERRAIN).map(([id, v]) => [v.char, id]));
 
+// Height levels for downhill bonuses: mountain 2, hills/hilly forest/dunes 1, rest 0.
+for (const v of Object.values(TERRAIN)) v.height = v.flags.includes('mountain') ? 2 : (v.flags.includes('hill') || v.flags.includes('ground')) ? 1 : 0;
+
 export const ROAD_MOVE = 1;
 
 const b = (name, blocks, capturable, produces, sight) => ({ name, blocks, capturable, produces, sight });
@@ -35,6 +38,7 @@ export const BUILDINGS = {
   soccer:      b('Fußballplatz', true, true, ['soccer'], 1),
   dojo:        b('Dojo', true, true, ['karate'], 1),
   rugby:       b('Rugbyplatz', true, true, ['rugby'], 1),
+  outdoor:     b('Outdoor-Geschäft', true, true, ['climber'], 1),
 };
 for (const [id, v] of Object.entries(BUILDINGS)) v.svg = `facilities/${id}.svg`;
 
@@ -49,6 +53,7 @@ export const UNITS = {
   soccer: u('Fußballer', 10, 5, 2, 4, 2, 2, 2, ['mountain', 'hill', 'building'], null, 1),
   karate: u('Karateka', 12, 5, 4, 2, 2, 3, 1, [], null, 0),
   rugby:  u('Rugbyspieler', 12, 4, 4, 3, 2, 3, 0, [], null, 0),
+  climber: u('Bergsteiger', 8, 4, 2, 4, 3, 2, 2, ['mountain'], null, 0),
 };
 for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // Special abilities:
@@ -59,6 +64,8 @@ for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // counter    – strikes back once when attacked from an adjacent tile and survives.
 // ram        – attacks by charging (>= 2 tiles run-up): pushes the target one tile on
 //              and takes its place; if it cannot give way, stops in front of it.
+// climb      – hills, hilly forest and mountains cost 1 move; on a mountain: sight +2 and
+//              nothing blocks its throws; attacking downhill: attack +1, range +1.
 UNITS.jogger.multiMove = true;
 UNITS.hockey.zoc = true;
 UNITS.soccer.zoc = true;
@@ -66,6 +73,7 @@ UNITS.soccer.dazeOnHit = true;
 UNITS.karate.counter = true;
 UNITS.rugby.ram = true;
 UNITS.rugby.ignoresZoc = true;
+UNITS.climber.climb = true;
 
 export const SPECIALS = {
   sprint: { name: 'Sprint', stat: 'move', amount: 2, turns: 3, icon: '⚡' },

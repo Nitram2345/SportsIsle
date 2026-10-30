@@ -1,5 +1,5 @@
 // Offline cache. ponytail: SHELL is maintained by hand; tests/pwa.test.js fails when it drifts. Bump CACHE on every release.
-const CACHE = 'sbi-v6';
+const CACHE = 'sbi-v7';
 const SHELL = [
   './',
   'index.html',
@@ -24,6 +24,7 @@ const SHELL = [
   'src/ui/editor-view.js',
   'src/ui/game-view.js',
   'src/ui/input.js',
+  'units/climber.svg',
   'units/golfer.svg',
   'units/hockey.svg',
   'units/jogger.svg',
@@ -35,6 +36,7 @@ const SHELL = [
   'facilities/golf.svg',
   'facilities/hockey.svg',
   'facilities/house.svg',
+  'facilities/outdoor.svg',
   'facilities/park.svg',
   'facilities/rugby.svg',
   'facilities/soccer.svg',

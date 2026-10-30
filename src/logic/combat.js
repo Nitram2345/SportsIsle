@@ -9,6 +9,7 @@ export function attackRange(state, unit, targetAt) {
   const own = TERRAIN[state.tiles[unit.at].terrain];
   if (cfg.rangeOnFlag && own.flags.includes(cfg.rangeOnFlag.flag)) range = cfg.rangeOnFlag.range;
   if (range > 0 && state.tiles[targetAt]?.road) range += cfg.roadBonus;
+  if (range > 0 && downhill(state, unit, targetAt)) range += 1;
   return range;
 }
 
@@ -19,14 +20,19 @@ function tileBlocks(state, blockedBy, k) {
   return blockedBy.includes('building') && !!BUILDINGS[tile.building]?.blocks;
 }
 
+// climb units attacking from a higher level than the target
+const height = (state, k) => TERRAIN[state.tiles[k]?.terrain]?.height ?? 0;
+const downhill = (state, unit, targetAt) => !!UNITS[unit.type].climb && height(state, unit.at) > height(state, targetAt);
+
 // A step blocks only if all its hexes block (line along an edge).
 export function pathBlocked(state, unit, targetAt) {
   const { blockedBy } = UNITS[unit.type];
+  if (UNITS[unit.type].climb && height(state, unit.at) === 2) return false;   // from a summit nothing blocks
   return lineBetween(unit.at, targetAt).some(step => step.every(k => tileBlocks(state, blockedBy, k)));
 }
 
 export const damage = (state, attacker, target) =>
-  Math.max(1, effective(attacker, 'atk') - (effective(target, 'def') + TERRAIN[state.tiles[target.at].terrain].def));
+  Math.max(1, effective(attacker, 'atk') + (downhill(state, attacker, target.at) ? 1 : 0) - (effective(target, 'def') + TERRAIN[state.tiles[target.at].terrain].def));
 
 export function attackTargets(state, unitId) {
   const unit = state.units[unitId];

@@ -30,6 +30,7 @@ Dann `http://localhost:8080` öffnen.
 | Fußballer | 2 | 🧱 Kontrollzone; nach einem Treffer im nächsten Zug 🤕 angeschlagen (kein Angriff, halbe Bewegung) |
 | Karateka | 1 | viel HP und Verteidigung; 🥋 schlägt zurück, wenn direkt daneben angegriffen |
 | Rugbyspieler | – | hohe Verteidigung; 🏉 rammt nach mind. 2 Feldern Anlauf: Gegner wird 1 Feld weggedrückt, der Rugbyspieler nimmt seinen Platz ein (kann er nicht ausweichen, bleibt der Rugbyspieler davor stehen); ignoriert Kontrollzonen |
+| Bergsteiger | 2 | wirft Steine; Hügel (auch hügeliger Wald) und Berge kosten ihn nur 1; auf dem Berg +2 Sicht und nichts blockiert seinen Wurf; bergab +1 Angriff und Reichweite |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
 

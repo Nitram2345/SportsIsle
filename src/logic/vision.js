@@ -1,5 +1,5 @@
 // Fog of sight: what a player sees now, and what they remember.
-import { UNITS, BUILDINGS } from '../config.js';
+import { UNITS, BUILDINGS, TERRAIN } from '../config.js';
 import { hexesInRange } from './hex.js';
 
 export const effective = (unit, stat) =>
@@ -8,7 +8,7 @@ export const effective = (unit, stat) =>
 export function visibleTiles(state, pid) {
   const seen = new Set(), { width, height } = state;
   const add = (at, n) => { for (const k of hexesInRange(at, n, width, height)) seen.add(k); };
-  for (const u of Object.values(state.units)) if (u.owner === pid) add(u.at, effective(u, 'sight'));
+  for (const u of Object.values(state.units)) if (u.owner === pid) add(u.at, effective(u, 'sight') + (UNITS[u.type].climb && TERRAIN[state.tiles[u.at]?.terrain]?.height === 2 ? 2 : 0));
   for (const [at, f] of Object.entries(state.facilities)) if (f.owner === pid) add(at, BUILDINGS[f.type].sight);
   return seen;
 }

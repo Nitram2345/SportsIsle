@@ -3,10 +3,13 @@ import { TERRAIN, ROAD_MOVE, SPECIALS, UNITS } from '../config.js';
 import { neighbors } from './hex.js';
 import { visibleTiles, visibleUnits, updateMemory } from './vision.js';
 
-export function moveCost(tile) {
+export function moveCost(tile, unit = null) {
   const t = TERRAIN[tile.terrain];
   if (!t.passable) return Infinity;
-  return tile.road ? ROAD_MOVE : t.move;
+  if (tile.road) return ROAD_MOVE;
+  // climbers are not slowed by hills (incl. hilly forest) and mountains
+  if (unit && UNITS[unit.type].climb && t.height > 0 && !t.flags.includes('ground')) return 1;
+  return t.move;
 }
 
 // Unit positions split into own and foreign-but-visible (hidden enemies are ignored).
@@ -38,7 +41,7 @@ export function reachable(state, unitId) {
     for (const n of neighbors(at, state.width, state.height)) {
       if (enemy.has(n) || !state.explored[unit.owner][n]) continue;
       if (at === unit.at && unit.retreatTo && n !== unit.retreatTo) continue;
-      const c = cost + moveCost(state.tiles[n]);
+      const c = cost + moveCost(state.tiles[n], unit);
       if (c > unit.movesLeft || c >= (best[n] ?? Infinity)) continue;
       best[n] = c; prev[n] = at; queue.push([c, n]);
     }
@@ -65,7 +68,7 @@ export function doMove(state, unit, path, events) {
     if (!state.explored[unit.owner][k]) throw new Error('Dieses Feld ist noch unerkundet.');
     if (enemy.has(k)) throw new Error('Dort steht eine gegnerische Einheit.');
     if (zone.has(k) && i < path.length - 1) throw new Error('Durch die Zone eines Gegners kommt man nicht hindurch.');
-    total += moveCost(state.tiles[k]);
+    total += moveCost(state.tiles[k], unit);
     at = k;
   }
   if (total > unit.movesLeft) throw new Error('Nicht genug Bewegungspunkte.');
@@ -78,7 +81,7 @@ export function doMove(state, unit, path, events) {
   for (const k of path) {
     const other = unitAt(k);
     if (other && other.owner !== unit.owner) { stopped = [other.id]; break; }  // hidden enemy in the way
-    const cost = moveCost(state.tiles[k]);
+    const cost = moveCost(state.tiles[k], unit);
     walked.push({ from: unit.at, cost });
     unit.at = k; unit.movesLeft -= cost;
     const sp = SPECIALS[state.tiles[k].special];
