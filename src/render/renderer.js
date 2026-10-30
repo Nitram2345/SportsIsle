@@ -2,7 +2,7 @@
 import { parseKey, hexToPixel } from '../logic/hex.js';
 import { visibleTiles, visibleUnits } from '../logic/vision.js';
 import { BUILDINGS, UNITS, SPECIALS, PLAYER_COLORS } from '../config.js';
-import { paintTerrain, hexPath } from './terrain.js';
+import { paintTerrain, hexPath, addHex } from './terrain.js';
 import { getUnitSprite, getFacilitySprite, onSpriteReady } from './sprites.js';
 
 export const HEX_SIZE = 32;
@@ -42,7 +42,7 @@ export function createRenderer(canvas) {
 
   function fill(keys, style, scale = 1.01) {
     ctx.beginPath();
-    for (const k of keys) { const { x, y } = px(k); hexPath(ctx, x, y, HEX_SIZE, scale); }
+    for (const k of keys) { const { x, y } = px(k); addHex(ctx, x, y, HEX_SIZE, scale); }
     ctx.fillStyle = style; ctx.fill();
   }
 

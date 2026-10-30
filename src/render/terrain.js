@@ -9,14 +9,19 @@ const BASE = {
   river: '#3d74a8', lake: '#2f68a0', sea: '#2b5d8c',
 };
 
-export function hexPath(ctx, x, y, size, scale = 1) {
-  ctx.beginPath();
+// Appends one hex as a subpath (no beginPath), so many hexes can share one fill.
+export function addHex(ctx, x, y, size, scale = 1) {
   for (let i = 0; i < 6; i++) {
     const a = Math.PI / 180 * (60 * i - 30);
     const px = x + size * scale * Math.cos(a), py = y + size * scale * Math.sin(a);
     i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
   }
   ctx.closePath();
+}
+
+export function hexPath(ctx, x, y, size, scale = 1) {
+  ctx.beginPath();
+  addHex(ctx, x, y, size, scale);
 }
 
 // Stable per-tile randomness.
