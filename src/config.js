@@ -34,6 +34,7 @@ export const BUILDINGS = {
   tabletennis: b('Tischtennishalle', true, true, [], 1),
   soccer:      b('Fußballplatz', true, true, ['soccer'], 1),
   dojo:        b('Dojo', true, true, ['karate'], 1),
+  rugby:       b('Rugbyplatz', true, true, ['rugby'], 1),
 };
 for (const [id, v] of Object.entries(BUILDINGS)) v.svg = `facilities/${id}.svg`;
 
@@ -47,18 +48,24 @@ export const UNITS = {
   jogger: u('Jogger', 6, 0, 1, 6, 4, 1, 0, [], null, 0),
   soccer: u('Fußballer', 10, 5, 2, 4, 2, 2, 2, ['mountain', 'hill', 'building'], null, 1),
   karate: u('Karateka', 12, 5, 4, 2, 2, 3, 1, [], null, 0),
+  rugby:  u('Rugbyspieler', 12, 4, 4, 3, 2, 3, 0, [], null, 0),
 };
 for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // Special abilities:
-// multiMove – leftover move points can be used for further moves in the same turn.
-// zoc       – enemies entering a neighbouring tile must stop there (zone of control).
-// dazeOnHit – after taking damage: next own turn half movement and no attack.
-// counter   – strikes back once when attacked from an adjacent tile and survives.
+// multiMove  – leftover move points can be used for further moves in the same turn.
+// zoc        – enemies entering a neighbouring tile must stop there (zone of control).
+// ignoresZoc – walks through zones of control.
+// dazeOnHit  – after taking damage: next own turn half movement and no attack.
+// counter    – strikes back once when attacked from an adjacent tile and survives.
+// ram        – attacks by charging (>= 2 tiles run-up): pushes the target one tile on
+//              and takes its place; if it cannot give way, stops in front of it.
 UNITS.jogger.multiMove = true;
 UNITS.hockey.zoc = true;
 UNITS.soccer.zoc = true;
 UNITS.soccer.dazeOnHit = true;
 UNITS.karate.counter = true;
+UNITS.rugby.ram = true;
+UNITS.rugby.ignoresZoc = true;
 
 export const SPECIALS = {
   sprint: { name: 'Sprint', stat: 'move', amount: 2, turns: 3, icon: '⚡' },

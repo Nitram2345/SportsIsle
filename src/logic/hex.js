@@ -75,3 +75,9 @@ export function pixelToHex(x, y, size) {
   const q = (SQ3 / 3 * px - py / 3) / size, r = (2 / 3 * py) / size;
   return cubeToKey(cubeRound([q, -q - r, r]));
 }
+
+// Next tile after b when moving from neighbour a to b (same direction).
+export function extend(a, b) {
+  const A = toCube(...parseKey(a)), B = toCube(...parseKey(b));
+  return cubeToKey([2 * B[0] - A[0], 2 * B[1] - A[1], 2 * B[2] - A[2]]);
+}

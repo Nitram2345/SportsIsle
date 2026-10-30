@@ -5,6 +5,7 @@ import { random } from './rng.js';
 import { effective, updateMemory } from './vision.js';
 import { doMove } from './movement.js';
 import { doAttack } from './combat.js';
+import { doRam } from './ram.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
 
@@ -159,6 +160,12 @@ export function apply(state, action) {
     case 'produce': doProduce(s, action.at, action.unitType); break;
     case 'endTurn': endTurn(s, events); break;
     case 'attack': doAttack(s, getUnit(s, action.unitId), action.targetId, events); break;
+    case 'ram': {
+      const u = getUnit(s, action.unitId);
+      doRam(s, u, action.path, events);
+      if (s.units[u.id]) capture(s, u.at, u.owner, events);
+      break;
+    }
     default: throw new Error(`Unbekannte Aktion: ${action?.type}`);
   }
   checkElimination(s, events);

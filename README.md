@@ -29,6 +29,7 @@ Dann `http://localhost:8080` öffnen.
 | Jogger | – | schnell, sieht weit, erobert; darf Restbewegung für weitere Züge nutzen |
 | Fußballer | 2 | 🧱 Kontrollzone; nach einem Treffer im nächsten Zug 🤕 angeschlagen (kein Angriff, halbe Bewegung) |
 | Karateka | 1 | viel HP und Verteidigung; 🥋 schlägt zurück, wenn direkt daneben angegriffen |
+| Rugbyspieler | – | hohe Verteidigung; 🏉 rammt nach mind. 2 Feldern Anlauf: Gegner wird 1 Feld weggedrückt, der Rugbyspieler nimmt seinen Platz ein (kann er nicht ausweichen, bleibt der Rugbyspieler davor stehen); ignoriert Kontrollzonen |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
 

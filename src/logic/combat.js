@@ -47,14 +47,18 @@ export function doAttack(state, unit, targetId, events) {
   const target = state.units[targetId];
   unit.hasAttacked = true; unit.movesLeft = 0;
   hit(state, unit, target, events);
-  // Active defence: survivor with counter strikes back at an adjacent attacker (free, once).
-  if (state.units[targetId] && UNITS[target.type].counter && distance(unit.at, target.at) === 1) {
-    events.push({ type: 'counter', unitId: targetId, targetId: unit.id });
-    hit(state, target, unit, events);
+  counterStrike(state, unit, target, events);
+}
+
+// Active defence: survivor with counter strikes back at an adjacent attacker (free, once).
+export function counterStrike(state, attacker, target, events) {
+  if (state.units[target.id] && state.units[attacker.id] && UNITS[target.type].counter && distance(attacker.at, target.at) === 1) {
+    events.push({ type: 'counter', unitId: target.id, targetId: attacker.id });
+    hit(state, target, attacker, events);
   }
 }
 
-function hit(state, attacker, target, events) {
+export function hit(state, attacker, target, events) {
   const amount = damage(state, attacker, target);
   target.hp -= amount;
   events.push({ type: 'damage', targetId: target.id, amount });

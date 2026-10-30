@@ -18,7 +18,7 @@ function occupancy(state, unit) {
     if (u.owner === unit.owner) own.add(u.at);
     else if (vis.has(u.at)) {
       enemy.add(u.at);
-      if (UNITS[u.type].zoc) for (const n of neighbors(u.at, state.width, state.height)) zone.add(n);
+      if (UNITS[u.type].zoc && !UNITS[unit.type].ignoresZoc) for (const n of neighbors(u.at, state.width, state.height)) zone.add(n);
     }
   }
   return { own, enemy, zone };

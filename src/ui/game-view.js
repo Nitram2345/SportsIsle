@@ -2,6 +2,7 @@
 import { apply, productionTime } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
 import { attackTargets } from '../logic/combat.js';
+import { ramTargets } from '../logic/ram.js';
 import { visibleUnits, knownOwner, effective } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
 import { UNITS, BUILDINGS, SPECIALS } from '../config.js';
@@ -13,7 +14,7 @@ import { attachInput } from './input.js';
 const $ = id => document.getElementById(id);
 
 export function startGameView(initial, { renderer, canvas, show, onExit }) {
-  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '';
+  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '', rams = {};
   const camera = createCamera();
   const view = { camera, state, viewer: null, selected: null, reach: [], targets: [] };
 
@@ -34,6 +35,9 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'captured') out.push(`${BUILDINGS[state.tiles[e.at].building].name} erobert`);
       if (e.type === 'damage') out.push(`Treffer: -${e.amount} ❤`);
       if (e.type === 'counter') out.push('🥋 Gegenschlag!');
+      if (e.type === 'ram') out.push('🏉 Gerammt!');
+      if (e.type === 'pushed') out.push('Gegner zurückgedrängt');
+      if (e.type === 'blocked') out.push('Gegner konnte nicht ausweichen');
       if (e.type === 'zone') out.push('Zone des Gegners – Halt!');
       if (e.type === 'killed') out.push('Einheit ausgeschaltet');
       if (e.type === 'eliminated') out.push(`${name(e.player)} ist ausgeschieden`);
@@ -60,14 +64,16 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
 
   // ---------- selection ----------
   function select(kind, id) {
-    sel = kind ? { kind, id } : null; pending = null;
-    view.reach = []; view.targets = []; view.selected = null; view.path = null;
+    sel = kind ? { kind, id } : null; pending = null; rams = {};
+    view.reach = []; view.targets = []; view.selected = null; view.path = null; view.pathColor = null;
     if (kind === 'unit') {
       const u = state.units[id];
       view.selected = u.at;
       if (u.owner === state.current) {
         if (!u.hasAttacked && u.movesLeft > 0) view.reach = Object.keys(reachable(state, id));
         if (!u.hasMoved && !u.hasAttacked) view.targets = attackTargets(state, id);
+        rams = ramTargets(state, id);
+        view.targets = [...view.targets, ...Object.keys(rams)];
       }
     }
     if (kind === 'facility') view.selected = id;
@@ -89,9 +95,10 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (cfg.multiMove) line.textContent += ' · 🔁 kann mehrmals ziehen';
       if (cfg.zoc) line.textContent += ' · 🧱 blockiert Nachbarfelder';
       if (cfg.counter) line.textContent += ' · 🥋 schlägt zurück';
+      if (cfg.ram) line.textContent += ' · 🏉 rammt (mind. 2 Felder Anlauf)';
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
-      if (mine && pending) { const b = document.createElement('b'); b.textContent = 'Nochmal tippen zum Bewegen'; div.append(b); }
+      if (mine && pending) { const b = document.createElement('b'); b.textContent = rams && Object.values(rams).some(p => p[p.length - 1] === pending) ? 'Nochmal tippen zum Rammen' : 'Nochmal tippen zum Bewegen'; div.append(b); }
       return;
     }
     const f = state.facilities[sel.id], b = BUILDINGS[f.type], mine = f.owner === state.current;
@@ -127,6 +134,18 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     const me = sel?.kind === 'unit' ? state.units[sel.id] : null;
     const mine = me && me.owner === state.current;
 
+    if (mine && seenUnit && rams[seenUnit.id]) {
+      // ram: first tap shows the run-up, second tap charges
+      if (pending !== k) {
+        pending = k; view.path = rams[seenUnit.id]; view.pathColor = '#ff3b30';
+        info(); redraw(); toast('Nochmal tippen zum Rammen');
+        return;
+      }
+      $('toast').classList.remove('show');
+      const ev = act({ type: 'ram', unitId: me.id, path: rams[seenUnit.id] });
+      if (ev && state.winner === null) select(state.units[me.id] ? 'unit' : null, me.id);
+      return;
+    }
     if (mine && seenUnit && view.targets.includes(seenUnit.id)) {
       const ev = act({ type: 'attack', unitId: me.id, targetId: seenUnit.id });
       if (ev) select(state.units[me.id] ? 'unit' : null, me.id);
@@ -134,7 +153,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     }
     if (mine && view.reach.includes(k)) {
       if (pending !== k) {
-        pending = k;
+        pending = k; view.pathColor = null;
         view.path = reachable(state, me.id)[k];
         info(); redraw(); toast('Nochmal tippen zum Bewegen');
         return;
