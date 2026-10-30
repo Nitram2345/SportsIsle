@@ -45,6 +45,8 @@ export const UNITS = {
   jogger: u('Jogger', 6, 0, 1, 6, 4, 1, 0, [], null, 0),
 };
 for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
+// Special ability: leftover move points can be used for further moves in the same turn.
+UNITS.jogger.multiMove = true;
 
 export const SPECIALS = {
   sprint: { name: 'Sprint', stat: 'move', amount: 2, turns: 3, icon: '⚡' },

@@ -26,7 +26,7 @@ Dann `http://localhost:8080` öffnen.
 | Golfer | 3 | schlägt über Hügel, nicht über Berge |
 | Tennisspieler | 2 | Hügel und Gebäude blockieren |
 | Hockeyspieler | 2 (im Wald 1) | viel Schaden, alles Bodennahe blockiert |
-| Jogger | – | schnell, sieht weit, erobert |
+| Jogger | – | schnell, sieht weit, erobert; darf Restbewegung für weitere Züge nutzen |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
 

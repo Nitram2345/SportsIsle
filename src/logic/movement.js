@@ -1,5 +1,5 @@
 // Movement: reachable tiles and step-by-step moves with discovery stop.
-import { TERRAIN, ROAD_MOVE, SPECIALS } from '../config.js';
+import { TERRAIN, ROAD_MOVE, SPECIALS, UNITS } from '../config.js';
 import { neighbors } from './hex.js';
 import { visibleTiles, visibleUnits, updateMemory } from './vision.js';
 
@@ -87,5 +87,8 @@ export function doMove(state, unit, path, events) {
     const seen = [...new Set([...stopped, ...visibleUnits(state, unit.owner).filter(u => u.owner !== unit.owner && !seenBefore.has(u.id)).map(u => u.id)])];
     events.push({ type: 'discovered', unitId: unit.id, seen });
   }
+  // Leftover points stay usable only after a discovery stop (spec) or for units
+  // with the multiMove ability (jogger); everyone else is done for this turn.
+  else if (!UNITS[unit.type].multiMove) unit.movesLeft = 0;
   unit.hasMoved = true;
 }

@@ -84,6 +84,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       const range = effective(u, 'range');
       title.textContent = cfg.name + (mine ? '' : ` (${state.players[u.owner].name})`);
       line.textContent = `❤ ${u.hp}/${cfg.hp} · ⚔ ${effective(u, 'atk')} · 🛡 ${effective(u, 'def')} · 👟 ${mine ? u.movesLeft + '/' : ''}${effective(u, 'move')}${range ? ` · 🎯 ${range}` : ''} ${buffs}`;
+      if (cfg.multiMove) line.textContent += ' · 🔁 kann mehrmals ziehen';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = 'Nochmal tippen zum Bewegen'; div.append(b); }
       return;
     }

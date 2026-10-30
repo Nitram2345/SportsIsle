@@ -1,4 +1,5 @@
 import test from 'node:test';
+import { UNITS } from '../src/config.js';
 import assert from 'node:assert/strict';
 import { reachable, moveCost } from '../src/logic/movement.js';
 import { apply } from '../src/logic/game.js';
@@ -122,4 +123,20 @@ test('move into unexplored tile is rejected', () => {
   const s = gameFrom(['G'.repeat(14)]); const j = place(s, 'jogger', 0, '0,0');
   s.explored[0] = { '0,0': true, '1,0': true };
   assert.throws(() => apply(s, { type: 'move', unitId: j.id, path: ['1,0', '2,0'] }), /unerkundet/);
+});
+test('only the jogger may move twice; others end their move after one move', () => {
+  const s = gameFrom(row()); const t = place(s, 'tennis', 0, '0,0'); exploreAll(s, 0);
+  place(s, 'golfer', 1, '13,0');
+  const s2 = move(s, t.id, ['1,0']).state;
+  assert.equal(s2.units[t.id].movesLeft, 0);
+  assert.throws(() => move(s2, t.id, ['2,0']));
+});
+test('discovery stop keeps leftover points for every unit type', () => {
+  const s = gameFrom(row()); const t = place(s, 'tennis', 0, '0,0'); exploreAll(s, 0);
+  place(s, 'golfer', 1, '4,0');   // tennis sight 2: seen once standing on 2,0
+  const u = move(s, t.id, ['1,0', '2,0', '3,0']).state.units[t.id];
+  assert.equal(u.at, '2,0'); assert.equal(u.movesLeft, 1);
+});
+test('config: multiMove only on jogger', () => {
+  assert.deepEqual(Object.entries(UNITS).filter(([, u]) => u.multiMove).map(([id]) => id), ['jogger']);
 });
