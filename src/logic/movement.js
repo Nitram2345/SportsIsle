@@ -29,7 +29,7 @@ export function reachable(state, unitId) {
     const [cost, at] = queue.shift();
     if (cost > best[at]) continue;
     for (const n of neighbors(at, state.width, state.height)) {
-      if (enemy.has(n)) continue;
+      if (enemy.has(n) || !state.explored[unit.owner][n]) continue;
       const c = cost + moveCost(state.tiles[n]);
       if (c > unit.movesLeft || c >= (best[n] ?? Infinity)) continue;
       best[n] = c; prev[n] = at; queue.push([c, n]);
@@ -53,6 +53,7 @@ export function doMove(state, unit, path, events) {
   let at = unit.at, total = 0;
   for (const k of path) {
     if (!state.tiles[k] || !neighbors(at, state.width, state.height).includes(k)) throw new Error('Ungültiger Weg.');
+    if (!state.explored[unit.owner][k]) throw new Error('Dieses Feld ist noch unerkundet.');
     if (enemy.has(k)) throw new Error('Dort steht eine gegnerische Einheit.');
     total += moveCost(state.tiles[k]);
     at = k;

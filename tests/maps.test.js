@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { loadMap, validateMap } from '../src/logic/map.js';
 import { createGame, suggestStarts } from '../src/logic/game.js';
 import { reachable } from '../src/logic/movement.js';
+import { updateMemory } from '../src/logic/vision.js';
 import { PLAYER_COLORS } from '../src/config.js';
 
 const index = JSON.parse(readFileSync('maps/index.json', 'utf8'));
@@ -30,6 +31,6 @@ test('every start can move somewhere (not walled in)', () => {
     const m = load(e);
     const players = m.starts.map((_, i) => ({ name: 'P' + i, color: PLAYER_COLORS[i] }));
     const s = createGame(m, players, { seed: 1, startSlots: m.starts.map((_, i) => i) });
-    for (const u of Object.values(s.units)) { s.current = u.owner; assert.ok(Object.keys(reachable(s, u.id)).length, `${e.id} ${u.type}@${u.at}`); }
+    for (const u of Object.values(s.units)) { s.current = u.owner; updateMemory(s, u.owner); assert.ok(Object.keys(reachable(s, u.id)).length, `${e.id} ${u.type}@${u.at}`); }
   }
 });

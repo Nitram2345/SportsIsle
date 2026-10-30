@@ -133,6 +133,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
         return;
       }
       const path = reachable(state, me.id)[k];
+      $('toast').classList.remove('show');
       const ev = act({ type: 'move', unitId: me.id, path });
       if (ev && state.winner === null) select('unit', me.id);
       return;

@@ -16,6 +16,7 @@ export function mapFrom(rows, { roads = [], buildings = {}, specials = {}, start
 }
 
 import { createGame, spawnUnit } from '../src/logic/game.js';
+import { updateMemory } from '../src/logic/vision.js';
 import { PLAYER_COLORS } from '../src/config.js';
 
 // Game from char rows. Default: n start points without units (tests place their own).
@@ -27,5 +28,9 @@ export function gameFrom(rows, opts = {}, { players = 2, seed = 1 } = {}) {
   return createGame(m, ps, { seed, startSlots: ps.map((_, i) => i) });
 }
 
-// Put a unit directly into the state (full movesLeft).
-export const place = (state, type, owner, at) => spawnUnit(state, type, owner, at);
+// Player has seen the whole map before (remembered terrain, no current sight).
+export const exploreAll = (state, pid) => { for (const k of Object.keys(state.tiles)) state.explored[pid][k] = true; };
+
+// Put a unit directly into the state (full movesLeft) and let its owner see around it,
+// as happens at the start of every real turn.
+export const place = (state, type, owner, at) => { const u = spawnUnit(state, type, owner, at); updateMemory(state, owner); return u; };
