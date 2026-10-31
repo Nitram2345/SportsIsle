@@ -1,0 +1,234 @@
+{
+ "format": 1,
+ "id": "philippinen",
+ "name": "Philippinen",
+ "author": "Sports Battle Isle",
+ "width": 20,
+ "height": 30,
+ "players": {
+  "min": 2,
+  "max": 6
+ },
+ "terrain": [
+  "WWWWWWWWWWWWWWWWWWWW",
+  "WWWWWWWWWWSGSWWWWWWW",
+  "WWWWWWWWWSHHGGWWWWWW",
+  "WWWWWWWWWHMMHGWWWWWW",
+  "WWWWWWWWWHMMhGGWWWWW",
+  "WWWWWWWWWHMhhGSWWWWW",
+  "WWWWWWWWSHhhFGGWWWWW",
+  "WWWWWWWWGGGFFFSWWWWW",
+  "WWWWWWWWSGGGFFHWWWWW",
+  "WWWWWWWWWLGGGFHWWWWW",
+  "WWWWWWWWWWSGHGFFWWWW",
+  "WWWWWWWWHWWWSFFGSWWW",
+  "WWWWWWWHMHWWWWGHGGWW",
+  "WWWWWWWWHWWWWSWWHMSW",
+  "WWWWWWWWWWWWWSWWGGFW",
+  "WWWWWWWSWSSWWSWFFFFW",
+  "WWWWWWHSWHSWSGWFHWWW",
+  "WWWWWHSWWWWGHSWFWWWW",
+  "WWWWMSWWWWWSGWSWWWWW",
+  "WWWWSWWWWWWWSWSWSGSW",
+  "WWWWSWWWWWWWGGFFFHGW",
+  "WWWSWWWWWWWGFLFFHHSW",
+  "WWWWWWWWWWSGFFHMHFGW",
+  "WWWWWWWWWSGFWFHMMFSW",
+  "WWWWWWWWSFWWWSFHMFGW",
+  "WWWWWWWSSWWWWWGGFSWW",
+  "WWWWWWWWWWWWWWWSSWWW",
+  "WWWWSWSWWWWWWWWWWWWW",
+  "WWSWWWWWWWWWWWWWWWWW",
+  "WWWWWWWWWWWWWWWWWWWW"
+ ],
+ "roads": [
+  [12,1],
+  [12,2],
+  [12,3],
+  [12,4],
+  [11,5],
+  [10,9],
+  [11,9],
+  [12,10],
+  [12,11],
+  [13,11],
+  [14,11],
+  [15,11],
+  [16,12],
+  [16,13],
+  [13,20],
+  [12,21],
+  [10,22],
+  [11,22],
+  [12,22],
+  [17,23],
+  [17,24],
+  [16,25],
+  [15,26],
+  [16,26]
+ ],
+ "buildings": [
+  {
+   "at": [11,1],
+   "type": "park"
+  },
+  {
+   "at": [11,5],
+   "type": "tabletennis"
+  },
+  {
+   "at": [13,5],
+   "type": "house"
+  },
+  {
+   "at": [8,6],
+   "type": "physio"
+  },
+  {
+   "at": [14,6],
+   "type": "soccer"
+  },
+  {
+   "at": [10,10],
+   "type": "park"
+  },
+  {
+   "at": [12,11],
+   "type": "park"
+  },
+  {
+   "at": [7,12],
+   "type": "pool"
+  },
+  {
+   "at": [16,12],
+   "type": "park"
+  },
+  {
+   "at": [12,16],
+   "type": "golf"
+  },
+  {
+   "at": [11,17],
+   "type": "house"
+  },
+  {
+   "at": [5,18],
+   "type": "park"
+  },
+  {
+   "at": [16,19],
+   "type": "hockey"
+  },
+  {
+   "at": [13,20],
+   "type": "rugby"
+  },
+  {
+   "at": [16,20],
+   "type": "house"
+  },
+  {
+   "at": [10,23],
+   "type": "park"
+  },
+  {
+   "at": [17,23],
+   "type": "outdoor"
+  },
+  {
+   "at": [14,25],
+   "type": "park"
+  },
+  {
+   "at": [6,27],
+   "type": "dojo"
+  },
+  {
+   "at": [2,28],
+   "type": "tennis"
+  }
+ ],
+ "specials": [
+  {
+   "at": [14,9],
+   "type": "sprint"
+  },
+  {
+   "at": [15,16],
+   "type": "power"
+  },
+  {
+   "at": [15,22],
+   "type": "shield"
+  }
+ ],
+ "starts": [
+  {
+   "at": [12,1],
+   "units": [
+    "jogger",
+    "swimmer",
+    "golfer"
+   ],
+   "facilities": [
+    [11,1]
+   ]
+  },
+  {
+   "at": [15,26],
+   "units": [
+    "jogger",
+    "swimmer",
+    "golfer"
+   ],
+   "facilities": [
+    [14,25]
+   ]
+  },
+  {
+   "at": [5,17],
+   "units": [
+    "jogger",
+    "swimmer",
+    "golfer"
+   ],
+   "facilities": [
+    [5,18]
+   ]
+  },
+  {
+   "at": [16,13],
+   "units": [
+    "jogger",
+    "swimmer",
+    "golfer"
+   ],
+   "facilities": [
+    [16,12]
+   ]
+  },
+  {
+   "at": [10,9],
+   "units": [
+    "jogger",
+    "swimmer",
+    "golfer"
+   ],
+   "facilities": [
+    [10,10]
+   ]
+  },
+  {
+   "at": [10,22],
+   "units": [
+    "jogger",
+    "swimmer",
+    "golfer"
+   ],
+   "facilities": [
+    [10,23]
+   ]
+  }
+ ]
+}

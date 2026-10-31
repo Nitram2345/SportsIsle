@@ -31,5 +31,71 @@
   },
   "width": 40,
   "height": 36
+ },
+ {
+  "id": "erde",
+  "name": "Die Erde",
+  "file": "erde.json",
+  "players": {
+   "min": 2,
+   "max": 16
+  },
+  "width": 40,
+  "height": 20
+ },
+ {
+  "id": "philippinen",
+  "name": "Philippinen",
+  "file": "philippinen.json",
+  "players": {
+   "min": 2,
+   "max": 6
+  },
+  "width": 20,
+  "height": 30
+ },
+ {
+  "id": "mordor",
+  "name": "Mordor",
+  "file": "mordor.json",
+  "players": {
+   "min": 2,
+   "max": 4
+  },
+  "width": 32,
+  "height": 24
+ },
+ {
+  "id": "mars",
+  "name": "Mars (Ozean)",
+  "file": "mars.json",
+  "players": {
+   "min": 2,
+   "max": 6
+  },
+  "width": 32,
+  "height": 16
+ },
+ {
+  "id": "hawaii",
+  "name": "Hawaii",
+  "file": "hawaii.json",
+  "players": {
+   "min": 2,
+   "max": 5
+  },
+  "width": 32,
+  "height": 16
+ },
+ {
+  "id": "alpen",
+  "name": "Alpen",
+  "file": "alpen.json",
+  "players": {
+   "min": 2,
+   "max": 4
+  },
+  "width": 28,
+  "height": 18
  }
 ]

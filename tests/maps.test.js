@@ -11,7 +11,7 @@ const index = JSON.parse(readFileSync('maps/index.json', 'utf8'));
 const load = e => loadMap(JSON.parse(readFileSync(`maps/${e.file}`, 'utf8')));
 
 test('every indexed map loads, validates and matches index', () => {
-  assert.equal(index.length, 3);
+  assert.ok(index.length >= 9);
   for (const e of index) {
     const m = load(e);
     assert.deepEqual(validateMap(m), [], e.id);
@@ -19,7 +19,7 @@ test('every indexed map loads, validates and matches index', () => {
     assert.equal(m.meta.width, e.width); assert.equal(m.meta.height, e.height);
   }
 });
-test('player counts 2 / 4 / 16', () => assert.deepEqual(index.map(e => e.players.max), [2, 4, 16]));
+test('player counts of the original maps 2 / 4 / 16', () => assert.deepEqual(index.slice(0, 3).map(e => e.players.max), [2, 4, 16]));
 test('archipel supports 16 players: game starts, every player has units', () => {
   const m = load(index.find(e => e.id === 'archipel'));
   const players = PLAYER_COLORS.map((color, i) => ({ name: 'P' + i, color }));

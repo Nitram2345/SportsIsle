@@ -1,0 +1,502 @@
+{
+ "format": 1,
+ "id": "erde",
+ "name": "Die Erde",
+ "author": "Sports Battle Isle",
+ "width": 40,
+ "height": 20,
+ "players": {
+  "min": 2,
+  "max": 16
+ },
+ "terrain": [
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+  "WWWWWWWWWWWWWWSGGSWWWWWWWWWWWWTTTTWWWWWW",
+  "WWTTTTTTTTTTTWSGGGWWTTWWTTTTTTTTTTTTTTWW",
+  "WFFFFFFFWWFFFWWSSWWWFFFFFFFFFFFFFFFFFFFW",
+  "WWFFFFGGGFFFFWWWWWSWGGGGGGTTTTTTTFFFFFWW",
+  "WWWMMGGGGGFFWWWWWWWSMGGLTTTTTTTGGGGWWSWW",
+  "WWWDDDGGGGSWWWWWWWSWWWWDDDTMMMMGGGGSWWWW",
+  "WWWWWDDGWWWWWWWWWWDDDDDDDWDDWGGWFFFWWWWW",
+  "WWWWWWWFFWWWWWWWWWTTTTTTTWDWSSWFFFWSWWWW",
+  "WWWWWWWWWWWFFFFFWWWWFFFFFDWWWWWFFWFWWWWW",
+  "WWWWWWWWWWWFFRFFFWWWFFFFFWWWWWWFFWFFWWWW",
+  "WWWWWWWWWWWGFFFGSWWWWGGGSWWWWWWWWTTTWWWW",
+  "WWWWWWWWWWWWHGGGGWWWWTTTTWSWWWWWDDDDDDWW",
+  "WWWWWWWWWWWMGGGSWWWWSGGSWWWWWWWWDDDDGSWW",
+  "WWWWWWWWWWWMGGGWWWWWWSWWWWWWWWWWWSGGGWHW",
+  "WWWWWWWWWWWMTTWWWWWWWWWWWWWWWWWWWWWSWWHW",
+  "WWWWWWWWWWWMTWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+  "WWTTTTTTTTTTTTWWWWTTTTTTTTTTTTTTTTTTTWWW",
+  "TTTTTTTTTMMMTTTTTTTTTTTTTTTTMMMTTTTTTTTT"
+ ],
+ "roads": [
+  [14,1],
+  [15,1],
+  [30,1],
+  [31,1],
+  [7,2],
+  [16,2],
+  [24,2],
+  [32,2],
+  [34,2],
+  [35,2],
+  [36,2],
+  [37,2],
+  [1,3],
+  [2,3],
+  [3,3],
+  [4,3],
+  [5,3],
+  [6,3],
+  [16,3],
+  [24,3],
+  [32,3],
+  [33,3],
+  [25,4],
+  [33,4],
+  [25,5],
+  [33,5],
+  [8,6],
+  [9,6],
+  [10,6],
+  [33,6],
+  [7,7],
+  [32,7],
+  [19,8],
+  [20,8],
+  [23,8],
+  [31,8],
+  [32,8],
+  [12,9],
+  [20,9],
+  [23,9],
+  [12,10],
+  [21,10],
+  [24,10],
+  [11,11],
+  [24,11],
+  [12,12],
+  [24,12],
+  [14,13],
+  [15,13],
+  [36,13],
+  [37,13],
+  [14,14],
+  [35,14],
+  [36,14],
+  [38,14],
+  [13,15],
+  [38,15],
+  [8,18],
+  [9,18],
+  [10,18],
+  [11,18],
+  [12,18],
+  [21,18],
+  [22,18],
+  [23,18],
+  [24,18],
+  [25,18],
+  [12,19],
+  [18,19],
+  [19,19],
+  [20,19],
+  [25,19]
+ ],
+ "buildings": [
+  {
+   "at": [2,2],
+   "type": "park"
+  },
+  {
+   "at": [6,2],
+   "type": "house"
+  },
+  {
+   "at": [7,2],
+   "type": "soccer"
+  },
+  {
+   "at": [10,2],
+   "type": "house"
+  },
+  {
+   "at": [14,2],
+   "type": "park"
+  },
+  {
+   "at": [20,2],
+   "type": "hockey"
+  },
+  {
+   "at": [24,2],
+   "type": "tabletennis"
+  },
+  {
+   "at": [30,2],
+   "type": "park"
+  },
+  {
+   "at": [36,2],
+   "type": "park"
+  },
+  {
+   "at": [10,3],
+   "type": "dojo"
+  },
+  {
+   "at": [16,3],
+   "type": "dojo"
+  },
+  {
+   "at": [20,3],
+   "type": "house"
+  },
+  {
+   "at": [33,4],
+   "type": "tabletennis"
+  },
+  {
+   "at": [21,5],
+   "type": "outdoor"
+  },
+  {
+   "at": [24,5],
+   "type": "park"
+  },
+  {
+   "at": [10,6],
+   "type": "hockey"
+  },
+  {
+   "at": [6,7],
+   "type": "park"
+  },
+  {
+   "at": [18,7],
+   "type": "park"
+  },
+  {
+   "at": [30,7],
+   "type": "park"
+  },
+  {
+   "at": [23,8],
+   "type": "physio"
+  },
+  {
+   "at": [11,9],
+   "type": "park"
+  },
+  {
+   "at": [34,9],
+   "type": "tennis"
+  },
+  {
+   "at": [15,10],
+   "type": "house"
+  },
+  {
+   "at": [16,10],
+   "type": "pool"
+  },
+  {
+   "at": [21,10],
+   "type": "rugby"
+  },
+  {
+   "at": [11,11],
+   "type": "house"
+  },
+  {
+   "at": [23,11],
+   "type": "park"
+  },
+  {
+   "at": [12,12],
+   "type": "outdoor"
+  },
+  {
+   "at": [21,12],
+   "type": "house"
+  },
+  {
+   "at": [15,13],
+   "type": "soccer"
+  },
+  {
+   "at": [20,13],
+   "type": "physio"
+  },
+  {
+   "at": [34,13],
+   "type": "park"
+  },
+  {
+   "at": [12,15],
+   "type": "park"
+  },
+  {
+   "at": [38,15],
+   "type": "golf"
+  },
+  {
+   "at": [7,18],
+   "type": "park"
+  },
+  {
+   "at": [12,18],
+   "type": "house"
+  },
+  {
+   "at": [21,18],
+   "type": "pool"
+  },
+  {
+   "at": [30,18],
+   "type": "house"
+  },
+  {
+   "at": [31,18],
+   "type": "golf"
+  },
+  {
+   "at": [0,19],
+   "type": "park"
+  },
+  {
+   "at": [12,19],
+   "type": "rugby"
+  },
+  {
+   "at": [17,19],
+   "type": "park"
+  },
+  {
+   "at": [24,19],
+   "type": "park"
+  },
+  {
+   "at": [34,19],
+   "type": "park"
+  },
+  {
+   "at": [38,19],
+   "type": "house"
+  },
+  {
+   "at": [39,19],
+   "type": "tennis"
+  }
+ ],
+ "specials": [
+  {
+   "at": [33,1],
+   "type": "sprint"
+  },
+  {
+   "at": [27,2],
+   "type": "power"
+  },
+  {
+   "at": [3,5],
+   "type": "power"
+  },
+  {
+   "at": [27,7],
+   "type": "shield"
+  },
+  {
+   "at": [25,9],
+   "type": "sprint"
+  },
+  {
+   "at": [32,12],
+   "type": "shield"
+  },
+  {
+   "at": [28,18],
+   "type": "sprint"
+  }
+ ],
+ "starts": [
+  {
+   "at": [1,19],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [0,19]
+   ]
+  },
+  {
+   "at": [37,2],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [36,2]
+   ]
+  },
+  {
+   "at": [14,1],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [14,2]
+   ]
+  },
+  {
+   "at": [25,19],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [24,19]
+   ]
+  },
+  {
+   "at": [1,3],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [2,2]
+   ]
+  },
+  {
+   "at": [13,15],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [12,15]
+   ]
+  },
+  {
+   "at": [25,5],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [24,5]
+   ]
+  },
+  {
+   "at": [35,14],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [34,13]
+   ]
+  },
+  {
+   "at": [19,8],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [18,7]
+   ]
+  },
+  {
+   "at": [7,7],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [6,7]
+   ]
+  },
+  {
+   "at": [18,19],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [17,19]
+   ]
+  },
+  {
+   "at": [24,12],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [23,11]
+   ]
+  },
+  {
+   "at": [30,1],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [30,2]
+   ]
+  },
+  {
+   "at": [31,8],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [30,7]
+   ]
+  },
+  {
+   "at": [8,18],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [7,18]
+   ]
+  },
+  {
+   "at": [12,9],
+   "units": [
+    "jogger",
+    "tennis",
+    "golfer"
+   ],
+   "facilities": [
+    [11,9]
+   ]
+  }
+ ]
+}

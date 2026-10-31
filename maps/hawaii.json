@@ -1,0 +1,191 @@
+{
+ "format": 1,
+ "id": "hawaii",
+ "name": "Hawaii",
+ "author": "Sports Battle Isle",
+ "width": 32,
+ "height": 16,
+ "players": {
+  "min": 2,
+  "max": 5
+ },
+ "terrain": [
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+  "WWWWSGSWWWWWWWWWWWWWWWWWWWWWWWWW",
+  "GWWSHMFSWWWWWWSSWWWWWWWWWWWWWWWW",
+  "SWWWSFSWWWWWWHGFSWWWWWWWWWWWWWWW",
+  "WWWWWWWWWWWWWSGHGWWWWWWWWWWWWWWW",
+  "WWWWWWWWWWWWWWSSWWSSSSWWWWWWWWWW",
+  "WWWWWWWWWWWWWWWWWWWWWGGHGSWWWWWW",
+  "WWWWWWWWWWWWWWWWWWWSWFGHMSWWWWWW",
+  "WWWWWWWWWWWWWWWWWWWWWTWWSFWWWWWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWSGFWWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWSHHFFWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWGTMHFFWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWSTHMhFFW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWDMHBFWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWDTSWWW",
+  "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+ ],
+ "roads": [
+  [4,1],
+  [5,1],
+  [6,1],
+  [4,2],
+  [15,3],
+  [16,4],
+  [15,5],
+  [24,6],
+  [25,6],
+  [23,7],
+  [26,9],
+  [26,10],
+  [25,11],
+  [25,12],
+  [28,12],
+  [29,12],
+  [30,12],
+  [27,13]
+ ],
+ "buildings": [
+  {
+   "at": [6,1],
+   "type": "rugby"
+  },
+  {
+   "at": [0,2],
+   "type": "golf"
+  },
+  {
+   "at": [3,2],
+   "type": "park"
+  },
+  {
+   "at": [14,2],
+   "type": "hockey"
+  },
+  {
+   "at": [0,3],
+   "type": "house"
+  },
+  {
+   "at": [15,3],
+   "type": "physio"
+  },
+  {
+   "at": [13,4],
+   "type": "pool"
+  },
+  {
+   "at": [14,5],
+   "type": "park"
+  },
+  {
+   "at": [18,5],
+   "type": "house"
+  },
+  {
+   "at": [19,5],
+   "type": "tennis"
+  },
+  {
+   "at": [21,5],
+   "type": "park"
+  },
+  {
+   "at": [25,6],
+   "type": "outdoor"
+  },
+  {
+   "at": [19,7],
+   "type": "tabletennis"
+  },
+  {
+   "at": [22,7],
+   "type": "park"
+  },
+  {
+   "at": [26,9],
+   "type": "soccer"
+  },
+  {
+   "at": [24,11],
+   "type": "park"
+  },
+  {
+   "at": [29,11],
+   "type": "park"
+  },
+  {
+   "at": [27,13],
+   "type": "dojo"
+  }
+ ],
+ "specials": [
+  {
+   "at": [21,8],
+   "type": "sprint"
+  },
+  {
+   "at": [25,8],
+   "type": "power"
+  }
+ ],
+ "starts": [
+  {
+   "at": [30,12],
+   "units": [
+    "jogger",
+    "swimmer",
+    "tennis"
+   ],
+   "facilities": [
+    [29,11]
+   ]
+  },
+  {
+   "at": [4,2],
+   "units": [
+    "jogger",
+    "swimmer",
+    "tennis"
+   ],
+   "facilities": [
+    [3,2]
+   ]
+  },
+  {
+   "at": [15,5],
+   "units": [
+    "jogger",
+    "swimmer",
+    "tennis"
+   ],
+   "facilities": [
+    [14,5]
+   ]
+  },
+  {
+   "at": [23,7],
+   "units": [
+    "jogger",
+    "swimmer",
+    "tennis"
+   ],
+   "facilities": [
+    [22,7]
+   ]
+  },
+  {
+   "at": [25,12],
+   "units": [
+    "jogger",
+    "swimmer",
+    "tennis"
+   ],
+   "facilities": [
+    [24,11]
+   ]
+  }
+ ]
+}

@@ -43,7 +43,8 @@ Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
 
 Gelände, Straßen, Gebäude, Sportstätten, Sonderfelder und Startpunkte malen.
 Maps sind JSON-Dateien und lassen sich exportieren, importieren und weitergeben.
-Mitgelieferte Maps liegen in `maps/` und sind in `maps/index.json` eingetragen.
+Mitgelieferte Maps liegen in `maps/` und sind in `maps/index.json` eingetragen:
+Insel-Duell (2), Vierland (4), Archipel (16), Die Erde (16), Philippinen (6), Mordor (4), Mars mit Ozean (6), Hawaii (5), Alpen (4).
 
 ## Entwicklung
 
