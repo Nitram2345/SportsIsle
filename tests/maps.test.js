@@ -41,5 +41,19 @@ test('every bundled map offers soccer field, dojo, rugby field and outdoor shop'
     assert.ok(types.includes('dojo'), `${e.id}: Dojo fehlt`);
     assert.ok(types.includes('rugby'), `${e.id}: Rugbyplatz fehlt`);
     assert.ok(types.includes('outdoor'), `${e.id}: Outdoor-Geschäft fehlt`);
+    for (const b of ['pool', 'physio', 'tabletennis']) assert.ok(types.includes(b), `${e.id}: ${b} fehlt`);
   }
+});
+test('every pool is on the coast (next to water) so swimmers can reach it', async () => {
+  const { neighbors } = await import('../src/logic/hex.js');
+  const { TERRAIN } = await import('../src/config.js');
+  let pools = 0;
+  for (const e of index) {
+    const m = load(e);
+    for (const [k, t] of Object.entries(m.tiles)) if (t.building === 'pool') {
+      pools++;
+      assert.ok(neighbors(k, m.meta.width, m.meta.height).some(n => TERRAIN[m.tiles[n].terrain].flags.includes('water')), `${e.id} pool@${k}`);
+    }
+  }
+  assert.ok(pools >= 3);
 });

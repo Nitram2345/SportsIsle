@@ -55,7 +55,7 @@ export function doRam(state, unit, path, events) {
 
   const behind = extend(unit.at, targetAt);
   const occupied = new Set(Object.values(state.units).map(u => u.at));
-  const canGiveWay = !!state.tiles[behind] && isPassable(state, behind) && !occupied.has(behind);
+  const canGiveWay = !!state.tiles[behind] && isPassable(state, behind, target) && !occupied.has(behind);
 
   hit(state, unit, target, events);
   if (!state.units[target.id]) { unit.at = targetAt; }          // knocked out: take the tile

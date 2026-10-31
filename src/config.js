@@ -34,11 +34,13 @@ export const BUILDINGS = {
   golf:        b('Golfplatz', true, true, ['golfer'], 2),
   tennis:      b('Tennisanlage', true, true, ['tennis'], 1),
   hockey:      b('Hockeyplatz', true, true, ['hockey'], 1),
-  tabletennis: b('Tischtennishalle', true, true, [], 1),
+  tabletennis: b('Tischtennishalle', true, true, ['tabletennis'], 1),
   soccer:      b('Fußballplatz', true, true, ['soccer'], 1),
   dojo:        b('Dojo', true, true, ['karate'], 1),
   rugby:       b('Rugbyplatz', true, true, ['rugby'], 1),
   outdoor:     b('Outdoor-Geschäft', true, true, ['climber'], 1),
+  pool:        b('Schwimmbad', true, true, ['swimmer'], 1),
+  physio:      b('Physiopraxis', true, true, ['physio'], 1),
 };
 for (const [id, v] of Object.entries(BUILDINGS)) v.svg = `facilities/${id}.svg`;
 
@@ -54,6 +56,9 @@ export const UNITS = {
   karate: u('Karateka', 12, 5, 4, 2, 2, 3, 1, [], null, 0),
   rugby:  u('Rugbyspieler', 12, 4, 4, 3, 2, 3, 0, [], null, 0),
   climber: u('Bergsteiger', 8, 4, 2, 4, 3, 2, 2, ['mountain'], null, 0),
+  swimmer: u('Schwimmer', 8, 3, 1, 4, 3, 2, 1, [], null, 0),
+  tabletennis: u('Tischtennisspieler', 8, 3, 2, 3, 2, 2, 1, [], null, 0),
+  physio: u('Physiotherapeut', 6, 0, 1, 4, 3, 2, 0, [], null, 0),
 };
 for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // Special abilities:
@@ -66,6 +71,9 @@ for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 //              and takes its place; if it cannot give way, stops in front of it.
 // climb      – hills, hilly forest and mountains cost 1 move; on a mountain: sight +2 and
 //              nothing blocks its throws; attacking downhill: attack +1, range +1.
+// swim       – the only unit that enters water (cost 1); every land tile costs 2 (road 1).
+// attacks    – number of attacks per turn (default 1).
+// heal       – instead of attacking: heals one adjacent own unit by this much, cures dazed.
 UNITS.jogger.multiMove = true;
 UNITS.hockey.zoc = true;
 UNITS.soccer.zoc = true;
@@ -74,6 +82,9 @@ UNITS.karate.counter = true;
 UNITS.rugby.ram = true;
 UNITS.rugby.ignoresZoc = true;
 UNITS.climber.climb = true;
+UNITS.swimmer.swim = true;
+UNITS.tabletennis.attacks = 2;
+UNITS.physio.heal = 3;
 
 export const SPECIALS = {
   sprint: { name: 'Sprint', stat: 'move', amount: 2, turns: 3, icon: '⚡' },

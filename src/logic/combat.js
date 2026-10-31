@@ -51,9 +51,34 @@ export function doAttack(state, unit, targetId, events) {
   if (unit.hasAttacked) throw new Error('Diese Einheit hat schon geschlagen.');
   if (!attackTargets(state, unit.id).includes(targetId)) throw new Error('Ziel nicht erreichbar.');
   const target = state.units[targetId];
-  unit.hasAttacked = true; unit.movesLeft = 0;
+  // attacks per turn (table tennis: 2); moving is over after the first one
+  unit.attacksUsed = (unit.attacksUsed ?? 0) + 1;
+  unit.movesLeft = 0;
+  if (unit.attacksUsed >= (UNITS[unit.type].attacks ?? 1)) unit.hasAttacked = true;
   hit(state, unit, target, events);
   counterStrike(state, unit, target, events);
+}
+
+// Physio: own units on neighbouring tiles that are hurt or dazed.
+export function healTargets(state, unitId) {
+  const unit = state.units[unitId];
+  if (!UNITS[unit.type].heal || unit.hasMoved || unit.hasAttacked) return [];
+  return Object.values(state.units)
+    .filter(t => t.owner === unit.owner && t.id !== unit.id && distance(unit.at, t.at) === 1
+      && (t.hp < UNITS[t.type].hp || t.dazed || t.dazedNow))
+    .map(t => t.id);
+}
+
+export function doHeal(state, unit, targetId, events) {
+  if (unit.owner !== state.current) throw new Error('Diese Einheit gehört nicht dir.');
+  if (!UNITS[unit.type].heal) throw new Error('Diese Einheit kann nicht behandeln.');
+  if (unit.hasMoved || unit.hasAttacked) throw new Error('Behandeln geht nur einmal pro Zug und nicht nach dem Ziehen.');
+  if (!healTargets(state, unit.id).includes(targetId)) throw new Error('Diese Einheit kann hier nicht behandelt werden.');
+  const t = state.units[targetId], before = t.hp;
+  t.hp = Math.min(UNITS[t.type].hp, t.hp + UNITS[unit.type].heal);
+  t.dazed = false; t.dazedNow = false;
+  unit.hasAttacked = true; unit.movesLeft = 0;
+  events.push({ type: 'healed', unitId: targetId, amount: t.hp - before });
 }
 
 // Active defence: survivor with counter strikes back at an adjacent attacker (free, once).

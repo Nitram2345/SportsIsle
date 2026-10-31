@@ -1,7 +1,7 @@
 // Hot-seat game screen: hand-over, map interaction, HUD, production, victory.
 import { apply, productionTime } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
-import { attackTargets } from '../logic/combat.js';
+import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
 import { visibleUnits, knownOwner, effective } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
@@ -36,6 +36,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'damage') out.push(`Treffer: -${e.amount} ❤`);
       if (e.type === 'counter') out.push('🥋 Gegenschlag!');
       if (e.type === 'ram') out.push('🏉 Gerammt!');
+      if (e.type === 'healed') out.push(`➕ Behandelt: +${e.amount} ❤`);
       if (e.type === 'pushed') out.push('Gegner zurückgedrängt');
       if (e.type === 'blocked') out.push('Gegner konnte nicht ausweichen');
       if (e.type === 'zone') out.push('Zone des Gegners – Halt!');
@@ -65,15 +66,16 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
   // ---------- selection ----------
   function select(kind, id) {
     sel = kind ? { kind, id } : null; pending = null; rams = {};
-    view.reach = []; view.targets = []; view.selected = null; view.path = null; view.pathColor = null;
+    view.reach = []; view.targets = []; view.heals = []; view.selected = null; view.path = null; view.pathColor = null;
     if (kind === 'unit') {
       const u = state.units[id];
       view.selected = u.at;
       if (u.owner === state.current) {
-        if (!u.hasAttacked && u.movesLeft > 0) view.reach = Object.keys(reachable(state, id));
+        if (!u.hasAttacked && !u.attacksUsed && u.movesLeft > 0) view.reach = Object.keys(reachable(state, id));
         if (!u.hasMoved && !u.hasAttacked) view.targets = attackTargets(state, id);
         rams = ramTargets(state, id);
         view.targets = [...view.targets, ...Object.keys(rams)];
+        view.heals = healTargets(state, id);
       }
     }
     if (kind === 'facility') view.selected = id;
@@ -97,6 +99,9 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (cfg.counter) line.textContent += ' · 🥋 schlägt zurück';
       if (cfg.ram) line.textContent += ' · 🏉 rammt (mind. 2 Felder Anlauf)';
       if (cfg.climb) line.textContent += ' · 🧗 klettert; auf dem Berg +2 Sicht; bergab +1 Angriff/Reichweite';
+      if (cfg.swim) line.textContent += ' · 🏊 schwimmt; an Land langsam';
+      if (cfg.attacks > 1) line.textContent += ` · 🏓 ${cfg.attacks} Angriffe pro Zug` + (mine && u.attacksUsed && !u.hasAttacked ? ` (noch ${cfg.attacks - u.attacksUsed})` : '');
+      if (cfg.heal) line.textContent += ` · ➕ behandelt Nachbarn (+${cfg.heal} ❤)`;
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = rams && Object.values(rams).some(p => p[p.length - 1] === pending) ? 'Nochmal tippen zum Rammen' : 'Nochmal tippen zum Bewegen'; div.append(b); }
@@ -135,6 +140,11 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     const me = sel?.kind === 'unit' ? state.units[sel.id] : null;
     const mine = me && me.owner === state.current;
 
+    if (mine && view.heals.includes(seenUnit?.id)) {
+      const ev = act({ type: 'heal', unitId: me.id, targetId: seenUnit.id });
+      if (ev) select('unit', me.id);
+      return;
+    }
     if (mine && seenUnit && rams[seenUnit.id]) {
       // ram: first tap shows the run-up, second tap charges
       if (pending !== k) {

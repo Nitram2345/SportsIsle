@@ -5,6 +5,7 @@ import { visibleTiles, visibleUnits, updateMemory } from './vision.js';
 
 export function moveCost(tile, unit = null) {
   const t = TERRAIN[tile.terrain];
+  if (unit && UNITS[unit.type].swim) return t.flags.includes('water') ? 1 : tile.road ? ROAD_MOVE : 2;
   if (!t.passable) return Infinity;
   if (tile.road) return ROAD_MOVE;
   // climbers are not slowed by hills (incl. hilly forest) and mountains
@@ -58,7 +59,7 @@ export function reachable(state, unitId) {
 
 export function doMove(state, unit, path, events) {
   if (unit.owner !== state.current) throw new Error('Diese Einheit gehört nicht dir.');
-  if (unit.hasAttacked) throw new Error('Diese Einheit hat schon geschlagen.');
+  if (unit.hasAttacked || unit.attacksUsed) throw new Error('Diese Einheit hat schon geschlagen.');
   if (!Array.isArray(path) || !path.length) throw new Error('Kein Weg angegeben.');
   const { own, enemy, zone } = occupancy(state, unit);
   if (unit.retreatTo && path[0] !== unit.retreatTo) throw new Error('In der Zone kann der Jogger nur genau zurück, woher er kam.');

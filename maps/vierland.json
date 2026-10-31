@@ -116,6 +116,10 @@
    "type": "golf"
   },
   {
+   "at": [1,5],
+   "type": "pool"
+  },
+  {
    "at": [11,5],
    "type": "hockey"
   },
@@ -144,6 +148,14 @@
    "type": "park"
   },
   {
+   "at": [15,8],
+   "type": "physio"
+  },
+  {
+   "at": [6,9],
+   "type": "physio"
+  },
+  {
    "at": [15,9],
    "type": "park"
   },
@@ -170,6 +182,10 @@
   {
    "at": [11,12],
    "type": "tennis"
+  },
+  {
+   "at": [20,12],
+   "type": "pool"
   },
   {
    "at": [4,14],

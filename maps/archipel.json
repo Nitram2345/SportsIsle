@@ -67,6 +67,14 @@
  ],
  "buildings": [
   {
+   "at": [4,3],
+   "type": "pool"
+  },
+  {
+   "at": [35,3],
+   "type": "pool"
+  },
+  {
    "at": [6,4],
    "type": "park"
   },
@@ -123,6 +131,10 @@
    "type": "park"
   },
   {
+   "at": [13,13],
+   "type": "physio"
+  },
+  {
    "at": [15,13],
    "type": "tennis"
   },
@@ -147,8 +159,16 @@
    "type": "golf"
   },
   {
+   "at": [16,14],
+   "type": "pool"
+  },
+  {
    "at": [27,14],
    "type": "hockey"
+  },
+  {
+   "at": [32,14],
+   "type": "physio"
   },
   {
    "at": [35,15],
@@ -167,12 +187,24 @@
    "type": "park"
   },
   {
+   "at": [10,22],
+   "type": "physio"
+  },
+  {
    "at": [14,22],
    "type": "tennis"
   },
   {
    "at": [16,22],
    "type": "park"
+  },
+  {
+   "at": [24,22],
+   "type": "pool"
+  },
+  {
+   "at": [29,22],
+   "type": "physio"
   },
   {
    "at": [36,22],
@@ -203,6 +235,10 @@
    "type": "rugby"
   },
   {
+   "at": [6,30],
+   "type": "pool"
+  },
+  {
    "at": [27,30],
    "type": "park"
   },
@@ -225,6 +261,10 @@
   {
    "at": [32,31],
    "type": "dojo"
+  },
+  {
+   "at": [34,31],
+   "type": "pool"
   },
   {
    "at": [35,31],

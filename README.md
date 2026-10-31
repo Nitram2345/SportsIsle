@@ -31,6 +31,9 @@ Dann `http://localhost:8080` öffnen.
 | Karateka | 1 | viel HP und Verteidigung; 🥋 schlägt zurück, wenn direkt daneben angegriffen |
 | Rugbyspieler | – | hohe Verteidigung; 🏉 rammt nach mind. 2 Feldern Anlauf: Gegner wird 1 Feld weggedrückt, der Rugbyspieler nimmt seinen Platz ein (kann er nicht ausweichen, bleibt der Rugbyspieler davor stehen); ignoriert Kontrollzonen |
 | Bergsteiger | 2 | wirft Steine; Hügel (auch hügeliger Wald) und Berge kosten ihn nur 1; auf dem Berg +2 Sicht und nichts blockiert seinen Wurf; bergab +1 Angriff und Reichweite |
+| Schwimmer | 1 | einzige Einheit im Wasser (Fluss, See, Meer: 1 Punkt); an Land langsam (2 Punkte, Straße 1) |
+| Tischtennisspieler | 1 | wenig Schaden, aber 🏓 2 Angriffe pro Zug |
+| Physiotherapeut | – | kämpft nicht; ➕ behandelt eine eigene Einheit daneben (+3 HP, hebt „angeschlagen“ auf) |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
 

@@ -96,10 +96,11 @@ export function createRenderer(canvas) {
     if (state) {
       const units = (fog ? visibleUnits(state, viewer, seen) : Object.values(state.units))
         .map(u => ({ u, p: px(u.at) })).sort((a, b) => a.p.y - b.p.y);
-      const targets = new Set(view.targets ?? []);
+      const targets = new Set(view.targets ?? []), heals = new Set(view.heals ?? []);
       for (const { u, p } of units) {
         const color = state.players[u.owner].color, feet = p.y + HEX_SIZE * 0.55, k = HEX_SIZE / 19 * 1.08;
         if (targets.has(u.id)) { hexPath(ctx, p.x, p.y, HEX_SIZE, 1.04); ctx.setLineDash([5, 3]); ctx.strokeStyle = '#ff3b30'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]); }
+        if (heals.has(u.id)) { hexPath(ctx, p.x, p.y, HEX_SIZE, 1.04); ctx.setLineDash([5, 3]); ctx.strokeStyle = '#34c759'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]); }
         ctx.fillStyle = 'rgba(0,0,0,.38)'; ctx.beginPath(); ctx.ellipse(p.x, feet, 11 * k, 3.2 * k, 0, 0, 6.2832); ctx.fill();
         const img = getUnitSprite(u.type, color, u.skin);
         if (img) ctx.drawImage(img, p.x - 24 * k, feet - 48 * k, 48 * k, 52 * k);  // svg viewBox -24 -48 48 52

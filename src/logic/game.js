@@ -3,8 +3,8 @@ import { UNITS, BUILDINGS, SKINS, TERRAIN, RULES } from '../config.js';
 import { distance, neighbors } from './hex.js';
 import { random } from './rng.js';
 import { effective, updateMemory } from './vision.js';
-import { doMove } from './movement.js';
-import { doAttack } from './combat.js';
+import { doMove, moveCost } from './movement.js';
+import { doAttack, doHeal } from './combat.js';
 import { doRam } from './ram.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
@@ -55,7 +55,8 @@ export function freeTilesNear(state, at, n) {
     .slice(0, n);
 }
 
-export const isPassable = (state, k) => !!state.tiles[k] && TERRAIN[state.tiles[k].terrain].passable;
+// unit (optional): a swimmer may also stand on water
+export const isPassable = (state, k, unit = null) => !!state.tiles[k] && isFinite(moveCost(state.tiles[k], unit));
 
 // ponytail: greedy, not optimal; fine for <=16 starts
 export function suggestStarts(map, n, seed) {
@@ -80,7 +81,7 @@ export function startTurn(state, pid, events) {
     // dazed (hit since last turn) -> this turn: half move, no attack
     u.dazedNow = !!u.dazed; u.dazed = false;
     u.movesLeft = u.dazedNow ? Math.floor(move / 2) : move;
-    u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null;
+    u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null; u.attacksUsed = 0;
   }
   updateMemory(state, pid);
 }
@@ -101,7 +102,7 @@ function tickProduction(state, at, f, events) {
   if (f.progress < f.needed) f.progress++;
   if (f.progress < f.needed) return;
   const occupied = new Set(Object.values(state.units).map(u => u.at));
-  const spot = [at, ...neighbors(at, state.width, state.height)].find(k => !occupied.has(k) && isPassable(state, k));
+  const spot = [at, ...neighbors(at, state.width, state.height)].find(k => !occupied.has(k) && isPassable(state, k, { type: f.producing }));
   if (!spot) return;  // wait, progress stays
   const u = spawnUnit(state, f.producing, f.owner, spot);
   events.push({ type: 'produced', unitId: u.id, at: spot });
@@ -160,6 +161,7 @@ export function apply(state, action) {
     case 'produce': doProduce(s, action.at, action.unitType); break;
     case 'endTurn': endTurn(s, events); break;
     case 'attack': doAttack(s, getUnit(s, action.unitId), action.targetId, events); break;
+    case 'heal': doHeal(s, getUnit(s, action.unitId), action.targetId, events); break;
     case 'ram': {
       const u = getUnit(s, action.unitId);
       doRam(s, u, action.path, events);
