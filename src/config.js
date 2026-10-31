@@ -51,7 +51,7 @@ export const UNITS = {
   golfer: u('Golfer', 8, 4, 1, 3, 3, 3, 3, ['mountain'], null, 1),
   tennis: u('Tennisspieler', 10, 5, 2, 3, 2, 2, 2, ['mountain', 'hill', 'building'], null, 1),
   hockey: u('Hockeyspieler', 10, 7, 2, 3, 2, 3, 2, ['forest', 'hill', 'ground', 'mountain', 'building'], { flag: 'forest', range: 1 }, 1),
-  jogger: u('Jogger', 6, 0, 1, 6, 4, 1, 0, [], null, 0),
+  jogger: u('Jogger', 6, 1, 1, 6, 4, 2, 1, [], null, 0),   // kicks weakly (range 1)
   soccer: u('Fußballer', 10, 5, 2, 4, 2, 2, 2, ['mountain', 'hill', 'building'], null, 1),
   karate: u('Karateka', 12, 5, 4, 2, 2, 3, 1, [], null, 0),
   rugby:  u('Rugbyspieler', 12, 4, 4, 3, 2, 3, 0, [], null, 0),

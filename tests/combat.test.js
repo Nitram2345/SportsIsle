@@ -51,8 +51,8 @@ test('damage uses terrain defence and min 1', () => {
   assert.equal(damage(s, h, t), 4);
   assert.equal(damage(s, g, h2), 1);
 });
-test('jogger cannot attack', () => {
-  const s = gameFrom(['GG']); const j = place(s, 'jogger', 0, '0,0'); place(s, 'tennis', 1, '1,0');
+test('physio cannot attack', () => {
+  const s = gameFrom(['GG']); const j = place(s, 'physio', 0, '0,0'); place(s, 'tennis', 1, '1,0');
   assert.deepEqual(attackTargets(s, j.id), []);
 });
 test('attack applies damage and uses the unit', () => {

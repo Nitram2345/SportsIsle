@@ -184,3 +184,8 @@ export function checkElimination(state, events) {
   const alive = state.players.map((p, i) => p.alive ? i : -1).filter(i => i >= 0);
   if (alive.length === 1 && state.winner === null) { state.winner = alive[0]; events.push({ type: 'won', player: alive[0] }); }
 }
+
+// Own units of the current player that have neither moved nor attacked yet ("next unit").
+export const idleUnits = state => Object.values(state.units)
+  .filter(u => u.owner === state.current && !u.hasMoved && !u.hasAttacked && !u.attacksUsed)
+  .map(u => u.id);

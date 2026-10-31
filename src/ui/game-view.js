@@ -1,5 +1,5 @@
 // Hot-seat game screen: hand-over, map interaction, HUD, production, victory.
-import { apply, productionTime } from '../logic/game.js';
+import { apply, productionTime, idleUnits } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
 import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
@@ -21,7 +21,25 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
   renderer.setMap(state.tiles, state.width, state.height);
   saveGame(state);
 
-  const redraw = () => { Object.assign(view, { state, viewer: state.current }); renderer.draw(view); };
+  const redraw = () => { Object.assign(view, { state, viewer: state.current }); renderer.draw(view); updateNext(); };
+
+  // "Next unit": cycles through own units that have not acted yet; when none is left the
+  // button gives way to a "all moved" note.
+  function updateNext() {
+    const idle = idleUnits(state);
+    $('hud-next').hidden = !idle.length;
+    $('hud-done').hidden = !!idle.length;
+    if (idle.length) $('hud-next').textContent = `Nächste Einheit (${idle.length})`;
+  }
+  function nextUnit() {
+    const idle = idleUnits(state);
+    if (!idle.length) return;
+    const after = sel?.kind === 'unit' ? idle.indexOf(sel.id) + 1 : 0;
+    const id = idle[after % idle.length];
+    const [c, r] = parseKey(state.units[id].at), p = hexToPixel(c, r, HEX_SIZE);
+    centerOn(camera, p.x, p.y, canvas.clientWidth, canvas.clientHeight);
+    select('unit', id);
+  }
 
   function toast(text) {
     const t = $('toast'); t.textContent = text; t.classList.add('show');
@@ -223,6 +241,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
   }
 
   $('handoff').onclick = beginTurn;
+  $('hud-next').onclick = nextUnit;
   $('hud-end').onclick = () => {
     const ev = act({ type: 'endTurn' });
     if (ev && state.winner === null) handoff();
