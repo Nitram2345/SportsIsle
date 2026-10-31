@@ -94,7 +94,7 @@ function preview() {
   const c = $('new-preview'), ctx = c.getContext('2d'), m = ng.map, { width, height } = m.meta;
   const size = Math.min(c.width / (Math.sqrt(3) * (width + 0.5)), c.height / (1.5 * height + 0.5));
   ctx.fillStyle = '#0d1520'; ctx.fillRect(0, 0, c.width, c.height);
-  const COL = { sea: '#2b5d8c', lake: '#2f68a0', river: '#3d74a8', mountain: '#8b8170', forest: '#4b6b2c', hillforest: '#4f6e2f', beach: '#d9c78e', dunes: '#dcc27a', moor: '#5d6b45' };
+  const COL = { sea: '#2b5d8c', lake: '#2f68a0', river: '#3d74a8', shallow: '#4d93bf', mountain: '#8b8170', forest: '#4b6b2c', hillforest: '#4f6e2f', beach: '#d9c78e', dunes: '#dcc27a', moor: '#5d6b45' };
   for (const [k, t] of Object.entries(m.tiles)) {
     const [x, y] = parseKey(k), p = hexToPixel(x, y, size);
     ctx.fillStyle = t.building ? '#eee' : COL[t.terrain] ?? '#6f9440';

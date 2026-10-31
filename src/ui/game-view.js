@@ -5,7 +5,7 @@ import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
 import { visibleUnits, knownOwner, effective } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
-import { UNITS, BUILDINGS, SPECIALS } from '../config.js';
+import { UNITS, BUILDINGS, SPECIALS, TERRAIN } from '../config.js';
 import { HEX_SIZE } from '../render/renderer.js';
 import { createCamera, screenToWorld, zoomAt, centerOn } from '../render/camera.js';
 import { saveGame, clearGame } from '../storage.js';
@@ -55,6 +55,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'counter') out.push('🥋 Gegenschlag!');
       if (e.type === 'ram') out.push('🏉 Gerammt!');
       if (e.type === 'healed') out.push(`➕ Behandelt: +${e.amount} ❤`);
+      if (e.type === 'roadBuilt' && state.units[e.unitId]?.owner === state.current) out.push('🛤️ Weg fertig');
       if (e.type === 'pushed') out.push('Gegner zurückgedrängt');
       if (e.type === 'blocked') out.push('Gegner konnte nicht ausweichen');
       if (e.type === 'zone') out.push('Zone des Gegners – Halt!');
@@ -70,6 +71,8 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     try {
       const r = apply(state, action);
       state = r.state;
+      // terrain is pre-rendered: repaint when a road appeared
+      if (r.events.some(e => e.type === 'roadBuilt')) renderer.setMap(state.tiles, state.width, state.height);
       saveGame(state);
       // end of turn: nothing of the previous player may leak past the hand-over;
       // eliminations are shown on the hand-over screen instead
@@ -123,6 +126,21 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = rams && Object.values(rams).some(p => p[p.length - 1] === pending) ? 'Nochmal tippen zum Rammen' : 'Nochmal tippen zum Bewegen'; div.append(b); }
+      // jogger road work
+      if (cfg.roadBuild && mine) {
+        const tile = state.tiles[u.at], turns = TERRAIN[tile.terrain].roadTurns;
+        const btn = document.createElement('button'); btn.className = 'chip';
+        if (u.building) {
+          line.textContent += ` · 🛤️ baut Weg: noch ${u.building.left} ${u.building.left === 1 ? 'Runde' : 'Runden'}`;
+          btn.textContent = 'Bau abbrechen';
+          btn.onclick = () => { if (act({ type: 'cancelRoad', unitId: u.id })) select('unit', u.id); };
+          div.append(btn);
+        } else if (turns && !tile.road && !tile.building && !u.hasMoved && !u.hasAttacked && !u.attacksUsed) {
+          btn.textContent = `🛤️ Weg anlegen (${turns} Runden)`;
+          btn.onclick = () => { if (act({ type: 'buildRoad', unitId: u.id })) select('unit', u.id); };
+          div.append(btn);
+        }
+      }
       return;
     }
     const f = state.facilities[sel.id], b = BUILDINGS[f.type], mine = f.owner === state.current;

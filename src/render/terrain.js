@@ -6,7 +6,7 @@ import { SPECIALS } from '../config.js';
 const BASE = {
   grass: '#6f9440', steppe: '#a3a058', beach: '#d9c78e', dunes: '#dcc27a', hillgrass: '#7f9a46',
   hill: '#8d9a4c', forest: '#4b6b2c', hillforest: '#4f6e2f', moor: '#5d6b45', mountain: '#8b8170',
-  river: '#3d74a8', lake: '#2f68a0', sea: '#2b5d8c',
+  river: '#3d74a8', lake: '#2f68a0', sea: '#2b5d8c', shallow: '#4d93bf',
 };
 
 // Appends one hex as a subpath (no beginPath), so many hexes can share one fill.
@@ -61,6 +61,7 @@ function paintDetail(ctx, terrain, x, y, R, rnd) {
       poly(ctx, [[x, y + 10 * k], [x + 8 * k, y - 5 * k], [x + 15 * k, y + 10 * k]], '#8f8573');
       poly(ctx, [[x + 8 * k, y - 5 * k], [x + 15 * k, y + 10 * k], [x + 10 * k, y + 10 * k]], '#5f5747');
       break;
+    case 'shallow': for (let i = 0; i < 5; i++) { const [ox, oy] = spread(1.2); dot(ctx, x + ox, y + oy, 1.6 * k, 'rgba(230,214,160,.35)'); } wave(ctx, x, y, 5 * k, '#8cc3e6', 1.1 * k); break;
     case 'river': case 'lake': case 'sea': for (let i = 0; i < 3; i++) { const [ox, oy] = spread(1); wave(ctx, x + ox, y + oy, 5 * k, terrain === 'river' ? '#6fa0cf' : '#5b8dbd', 1.3 * k); } break;
   }
 }

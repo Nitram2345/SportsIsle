@@ -28,17 +28,29 @@ function occupancy(state, unit) {
   return { own, enemy, zone };
 }
 
+// Wading: non-swimmers stop when entering shallow water; from shallow water they can
+// make exactly one step (any terrain they could enter), then they are done.
+const wades = (state, unit, k) => !UNITS[unit.type].swim && TERRAIN[state.tiles[k].terrain].flags.includes('shallow');
+
 // Destination -> path (excluding start). Dijkstra over movesLeft.
 // Zone tiles are destinations but never passed through; a jogger stopped in a zone
 // (retreatTo) must take its first step straight back.
 export function reachable(state, unitId) {
   const unit = state.units[unitId], { own, enemy, zone } = occupancy(state, unit);
+  const out = {};
+  if (unit.building || unit.movesLeft <= 0) return out;
+  if (wades(state, unit, unit.at)) {
+    for (const n of neighbors(unit.at, state.width, state.height))
+      if (!enemy.has(n) && !own.has(n) && state.explored[unit.owner][n] && isFinite(moveCost(state.tiles[n], unit))
+        && (!unit.retreatTo || n === unit.retreatTo)) out[n] = [n];
+    return out;
+  }
   const best = { [unit.at]: 0 }, prev = {}, queue = [[0, unit.at]];
   while (queue.length) {
     queue.sort((a, b) => a[0] - b[0]);
     const [cost, at] = queue.shift();
     if (cost > best[at]) continue;
-    if (at !== unit.at && zone.has(at)) continue;
+    if (at !== unit.at && (zone.has(at) || wades(state, unit, at))) continue;
     for (const n of neighbors(at, state.width, state.height)) {
       if (enemy.has(n) || !state.explored[unit.owner][n]) continue;
       if (at === unit.at && unit.retreatTo && n !== unit.retreatTo) continue;
@@ -47,14 +59,14 @@ export function reachable(state, unitId) {
       best[n] = c; prev[n] = at; queue.push([c, n]);
     }
   }
-  const out = {};
+  const out2 = out;
   for (const k of Object.keys(prev)) {
     if (own.has(k)) continue;
     const p = [];
     for (let at = k; at !== unit.at; at = prev[at]) p.unshift(at);
-    out[k] = p;
+    out2[k] = p;
   }
-  return out;
+  return out2;
 }
 
 export function doMove(state, unit, path, events) {
@@ -63,16 +75,21 @@ export function doMove(state, unit, path, events) {
   if (!Array.isArray(path) || !path.length) throw new Error('Kein Weg angegeben.');
   const { own, enemy, zone } = occupancy(state, unit);
   if (unit.retreatTo && path[0] !== unit.retreatTo) throw new Error('In der Zone kann der Jogger nur genau zurück, woher er kam.');
+  if (unit.building) throw new Error('Der Jogger baut gerade einen Weg.');
+  const fromShallow = wades(state, unit, unit.at);
+  if (fromShallow && path.length !== 1) throw new Error('Aus dem seichten Wasser geht es nur 1 Feld weit.');
   let at = unit.at, total = 0;
   for (const [i, k] of path.entries()) {
     if (!state.tiles[k] || !neighbors(at, state.width, state.height).includes(k)) throw new Error('Ungültiger Weg.');
     if (!state.explored[unit.owner][k]) throw new Error('Dieses Feld ist noch unerkundet.');
     if (enemy.has(k)) throw new Error('Dort steht eine gegnerische Einheit.');
     if (zone.has(k) && i < path.length - 1) throw new Error('Durch die Zone eines Gegners kommt man nicht hindurch.');
+    if (wades(state, unit, k) && i < path.length - 1) throw new Error('Im seichten Wasser endet die Bewegung.');
+    if (!isFinite(moveCost(state.tiles[k], unit))) throw new Error('Dieses Feld ist nicht begehbar.');
     total += moveCost(state.tiles[k], unit);
     at = k;
   }
-  if (total > unit.movesLeft) throw new Error('Nicht genug Bewegungspunkte.');
+  if (!fromShallow && total > unit.movesLeft) throw new Error('Nicht genug Bewegungspunkte.');
   if (own.has(at)) throw new Error('Dort steht schon eine eigene Einheit.');
 
   const seenBefore = new Set(visibleUnits(state, unit.owner).filter(u => u.owner !== unit.owner).map(u => u.id));
@@ -84,7 +101,7 @@ export function doMove(state, unit, path, events) {
     if (other && other.owner !== unit.owner) { stopped = [other.id]; break; }  // hidden enemy in the way
     const cost = moveCost(state.tiles[k], unit);
     walked.push({ from: unit.at, cost });
-    unit.at = k; unit.movesLeft -= cost;
+    unit.at = k; unit.movesLeft = Math.max(0, unit.movesLeft - cost);
     const sp = SPECIALS[state.tiles[k].special];
     if (sp) {
       unit.buffs = unit.buffs.filter(b => b.special !== state.tiles[k].special);
@@ -102,7 +119,9 @@ export function doMove(state, unit, path, events) {
     events.push({ type: 'discovered', unitId: unit.id, seen });
   }
   unit.retreatTo = null;
-  if (!stopped && zone.has(unit.at)) {
+  // Wading: stepping into or out of shallow water ends the move for everyone (incl. jogger).
+  if (!stopped && (fromShallow || wades(state, unit, unit.at))) unit.movesLeft = 0;
+  else if (!stopped && zone.has(unit.at)) {
     // Entered an enemy zone: stop. Jogger keeps its points but may only go back.
     events.push({ type: 'zone', unitId: unit.id });
     if (UNITS[unit.type].multiMove && unit.movesLeft > 0) unit.retreatTo = walked[walked.length - 1].from;

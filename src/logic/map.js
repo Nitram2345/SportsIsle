@@ -1,6 +1,6 @@
 // Map data: runtime format (keyed tiles) <-> file format (JSON, terrain as char rows).
 import { TERRAIN, TERRAIN_BY_CHAR, BUILDINGS, SPECIALS, UNITS } from '../config.js';
-import { key, parseKey } from './hex.js';
+import { key, parseKey, neighbors } from './hex.js';
 
 export const FORMAT = 1;
 
@@ -108,4 +108,17 @@ export function uniqueMapId(id, taken) {
   let n = 2;
   while (taken.includes(`${id}-${n}`)) n++;
   return `${id}-${n}`;
+}
+
+// Shallow water rings every land tile: sea/lake next to land becomes shallow,
+// shallow without land next to it turns back into sea. Rivers stay rivers.
+export function applyShallows(m) {
+  const { width, height } = m.meta;
+  const land = k => !TERRAIN[m.tiles[k].terrain].flags.includes('water');
+  const nearLand = k => neighbors(k, width, height).some(land);
+  for (const [k, t] of Object.entries(m.tiles)) {
+    if ((t.terrain === 'sea' || t.terrain === 'lake') && nearLand(k)) t.terrain = 'shallow';
+    else if (t.terrain === 'shallow' && !nearLand(k)) t.terrain = 'sea';
+  }
+  return m;
 }

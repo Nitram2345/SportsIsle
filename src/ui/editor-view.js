@@ -1,5 +1,5 @@
 // Map editor: paint layers, start points with line-ups, import/export, test play.
-import { createEmptyMap, loadMap, saveMap, validateMap, canPlace, uniqueMapId } from '../logic/map.js';
+import { createEmptyMap, loadMap, saveMap, validateMap, canPlace, uniqueMapId, applyShallows } from '../logic/map.js';
 import { pixelToHex, parseKey, hexToPixel } from '../logic/hex.js';
 import { TERRAIN, BUILDINGS, SPECIALS, UNITS, RULES } from '../config.js';
 import { HEX_SIZE } from '../render/renderer.js';
@@ -14,7 +14,7 @@ export const toJson = m => saveMap(m);
 
 const SW = {
   grass: '#6f9440', steppe: '#a3a058', beach: '#d9c78e', dunes: '#dcc27a', hillgrass: '#7f9a46', hill: '#8d9a4c', forest: '#4b6b2c',
-  hillforest: '#4f6e2f', moor: '#5d6b45', mountain: '#8b8170', river: '#3d74a8', lake: '#2f68a0', sea: '#2b5d8c',
+  hillforest: '#4f6e2f', moor: '#5d6b45', mountain: '#8b8170', river: '#3d74a8', lake: '#2f68a0', sea: '#2b5d8c', shallow: '#4d93bf',
 };
 
 export function startEditorView(initial, { renderer, canvas, show, onExit, onTestPlay }) {
@@ -72,7 +72,7 @@ export function startEditorView(initial, { renderer, canvas, show, onExit, onTes
   }
 
   function changed(terrainChanged = true) {
-    if (terrainChanged) renderer.setMap(map.tiles, map.meta.width, map.meta.height);
+    if (terrainChanged) { applyShallows(map); renderer.setMap(map.tiles, map.meta.width, map.meta.height); }
     redraw();
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => saveLocalMap(saveMap(map)), 1000);

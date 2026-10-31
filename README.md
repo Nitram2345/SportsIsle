@@ -26,7 +26,7 @@ Dann `http://localhost:8080` öffnen.
 | Golfer | 3 | schlägt über Hügel, nicht über Berge |
 | Tennisspieler | 2 | Hügel und Gebäude blockieren |
 | Hockeyspieler | 2 (im Wald 1) | viel Schaden, alles Bodennahe blockiert; 🧱 Kontrollzone |
-| Jogger | 1 | schnell, sieht weit, erobert; darf Restbewegung für weitere Züge nutzen; schwacher Tritt nur vor dem ersten Schritt |
+| Jogger | 1 | schnell, sieht weit, erobert; darf Restbewegung für weitere Züge nutzen; schwacher Tritt nur vor dem ersten Schritt; 🛤️ legt Wege an (Berg 7, Hügel/hügeliger Wald/Dünen 4, Wald 3, sonst 2 Runden) |
 | Fußballer | 2 | 🧱 Kontrollzone; nach einem Treffer im nächsten Zug 🤕 angeschlagen (kein Angriff, halbe Bewegung) |
 | Karateka | 1 | viel HP und Verteidigung; 🥋 schlägt zurück, wenn direkt daneben angegriffen |
 | Rugbyspieler | – | hohe Verteidigung; 🏉 rammt nach mind. 2 Feldern Anlauf: Gegner wird 1 Feld weggedrückt, der Rugbyspieler nimmt seinen Platz ein (kann er nicht ausweichen, bleibt der Rugbyspieler davor stehen); ignoriert Kontrollzonen |
@@ -36,6 +36,8 @@ Dann `http://localhost:8080` öffnen.
 | Physiotherapeut | – | kämpft nicht; ➕ behandelt eine eigene Einheit daneben (+3 HP, hebt „angeschlagen“ auf) |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
+
+**Seichtes Wasser:** umgibt jedes Land mit 1 Feld. Alle können hineinwaten, dort endet die Bewegung; heraus geht es genau 1 Feld weit. Schwimmer werden nicht gebremst.
 
 **Kontrollzone (🧱):** Wer ein Nachbarfeld eines gegnerischen Hockeyspielers oder Fußballers betritt, muss dort stehen bleiben. Der Jogger behält seine Restpunkte, darf aber nur genau zurück.
 

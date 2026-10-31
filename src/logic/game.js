@@ -16,7 +16,7 @@ export function spawnUnit(state, type, owner, at) {
     tone: Math.floor(random(state) * SKINS.tones.length),
     hair: Math.floor(random(state) * SKINS.hairPerVariant),
   };
-  const unit = { id, type, owner, at, hp: UNITS[type].hp, movesLeft: UNITS[type].move, hasMoved: false, hasAttacked: false, skin, buffs: [] };
+  const unit = { id, type, owner, at, hp: UNITS[type].hp, movesLeft: UNITS[type].move, hasMoved: false, hasAttacked: false, skin, buffs: [], building: null };
   state.units[id] = unit;
   return unit;
 }
@@ -82,8 +82,36 @@ export function startTurn(state, pid, events) {
     u.dazedNow = !!u.dazed; u.dazed = false;
     u.movesLeft = u.dazedNow ? Math.floor(move / 2) : move;
     u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null; u.attacksUsed = 0;
+    if (u.building) {
+      // road work: one turn of progress; finished -> road on the tile, unit free again
+      u.building.left--;
+      if (u.building.left <= 0) {
+        state.tiles[u.building.at].road = true;
+        events.push({ type: 'roadBuilt', unitId: u.id, at: u.building.at });
+        u.building = null;
+      } else lockForRoad(u);
+    }
   }
   updateMemory(state, pid);
+}
+
+const lockForRoad = u => { u.movesLeft = 0; u.hasMoved = true; u.hasAttacked = true; };
+
+function doBuildRoad(state, unit) {
+  if (unit.owner !== state.current) throw new Error('Diese Einheit gehört nicht dir.');
+  if (!UNITS[unit.type].roadBuild) throw new Error('Nur der Jogger kann Wege anlegen.');
+  if (unit.hasMoved || unit.hasAttacked || unit.attacksUsed || unit.building) throw new Error('Einen Weg anlegen geht nur zu Beginn des Zuges.');
+  const tile = state.tiles[unit.at], turns = TERRAIN[tile.terrain].roadTurns;
+  if (!turns) throw new Error('Hier kann kein Weg angelegt werden.');
+  if (tile.road || tile.building) throw new Error('Hier gibt es schon einen Weg.');
+  unit.building = { at: unit.at, left: turns };
+  lockForRoad(unit);
+}
+
+function doCancelRoad(state, unit) {
+  if (unit.owner !== state.current) throw new Error('Diese Einheit gehört nicht dir.');
+  if (!unit.building) throw new Error('Hier wird kein Weg gebaut.');
+  unit.building = null;   // progress lost; free again from next turn
 }
 
 const countUnits = (state, pid) => Object.values(state.units).filter(u => u.owner === pid).length;
@@ -162,6 +190,8 @@ export function apply(state, action) {
     case 'endTurn': endTurn(s, events); break;
     case 'attack': doAttack(s, getUnit(s, action.unitId), action.targetId, events); break;
     case 'heal': doHeal(s, getUnit(s, action.unitId), action.targetId, events); break;
+    case 'buildRoad': doBuildRoad(s, getUnit(s, action.unitId)); break;
+    case 'cancelRoad': doCancelRoad(s, getUnit(s, action.unitId)); break;
     case 'ram': {
       const u = getUnit(s, action.unitId);
       doRam(s, u, action.path, events);

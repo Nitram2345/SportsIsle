@@ -17,12 +17,18 @@ export const TERRAIN = {
   river:      t('Fluss', 'R', 3, 0, true, false, ['water']),
   lake:       t('See', 'L', Infinity, 0, false, false, ['water']),
   sea:        t('Meer', 'W', Infinity, 0, false, false, ['water']),
+  // wading: entering ends the move; leaving allows exactly one tile (see movement.js)
+  shallow:    t('Seichtes Wasser', 'U', 1, 0, true, false, ['water', 'shallow']),
 };
 
 export const TERRAIN_BY_CHAR = Object.fromEntries(Object.entries(TERRAIN).map(([id, v]) => [v.char, id]));
 
 // Height levels for downhill bonuses: mountain 2, hills/hilly forest/dunes 1, rest 0.
 for (const v of Object.values(TERRAIN)) v.height = v.flags.includes('mountain') ? 2 : (v.flags.includes('hill') || v.flags.includes('ground')) ? 1 : 0;
+
+// Turns a jogger needs to lay a road (null = not possible).
+for (const v of Object.values(TERRAIN)) v.roadTurns = v.flags.includes('water') ? null
+  : v.flags.includes('mountain') ? 7 : (v.height === 1) ? 4 : v.flags.includes('forest') ? 3 : 2;
 
 export const ROAD_MOVE = 1;
 
@@ -74,7 +80,9 @@ for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // swim       – the only unit that enters water (cost 1); every land tile costs 2 (road 1).
 // attacks    – number of attacks per turn (default 1).
 // heal       – instead of attacking: heals one adjacent own unit by this much, cures dazed.
+// roadBuild  – lays a road on its own tile (TERRAIN.roadTurns turns, locked meanwhile).
 UNITS.jogger.multiMove = true;
+UNITS.jogger.roadBuild = true;
 UNITS.hockey.zoc = true;
 UNITS.soccer.zoc = true;
 UNITS.soccer.dazeOnHit = true;
