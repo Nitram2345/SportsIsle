@@ -82,21 +82,23 @@ export function createRenderer(canvas) {
     }
 
     // markings
-    if (view.reach?.length) fill(view.reach, 'rgba(80,170,255,.30)', 0.96);
-    if (view.path?.length && view.selected) {
+    // markings are hidden while an animation plays
+    if (!anim && view.reach?.length) fill(view.reach, 'rgba(80,170,255,.30)', 0.96);
+    if (!anim && view.path?.length && view.selected) {
       const col = view.pathColor ?? 'rgba(255,255,255,.9)';
       ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.setLineDash([2, 6]); ctx.lineCap = 'round';
       ctx.beginPath(); [view.selected, ...view.path].forEach((k, i) => { const { x, y } = px(k); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
       ctx.setLineDash([]);
       const end = px(view.path[view.path.length - 1]); hexPath(ctx, end.x, end.y, HEX_SIZE, 0.9); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.stroke();
     }
-    if (view.selected) { const { x, y } = px(view.selected); hexPath(ctx, x, y, HEX_SIZE, 0.95); ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3; ctx.stroke(); }
+    if (!anim && view.selected) { const { x, y } = px(view.selected); hexPath(ctx, x, y, HEX_SIZE, 0.95); ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 3; ctx.stroke(); }
 
-    // units
+    // units (positions may be overridden by a running animation)
+    const fx = anim ? anim.frame(performance.now() - anim.t0) : null;
     if (state) {
       const units = (fog ? visibleUnits(state, viewer, seen) : Object.values(state.units))
-        .map(u => ({ u, p: px(u.at) })).sort((a, b) => a.p.y - b.p.y);
-      const targets = new Set(view.targets ?? []), heals = new Set(view.heals ?? []);
+        .map(u => ({ u, p: fx?.pos[u.id] ?? px(u.at) })).sort((a, b) => a.p.y - b.p.y);
+      const targets = new Set(fx ? [] : view.targets ?? []), heals = new Set(fx ? [] : view.heals ?? []);
       for (const { u, p } of units) {
         const color = state.players[u.owner].color, feet = p.y + HEX_SIZE * 0.55, k = HEX_SIZE / 19 * 1.08;
         if (targets.has(u.id)) { hexPath(ctx, p.x, p.y, HEX_SIZE, 1.04); ctx.setLineDash([5, 3]); ctx.strokeStyle = '#ff3b30'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]); }
@@ -106,12 +108,28 @@ export function createRenderer(canvas) {
         if (img) ctx.drawImage(img, p.x - 24 * k, feet - 48 * k, 48 * k, 52 * k);  // svg viewBox -24 -48 48 52
         else { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(p.x, feet - 18 * k, 10 * k, 0, 6.2832); ctx.fill(); ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5; ctx.stroke();
           ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.round(11 * k)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(UNITS[u.type].name[0], p.x, feet - 18 * k); }
+        const fl = fx?.flash[u.id];
+        if (fl) { ctx.save(); ctx.globalAlpha = fl.alpha; ctx.fillStyle = fl.color; ctx.beginPath(); ctx.ellipse(p.x, feet - 22 * k, 13 * k, 24 * k, 0, 0, 6.2832); ctx.fill(); ctx.restore(); }
         const hp = u.hp / UNITS[u.type].hp, bw = 22 * k / 1.08;
         ctx.fillStyle = '#222'; ctx.fillRect(p.x - bw / 2, feet + 3, bw, 4);
         ctx.fillStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffcc00' : '#ff3b30'; ctx.fillRect(p.x - bw / 2, feet + 3, bw * hp, 4);
         const icons = u.buffs.map(b => SPECIALS[b.special].icon).join('') + (u.dazed || u.dazedNow ? '🤕' : '') + (u.building ? '🛤️' : '');
         if (icons) { ctx.font = `${Math.round(HEX_SIZE * 0.4)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icons, p.x + HEX_SIZE * 0.55, feet - HEX_SIZE * 1.1); }
         if (u.owner === state.current && fog && !u.hasMoved && !u.hasAttacked) { ctx.fillStyle = '#ffd700'; ctx.beginPath(); ctx.arc(p.x - HEX_SIZE * 0.5, feet - HEX_SIZE * 1.1, 3.5, 0, 6.2832); ctx.fill(); }
+      }
+    }
+
+    // animation overlays: projectiles and floating numbers
+    if (fx) {
+      for (const s of fx.shots) {
+        const col = s.kind === 'tennis' ? '#d8f040' : s.kind === 'climber' ? '#8e8a82' : s.kind === 'hockey' ? '#f2f2f2' : '#fff';
+        ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.ellipse(s.x, s.y + HEX_SIZE * 0.9, 3, 1.2, 0, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = col; ctx.strokeStyle = '#222'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(s.x, s.y, 3.6, 0, 6.2832); ctx.fill(); ctx.stroke();
+      }
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `bold ${Math.round(HEX_SIZE * 0.6)}px system-ui, sans-serif`;
+      for (const t of fx.texts) {
+        ctx.save(); ctx.globalAlpha = t.alpha; ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(0,0,0,.65)';
+        ctx.strokeText(t.text, t.x, t.y); ctx.fillStyle = t.color; ctx.fillText(t.text, t.x, t.y); ctx.restore();
       }
     }
 
@@ -126,5 +144,20 @@ export function createRenderer(canvas) {
     });
   }
 
-  return { setMap, draw, resize, worldSize: () => ({ w: terrain.width, h: terrain.height }) };
+  // play(animation): redraw every frame until it ends, then resolve
+  let anim = null;
+  function play(a) {
+    if (!a || a.duration <= 0) return Promise.resolve();
+    return new Promise(resolve => {
+      anim = { ...a, t0: performance.now(), resolve };
+      const tick = () => {
+        render();
+        if (performance.now() - anim.t0 < anim.duration) requestAnimationFrame(tick);
+        else { const r = anim.resolve; anim = null; render(); r(); }
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  return { setMap, draw, resize, play, worldSize: () => ({ w: terrain.width, h: terrain.height }) };
 }

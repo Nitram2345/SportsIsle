@@ -10,11 +10,15 @@ import { HEX_SIZE } from '../render/renderer.js';
 import { createCamera, screenToWorld, zoomAt, centerOn } from '../render/camera.js';
 import { saveGame, clearGame } from '../storage.js';
 import { attachInput } from './input.js';
+import { buildAnim } from '../render/anim.js';
+
+// respect the OS setting 'reduce motion'
+const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const $ = id => document.getElementById(id);
 
 export function startGameView(initial, { renderer, canvas, show, onExit }) {
-  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '', rams = {};
+  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '', rams = {}, busy = false;
   const camera = createCamera();
   const view = { camera, state, viewer: null, selected: null, reach: [], targets: [] };
 
@@ -69,6 +73,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
 
   function act(action) {
     try {
+      const before = state;
       const r = apply(state, action);
       state = r.state;
       // terrain is pre-rendered: repaint when a road appeared
@@ -79,6 +84,13 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (action.type === 'endTurn') {
         eliminatedNote = r.events.filter(e => e.type === 'eliminated').map(e => `${state.players[e.player].name} ist ausgeschieden`).join('\n');
       } else describe(r.events);
+      // play the action (input is blocked meanwhile); victory waits for the last hit
+      const a = action.type === 'endTurn' ? null : buildAnim(before, state, action, r.events, { size: HEX_SIZE, reduced: REDUCED });
+      if (a?.duration) {
+        busy = true; Object.assign(view, { state, viewer: state.current });
+        renderer.play(a).then(() => { busy = false; if (state.winner !== null) victory(); else redraw(); });
+        return r.events;
+      }
       if (state.winner !== null) return victory();
       return r.events;
     } catch (err) { toast(err.message); return null; }
@@ -259,8 +271,9 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
   }
 
   $('handoff').onclick = beginTurn;
-  $('hud-next').onclick = nextUnit;
+  $('hud-next').onclick = () => { if (!busy) nextUnit(); };
   $('hud-end').onclick = () => {
+    if (busy) return;
     const ev = act({ type: 'endTurn' });
     if (ev && state.winner === null) handoff();
   };
@@ -275,7 +288,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
   };
 
   detach = attachInput(canvas, {
-    onTap: (x, y) => { if (document.querySelector('[data-screen="game"].active')) tap(x, y); },
+    onTap: (x, y) => { if (!busy && document.querySelector('[data-screen="game"].active')) tap(x, y); },
     onPan: (dx, dy) => { camera.x -= dx / camera.zoom; camera.y -= dy / camera.zoom; redraw(); },
     onZoom: (f, x, y) => { zoomAt(camera, f, x, y); redraw(); },
   });

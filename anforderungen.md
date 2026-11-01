@@ -161,9 +161,18 @@ Neue Map (6–40 × 6–40), Pinsel je Schicht (Gelände, Straße, Bebauung, Son
 - Figuren und Sportstätten sind SVG-Dateien (`units/`, `facilities/`) mit Platzhalterfarben für Spielerfarbe (`#FF00FF`) und Hautton (`#00FFFF`). Figuren ragen über den Feldrand, Sportstätten haben innen einen Rand in Besitzerfarbe.
 - Lebensbalken und Zustandssymbole an den Figuren.
 
+### 10.1 Animationen
+Kurz und schnell, Eingaben sind während einer Animation gesperrt. Die Spiellogik bleibt unverändert: die Animation spielt nur das Ergebnis einer Aktion ab (gleiche Ereignisse funktionieren später auch online). Mit der Systemeinstellung „Bewegung reduzieren“ entfallen sie.
+- **Bewegung:** Die Figur gleitet Feld für Feld den gelaufenen Weg entlang (110 ms pro Feld) und wippt dabei leicht. Nach einem Entdeckungsstopp nur bis zum Haltefeld.
+- **Fernangriff:** Ball/Stein fliegt auf einem Bogen zum Ziel (Golf hoch, Tennis/Fußball flacher, Hockey flach, Bergsteiger-Stein).
+- **Nahangriff:** kurzer Ausfallschritt zum Ziel und zurück.
+- **Treffer:** Ziel blinkt rot und wackelt, Schadenszahl („−3“) steigt auf. Gegenschlag folgt sichtbar danach.
+- **Rammen:** Anlauf, dann schiebt der Rugbyspieler das Ziel ein Feld weiter (oder prallt ab, wenn es nicht ausweichen kann).
+- **Behandeln:** kurzer Schritt zum Patienten, grünes „+3“ steigt auf.
+- Markierungen (Reichweite, Ziele, Weg) sind während der Animation ausgeblendet.
+
 ## 11. Offen / geplant
 
-- Animationen für Bewegung und Angriff (in Arbeit).
 - Sportstätten bauen, Wirtschaft.
 - Online-Multiplayer über Server (Aktionen sind bereits als `apply(state, action)` gekapselt).
 - Weitere Einheiten (Ideen: Trainer, Radfahrer, Schiedsrichter).

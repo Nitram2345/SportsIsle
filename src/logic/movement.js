@@ -131,4 +131,6 @@ export function doMove(state, unit, path, events) {
   // with the multiMove ability (jogger); everyone else is done for this turn.
   else if (!stopped && !UNITS[unit.type].multiMove) unit.movesLeft = 0;
   unit.hasMoved = true;
+  // the tiles actually walked (shorter than path after a discovery stop) – used for animation
+  if (walked.length) events.unshift({ type: 'moved', unitId: unit.id, from: walked[0].from, path: [...walked.slice(1).map(w => w.from), unit.at] });
 }
