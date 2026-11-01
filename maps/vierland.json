@@ -144,6 +144,10 @@
    "type": "outdoor"
   },
   {
+   "at": [1,8],
+   "type": "boathouse"
+  },
+  {
    "at": [2,8],
    "type": "tabletennis"
   },
@@ -154,6 +158,10 @@
   {
    "at": [15,8],
    "type": "physio"
+  },
+  {
+   "at": [20,8],
+   "type": "boathouse"
   },
   {
    "at": [6,9],

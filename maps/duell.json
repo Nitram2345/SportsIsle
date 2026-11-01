@@ -63,6 +63,10 @@
    "type": "rugby"
   },
   {
+   "at": [12,3],
+   "type": "boathouse"
+  },
+  {
    "at": [4,4],
    "type": "physio"
   },
@@ -93,6 +97,10 @@
   {
    "at": [9,7],
    "type": "physio"
+  },
+  {
+   "at": [1,8],
+   "type": "boathouse"
   },
   {
    "at": [6,8],

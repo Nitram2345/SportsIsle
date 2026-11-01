@@ -4,6 +4,7 @@ import { reachable } from '../logic/movement.js';
 import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
 import { boardTargets, unloadTargets } from '../logic/transport.js';
+import { mergeTargets } from '../logic/canoe.js';
 import { visibleUnits, knownOwner, effective } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
 import { UNITS, BUILDINGS, SPECIALS, TERRAIN } from '../config.js';
@@ -19,7 +20,7 @@ const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced
 const $ = id => document.getElementById(id);
 
 export function startGameView(initial, { renderer, canvas, show, onExit }) {
-  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '', rams = {}, busy = false;
+  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '', rams = {}, busy = false, merging = false;
   const camera = createCamera();
   const view = { camera, state, viewer: null, selected: null, reach: [], targets: [] };
 
@@ -62,6 +63,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'healed') out.push(`➕ Behandelt: +${e.amount} ❤`);
       if (e.type === 'whistle') out.push('📣 Pfiff! Gegner angeschlagen');
       if (e.type === 'boarded') out.push('🛟 Eingestiegen');
+      if (e.type === 'merged') out.push(`🛶 ${UNITS[e.newType].name}!`);
       if (e.type === 'unloaded') out.push('🛟 Ausgestiegen');
       if (e.type === 'drowned') out.push('Eine Einheit ist ertrunken');
       if (e.type === 'rescued') out.push('Eine Einheit konnte sich retten');
@@ -104,7 +106,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
 
   // ---------- selection ----------
   function select(kind, id) {
-    sel = kind ? { kind, id } : null; pending = null; rams = {};
+    sel = kind ? { kind, id } : null; pending = null; rams = {}; merging = false;
     view.reach = []; view.targets = []; view.heals = []; view.boards = []; view.unloads = []; view.selected = null; view.path = null; view.pathColor = null;
     if (kind === 'unit') {
       const u = state.units[id];
@@ -149,6 +151,21 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = rams && Object.values(rams).some(p => p[p.length - 1] === pending) ? 'Nochmal tippen zum Rammen' : 'Nochmal tippen zum Bewegen'; div.append(b); }
+      // canoe merge: button arms the mode, then tap a green partner canoe
+      if (cfg.mergeInto && mine) {
+        const partners = mergeTargets(state, u.id);
+        if (u.mergeLock) line.textContent += ' · 🛶 wird umgebaut – diese Runde unbeweglich';
+        else if (partners.length) {
+          const btn = document.createElement('button'); btn.className = 'chip' + (merging ? ' on' : '');
+          btn.textContent = merging ? 'Partner-Kanu antippen …' : `🛶 Zusammenlegen → ${UNITS[cfg.mergeInto].name}`;
+          btn.onclick = () => {
+            merging = !merging;
+            if (merging && partners.length === 1) { if (act({ type: 'merge', unitId: u.id, withId: partners[0] })) select('unit', partners[0]); merging = false; return; }
+            view.boards = merging ? partners : []; info(); redraw();
+          };
+          div.append(btn);
+        }
+      }
       // jogger road work
       if (cfg.roadBuild && mine) {
         const tile = state.tiles[u.at], turns = TERRAIN[tile.terrain].roadTurns;
@@ -199,6 +216,13 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     const me = sel?.kind === 'unit' ? state.units[sel.id] : null;
     const mine = me && me.owner === state.current;
 
+    if (mine && merging && view.boards.includes(seenUnit?.id)) {
+      merging = false;
+      const ev = act({ type: 'merge', unitId: me.id, withId: seenUnit.id });
+      if (ev) select('unit', seenUnit.id);
+      return;
+    }
+    merging = false;
     if (mine && view.boards.includes(seenUnit?.id)) {
       const ev = act({ type: 'board', unitId: me.id, carrierId: seenUnit.id });
       if (ev) select('unit', seenUnit.id);

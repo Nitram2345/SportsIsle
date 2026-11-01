@@ -5,6 +5,7 @@ import { visibleTiles, visibleUnits, updateMemory } from './vision.js';
 
 export function moveCost(tile, unit = null) {
   const t = TERRAIN[tile.terrain];
+  if (unit && UNITS[unit.type].boat) return t.flags.includes('water') ? 1 : Infinity;
   if (unit && UNITS[unit.type].swim) return t.flags.includes('water') ? 1 : tile.road ? ROAD_MOVE : 2;
   if (!t.passable) return Infinity;
   if (tile.road) return ROAD_MOVE;
@@ -30,7 +31,7 @@ function occupancy(state, unit) {
 
 // Wading: non-swimmers stop when entering shallow water; from shallow water they can
 // make exactly one step (any terrain they could enter), then they are done.
-const wades = (state, unit, k) => !UNITS[unit.type].swim && TERRAIN[state.tiles[k].terrain].flags.includes('shallow');
+const wades = (state, unit, k) => !UNITS[unit.type].swim && !UNITS[unit.type].boat && TERRAIN[state.tiles[k].terrain].flags.includes('shallow');
 
 // Destination -> path (excluding start). Dijkstra over movesLeft.
 // Zone tiles are destinations but never passed through; a jogger stopped in a zone

@@ -159,6 +159,10 @@
    "type": "hockey"
   },
   {
+   "at": [0,10],
+   "type": "boathouse"
+  },
+  {
    "at": [17,10],
    "type": "house"
   },

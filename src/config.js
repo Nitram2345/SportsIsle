@@ -48,6 +48,7 @@ export const BUILDINGS = {
   pool:        b('Schwimmbad', true, true, ['swimmer'], 1),
   physio:      b('Physiopraxis', true, true, ['physio'], 1),
   tower:       b('Strandturm', true, true, ['lifeguard'], 2),
+  boathouse:   b('Bootshaus', true, true, ['canoe1'], 1),
 };
 for (const [id, v] of Object.entries(BUILDINGS)) v.svg = `facilities/${id}.svg`;
 
@@ -67,6 +68,7 @@ export const UNITS = {
   tabletennis: u('Tischtennisspieler', 8, 3, 2, 3, 2, 2, 1, [], null, 0),
   physio: u('Physiotherapeut', 6, 0, 1, 4, 3, 2, 0, [], null, 0),
   lifeguard: u('Rettungsschwimmer', 10, 0, 2, 4, 3, 3, 2, [], null, 0),
+  canoe1: u('1er-Kanu', 6, 3, 2, 5, 3, 2, 0, [], null, 0),
 };
 for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // Special abilities:
@@ -85,6 +87,8 @@ for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // roadBuild  – lays a road on its own tile (TERRAIN.roadTurns turns, locked meanwhile).
 // whistle    – its attack does no damage; the target is dazed next turn (no attack, half move).
 // carry      – transports this many own units (board from a neighbour tile, unload next turn).
+// boat       – moves only on water (all water tiles cost 1).
+// mergeInto  – two equal canoes side by side merge into this type (button, locked one turn).
 UNITS.jogger.multiMove = true;
 UNITS.jogger.roadBuild = true;
 UNITS.hockey.zoc = true;
@@ -102,6 +106,17 @@ UNITS.lifeguard.whistle = true;
 UNITS.lifeguard.carry = 1;
 // Beach towers stand only on beach or shallow water (overrides TERRAIN.buildable).
 BUILDINGS.tower.onlyOn = ['beach', 'shallow'];
+BUILDINGS.boathouse.onlyOn = ['beach', 'shallow'];
+
+// Canoes: only the 1er is built; two equal canoes merge into the next size.
+// Each step: move +1, hp and attack x1.4 (from the 1er, rounded per level), defence unchanged.
+UNITS.canoe1.boat = true; UNITS.canoe1.ram = true;
+for (const [from, to, n, step] of [['canoe1', 'canoe2', 2, 1], ['canoe2', 'canoe4', 4, 2], ['canoe4', 'canoe8', 8, 3]]) {
+  const a = UNITS[from], base = UNITS.canoe1;
+  UNITS[to] = { ...a, name: `${n}er-Kanu`, hp: Math.round(base.hp * 1.4 ** step), atk: Math.round(base.atk * 1.4 ** step), move: base.move + step, svg: `units/${to}.svg` };
+  a.mergeInto = to;
+}
+for (const t of ['canoe1', 'canoe2', 'canoe4', 'canoe8']) UNITS[t].paddlers = Number(t.slice(5));
 
 export const SPECIALS = {
   sprint: { name: 'Sprint', stat: 'move', amount: 2, turns: 3, icon: '⚡' },

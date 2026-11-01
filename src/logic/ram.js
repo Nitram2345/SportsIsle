@@ -58,10 +58,12 @@ export function doRam(state, unit, path, events) {
   const canGiveWay = !!state.tiles[behind] && isPassable(state, behind, target) && !occupied.has(behind);
 
   hit(state, unit, target, events);
-  if (!state.units[target.id]) { unit.at = targetAt; }          // knocked out: take the tile
+  // a boat cannot follow its target onto land: it pushes but stays on the water
+  const canTake = isPassable(state, targetAt, unit);
+  if (!state.units[target.id]) { if (canTake) unit.at = targetAt; }          // knocked out: take the tile
   else if (canGiveWay) {
-    target.at = behind; unit.at = targetAt;
-    events.push({ type: 'pushed', unitId: target.id, to: behind });
+    target.at = behind; if (canTake) unit.at = targetAt;
+    events.push({ type: 'pushed', unitId: target.id, to: behind, took: canTake });
   } else events.push({ type: 'blocked', unitId: unit.id });
   updateMemory(state, unit.owner);
   counterStrike(state, unit, target, events);

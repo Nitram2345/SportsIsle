@@ -232,6 +232,10 @@
    "type": "tower"
   },
   {
+   "at": [25,15],
+   "type": "boathouse"
+  },
+  {
    "at": [29,15],
    "type": "house"
   },

@@ -127,6 +127,14 @@
    "type": "tower"
   },
   {
+   "at": [38,8],
+   "type": "boathouse"
+  },
+  {
+   "at": [3,9],
+   "type": "boathouse"
+  },
+  {
    "at": [13,9],
    "type": "tower"
   },
@@ -191,8 +199,16 @@
    "type": "dojo"
   },
   {
+   "at": [23,16],
+   "type": "boathouse"
+  },
+  {
    "at": [6,18],
    "type": "soccer"
+  },
+  {
+   "at": [1,21],
+   "type": "boathouse"
   },
   {
    "at": [10,21],
@@ -247,6 +263,10 @@
    "type": "outdoor"
   },
   {
+   "at": [39,24],
+   "type": "boathouse"
+  },
+  {
    "at": [18,25],
    "type": "tower"
   },
@@ -261,6 +281,18 @@
   {
    "at": [26,27],
    "type": "rugby"
+  },
+  {
+   "at": [3,28],
+   "type": "boathouse"
+  },
+  {
+   "at": [14,28],
+   "type": "boathouse"
+  },
+  {
+   "at": [32,29],
+   "type": "boathouse"
   },
   {
    "at": [6,30],

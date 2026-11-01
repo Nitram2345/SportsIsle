@@ -107,3 +107,10 @@ test('whistle shows a yellow whistle mark on the target, no damage number', () =
   const texts = [...Array(30)].flatMap((_, i) => anim.frame(i * anim.duration / 30).texts);
   assert.ok(texts.some(x => x.text === '📣')); assert.ok(!texts.some(x => x.text.startsWith('−')));
 });
+test('merge: first canoe glides onto its partner (ghost), then a marker pops', () => {
+  const s = setup(['WWWWWW']); const a = place(s, 'canoe1', 0, '0,0'); const b = place(s, 'canoe1', 0, '1,0'); place(s, 'swimmer', 1, '5,0');
+  const { anim } = run(s, { type: 'merge', unitId: a.id, withId: b.id });
+  const mid = anim.frame(STEP_MS / 2);   // during the glide
+  assert.equal(mid.ghost.id, a.id);
+  assert.ok([...Array(30)].flatMap((_, i) => anim.frame(i * anim.duration / 30).texts).some(t => t.text === '🛶'));
+});

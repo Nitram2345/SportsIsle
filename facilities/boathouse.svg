@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56" width="112" height="112">
+  <!-- boathouse. Centre = hex centre, hex radius 24. Owner ring is drawn by the game. -->
+  <defs><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="1.5" dy="2.5" stdDeviation="1.5" flood-opacity=".45"/></filter></defs>
+  <g filter="url(#sh)"><path d="M-18 12 h36" stroke="#4a90c2" stroke-width="3"/><path d="M-12 12 V-2 M12 12 V-2" stroke="#6b4f2f" stroke-width="2"/><rect x="-15" y="-4" width="30" height="10" fill="#b07a45" stroke="#5b3a1e"/><path d="M-15 -1 h30 M-15 2 h30" stroke="#8f5f30" stroke-width=".7"/><path d="M-18 -4 L0 -16 L18 -4 Z" fill="#2f6f8f" stroke="#1d4a60"/><rect x="-6" y="-2" width="12" height="8" fill="#3a2a1a"/><path d="M-9 9 Q0 13 9 9 L7 7 L-7 7 Z" fill="#c8662d" stroke="#222" stroke-width=".6"/><path d="M-4 4 L6 12" stroke="#7a4a22" stroke-width="1"/></g>
+</svg>

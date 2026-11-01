@@ -73,6 +73,10 @@
    "type": "park"
   },
   {
+   "at": [9,2],
+   "type": "boathouse"
+  },
+  {
    "at": [11,5],
    "type": "tabletennis"
   },
@@ -141,12 +145,24 @@
    "type": "house"
   },
   {
+   "at": [3,21],
+   "type": "boathouse"
+  },
+  {
+   "at": [18,21],
+   "type": "boathouse"
+  },
+  {
    "at": [10,23],
    "type": "park"
   },
   {
    "at": [17,23],
    "type": "outdoor"
+  },
+  {
+   "at": [7,25],
+   "type": "boathouse"
   },
   {
    "at": [14,25],

@@ -83,6 +83,10 @@
    "type": "house"
   },
   {
+   "at": [10,6],
+   "type": "boathouse"
+  },
+  {
    "at": [6,7],
    "type": "outdoor"
   },
@@ -93,6 +97,10 @@
   {
    "at": [16,7],
    "type": "tabletennis"
+  },
+  {
+   "at": [25,8],
+   "type": "boathouse"
   },
   {
    "at": [13,9],
@@ -115,6 +123,10 @@
    "type": "dojo"
   },
   {
+   "at": [5,11],
+   "type": "boathouse"
+  },
+  {
    "at": [10,11],
    "type": "park"
   },
@@ -133,6 +145,10 @@
   {
    "at": [17,12],
    "type": "soccer"
+  },
+  {
+   "at": [10,14],
+   "type": "boathouse"
   },
   {
    "at": [13,15],

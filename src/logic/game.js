@@ -7,6 +7,7 @@ import { doMove, moveCost } from './movement.js';
 import { doAttack, doHeal } from './combat.js';
 import { doRam } from './ram.js';
 import { doBoard, doUnload } from './transport.js';
+import { doMerge } from './canoe.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
 
@@ -84,6 +85,8 @@ export function startTurn(state, pid, events) {
     u.movesLeft = u.dazedNow ? Math.floor(move / 2) : move;
     u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null; u.attacksUsed = 0;
     if (u.cargo) { u.cargo.justBoarded = false; u.cargo.dazed = false; }
+    // freshly merged canoe: the whole next own turn it cannot act
+    if (u.locked) { u.locked = 0; lockForRoad(u); u.mergeLock = true; } else u.mergeLock = false;
     if (u.building) {
       // road work: one turn of progress; finished -> road on the tile, unit free again
       u.building.left--;
@@ -196,6 +199,7 @@ export function apply(state, action) {
     case 'buildRoad': doBuildRoad(s, getUnit(s, action.unitId)); break;
     case 'cancelRoad': doCancelRoad(s, getUnit(s, action.unitId)); break;
     case 'board': doBoard(s, getUnit(s, action.unitId), action.carrierId, events); break;
+    case 'merge': doMerge(s, getUnit(s, action.unitId), action.withId, events); break;
     case 'unload': {
       const c = getUnit(s, action.unitId);
       doUnload(s, c, action.to, events);

@@ -81,6 +81,10 @@
    "type": "physio"
   },
   {
+   "at": [16,3],
+   "type": "boathouse"
+  },
+  {
    "at": [13,4],
    "type": "pool"
   },
@@ -117,8 +121,16 @@
    "type": "park"
   },
   {
+   "at": [25,7],
+   "type": "boathouse"
+  },
+  {
    "at": [26,9],
    "type": "soccer"
+  },
+  {
+   "at": [25,10],
+   "type": "boathouse"
   },
   {
    "at": [24,11],
@@ -127,6 +139,10 @@
   {
    "at": [29,11],
    "type": "park"
+  },
+  {
+   "at": [24,12],
+   "type": "boathouse"
   },
   {
    "at": [27,13],
