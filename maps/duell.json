@@ -39,6 +39,10 @@
  ],
  "buildings": [
   {
+   "at": [10,1],
+   "type": "tower"
+  },
+  {
    "at": [6,2],
    "type": "tabletennis"
   },
@@ -109,6 +113,10 @@
   {
    "at": [7,9],
    "type": "tabletennis"
+  },
+  {
+   "at": [2,10],
+   "type": "tower"
   }
  ],
  "specials": [

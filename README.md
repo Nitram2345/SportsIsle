@@ -34,6 +34,7 @@ Dann `http://localhost:8080` öffnen.
 | Schwimmer | 1 | einzige Einheit im Wasser (Fluss, See, Meer: 1 Punkt); an Land langsam (2 Punkte, Straße 1) |
 | Tischtennisspieler | 1 | wenig Schaden, aber 🏓 2 Angriffe pro Zug |
 | Physiotherapeut | – | kämpft nicht; ➕ behandelt eine eigene Einheit daneben (+3 HP, hebt „angeschlagen“ auf) |
+| Rettungsschwimmer | 2 | 🏊 schwimmt; 📣 Trillerpfeife (kein Schaden, Ziel angeschlagen); 🛟 trägt eine Einheit übers Wasser; aus dem Strandturm |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
 

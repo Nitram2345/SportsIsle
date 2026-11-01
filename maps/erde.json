@@ -107,6 +107,10 @@
  ],
  "buildings": [
   {
+   "at": [17,1],
+   "type": "tower"
+  },
+  {
    "at": [2,2],
    "type": "park"
   },
@@ -155,6 +159,10 @@
    "type": "house"
   },
   {
+   "at": [18,4],
+   "type": "tower"
+  },
+  {
    "at": [33,4],
    "type": "tabletennis"
   },
@@ -171,6 +179,10 @@
    "type": "hockey"
   },
   {
+   "at": [35,6],
+   "type": "tower"
+  },
+  {
    "at": [6,7],
    "type": "park"
   },
@@ -185,6 +197,10 @@
   {
    "at": [23,8],
    "type": "physio"
+  },
+  {
+   "at": [28,8],
+   "type": "tower"
   },
   {
    "at": [11,9],
@@ -211,6 +227,10 @@
    "type": "house"
   },
   {
+   "at": [16,11],
+   "type": "tower"
+  },
+  {
    "at": [23,11],
    "type": "park"
   },
@@ -233,6 +253,10 @@
   {
    "at": [34,13],
    "type": "park"
+  },
+  {
+   "at": [21,14],
+   "type": "tower"
   },
   {
    "at": [12,15],

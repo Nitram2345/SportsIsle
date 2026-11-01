@@ -84,6 +84,7 @@ export function createRenderer(canvas) {
     // markings
     // markings are hidden while an animation plays
     if (!anim && view.reach?.length) fill(view.reach, 'rgba(80,170,255,.30)', 0.96);
+    if (!anim && view.unloads?.length) fill(view.unloads, 'rgba(52,199,89,.35)', 0.96);
     if (!anim && view.path?.length && view.selected) {
       const col = view.pathColor ?? 'rgba(255,255,255,.9)';
       ctx.strokeStyle = col; ctx.lineWidth = 5; ctx.setLineDash([2, 6]); ctx.lineCap = 'round';
@@ -97,8 +98,9 @@ export function createRenderer(canvas) {
     const fx = anim ? anim.frame(performance.now() - anim.t0) : null;
     if (state) {
       const units = (fog ? visibleUnits(state, viewer, seen) : Object.values(state.units))
+        .concat(fx?.ghost ? [fx.ghost.unit] : [])   // unit climbing aboard is gone from the state already
         .map(u => ({ u, p: fx?.pos[u.id] ?? px(u.at) })).sort((a, b) => a.p.y - b.p.y);
-      const targets = new Set(fx ? [] : view.targets ?? []), heals = new Set(fx ? [] : view.heals ?? []);
+      const targets = new Set(fx ? [] : view.targets ?? []), heals = new Set(fx ? [] : [...(view.heals ?? []), ...(view.boards ?? [])]);
       for (const { u, p } of units) {
         const color = state.players[u.owner].color, feet = p.y + HEX_SIZE * 0.55, k = HEX_SIZE / 19 * 1.08;
         if (targets.has(u.id)) { hexPath(ctx, p.x, p.y, HEX_SIZE, 1.04); ctx.setLineDash([5, 3]); ctx.strokeStyle = '#ff3b30'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]); }
@@ -113,7 +115,7 @@ export function createRenderer(canvas) {
         const hp = u.hp / UNITS[u.type].hp, bw = 22 * k / 1.08;
         ctx.fillStyle = '#222'; ctx.fillRect(p.x - bw / 2, feet + 3, bw, 4);
         ctx.fillStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffcc00' : '#ff3b30'; ctx.fillRect(p.x - bw / 2, feet + 3, bw * hp, 4);
-        const icons = u.buffs.map(b => SPECIALS[b.special].icon).join('') + (u.dazed || u.dazedNow ? '🤕' : '') + (u.building ? '🛤️' : '');
+        const icons = u.buffs.map(b => SPECIALS[b.special].icon).join('') + (u.dazed || u.dazedNow ? '🤕' : '') + (u.building ? '🛤️' : '') + (u.cargo ? '🛟' : '');
         if (icons) { ctx.font = `${Math.round(HEX_SIZE * 0.4)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icons, p.x + HEX_SIZE * 0.55, feet - HEX_SIZE * 1.1); }
         if (u.owner === state.current && fog && !u.hasMoved && !u.hasAttacked) { ctx.fillStyle = '#ffd700'; ctx.beginPath(); ctx.arc(p.x - HEX_SIZE * 0.5, feet - HEX_SIZE * 1.1, 3.5, 0, 6.2832); ctx.fill(); }
       }

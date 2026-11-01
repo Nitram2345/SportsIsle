@@ -67,6 +67,10 @@
  ],
  "buildings": [
   {
+   "at": [11,2],
+   "type": "tower"
+  },
+  {
    "at": [4,3],
    "type": "pool"
   },
@@ -113,6 +117,18 @@
   {
    "at": [14,5],
    "type": "tennis"
+  },
+  {
+   "at": [0,6],
+   "type": "tower"
+  },
+  {
+   "at": [21,8],
+   "type": "tower"
+  },
+  {
+   "at": [13,9],
+   "type": "tower"
   },
   {
    "at": [15,9],
@@ -179,6 +195,10 @@
    "type": "soccer"
   },
   {
+   "at": [10,21],
+   "type": "tower"
+  },
+  {
    "at": [24,21],
    "type": "park"
   },
@@ -225,6 +245,14 @@
   {
    "at": [19,24],
    "type": "outdoor"
+  },
+  {
+   "at": [18,25],
+   "type": "tower"
+  },
+  {
+   "at": [29,25],
+   "type": "tower"
   },
   {
    "at": [16,26],
@@ -281,6 +309,10 @@
   {
    "at": [26,32],
    "type": "hockey"
+  },
+  {
+   "at": [10,33],
+   "type": "tower"
   }
  ],
  "specials": [

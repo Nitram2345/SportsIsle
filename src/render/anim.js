@@ -62,11 +62,22 @@ export function buildAnim(before, after, action, events, { size, reduced = false
       let striker = action.unitId, victimFallback = action.targetId;
       for (const e of events) {
         if (e.type === 'counter') { striker = e.unitId; victimFallback = e.targetId; }
+        if (e.type === 'whistle') pop(e.targetId, before.units[e.targetId].at, '📣', '#ffcc00');
         if (e.type === 'damage') {
           strike(striker, before.units[striker].at, before.units[e.targetId]?.at ?? at(victimFallback));
           pop(e.targetId, before.units[e.targetId].at, `−${e.amount}`, RED);
         }
       }
+      break;
+    }
+    case 'board': {
+      const ev = events.find(e => e.type === 'boarded');
+      if (ev) { const a = P(ev.from), b = P(at(ev.carrierId)); seq(STEP_MS * 1.5, (u, out) => { out.pos[ev.unitId] = lerp(a, b, ease(u)); out.ghost = { id: ev.unitId, unit: before.units[ev.unitId], p: lerp(a, b, ease(u)) }; }); }
+      break;
+    }
+    case 'unload': {
+      const ev = events.find(e => e.type === 'unloaded');
+      if (ev) { const a = P(ev.from), b = P(ev.to); rest[ev.unitId] = { from: a, to: b, since: t + STEP_MS * 1.5 }; seq(STEP_MS * 1.5, (u, out) => { out.pos[ev.unitId] = lerp(a, b, ease(u)); }); }
       break;
     }
     case 'heal': {

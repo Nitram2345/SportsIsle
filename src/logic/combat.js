@@ -2,6 +2,7 @@
 import { UNITS, TERRAIN, BUILDINGS } from '../config.js';
 import { distance, lineBetween } from './hex.js';
 import { visibleUnits, effective } from './vision.js';
+import { dropCargo } from './transport.js';
 
 export function attackRange(state, unit, targetAt) {
   const cfg = UNITS[unit.type];
@@ -55,6 +56,12 @@ export function doAttack(state, unit, targetId, events) {
   unit.attacksUsed = (unit.attacksUsed ?? 0) + 1;
   unit.movesLeft = 0;
   if (unit.attacksUsed >= (UNITS[unit.type].attacks ?? 1)) unit.hasAttacked = true;
+  if (UNITS[unit.type].whistle) {
+    // whistle: no damage, target is dazed for its next turn
+    target.dazed = true;
+    events.push({ type: 'whistle', unitId: unit.id, targetId });
+    return;
+  }
   hit(state, unit, target, events);
   counterStrike(state, unit, target, events);
 }
@@ -93,6 +100,6 @@ export function hit(state, attacker, target, events) {
   const amount = damage(state, attacker, target);
   target.hp -= amount;
   events.push({ type: 'damage', targetId: target.id, amount });
-  if (target.hp <= 0) { delete state.units[target.id]; events.push({ type: 'killed', unitId: target.id }); return; }
+  if (target.hp <= 0) { delete state.units[target.id]; events.push({ type: 'killed', unitId: target.id }); dropCargo(state, target, events); return; }
   if (UNITS[target.type].dazeOnHit) target.dazed = true;
 }

@@ -6,6 +6,7 @@ import { effective, updateMemory } from './vision.js';
 import { doMove, moveCost } from './movement.js';
 import { doAttack, doHeal } from './combat.js';
 import { doRam } from './ram.js';
+import { doBoard, doUnload } from './transport.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
 
@@ -82,6 +83,7 @@ export function startTurn(state, pid, events) {
     u.dazedNow = !!u.dazed; u.dazed = false;
     u.movesLeft = u.dazedNow ? Math.floor(move / 2) : move;
     u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null; u.attacksUsed = 0;
+    if (u.cargo) { u.cargo.justBoarded = false; u.cargo.dazed = false; }
     if (u.building) {
       // road work: one turn of progress; finished -> road on the tile, unit free again
       u.building.left--;
@@ -114,7 +116,8 @@ function doCancelRoad(state, unit) {
   unit.building = null;   // progress lost; free again from next turn
 }
 
-const countUnits = (state, pid) => Object.values(state.units).filter(u => u.owner === pid).length;
+// carried units count too
+const countUnits = (state, pid) => Object.values(state.units).reduce((n, u) => n + (u.owner === pid ? 1 + (u.cargo ? 1 : 0) : 0), 0);
 
 export function productionTime(state, pid, unitType) {
   const n = countUnits(state, pid);
@@ -192,6 +195,13 @@ export function apply(state, action) {
     case 'heal': doHeal(s, getUnit(s, action.unitId), action.targetId, events); break;
     case 'buildRoad': doBuildRoad(s, getUnit(s, action.unitId)); break;
     case 'cancelRoad': doCancelRoad(s, getUnit(s, action.unitId)); break;
+    case 'board': doBoard(s, getUnit(s, action.unitId), action.carrierId, events); break;
+    case 'unload': {
+      const c = getUnit(s, action.unitId);
+      doUnload(s, c, action.to, events);
+      capture(s, action.to, c.owner, events);
+      break;
+    }
     case 'ram': {
       const u = getUnit(s, action.unitId);
       doRam(s, u, action.path, events);

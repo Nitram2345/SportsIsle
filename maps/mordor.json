@@ -228,6 +228,10 @@
    "type": "pool"
   },
   {
+   "at": [20,15],
+   "type": "tower"
+  },
+  {
    "at": [29,15],
    "type": "house"
   },

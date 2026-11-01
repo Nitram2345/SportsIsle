@@ -5,7 +5,7 @@ Lebendes Dokument: beschreibt den **aktuellen** Stand des Spiels. Bei jeder Änd
 - Ursprüngliches Design (MVP): `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 - Spielwerte: Quelle der Wahrheit ist `src/config.js`. Die Tabellen hier sind ein Abbild davon.
 
-Stand: 2026-11-01
+Stand: 2026-11-01 (Rettungsschwimmer)
 
 ---
 
@@ -52,7 +52,7 @@ Pointy-Top-Hex, odd-r-Koordinaten. Jedes Feld hat: **Gelände** (genau eins), **
 
 - **Straße:** kostet 1 Bewegungspunkt auf jedem passierbaren Gelände.
 - **Seichtes Wasser:** umgibt jedes Land mit genau 1 Feld (Meer/See neben Land wird automatisch seicht, auch im Editor). Alle Einheiten können **hineinwaten**, dort endet die Bewegung. **Heraus** geht es genau 1 Feld weit (egal welche Kosten), danach ist die Bewegung zu Ende – auch für den Jogger. Schwimmer werden nicht gebremst.
-- Gebäude, Parks und Sportstätten nur auf bebaubarem Gelände (nicht auf Wasser, Berg, Moor, Fluss).
+- Gebäude, Parks und Sportstätten nur auf bebaubarem Gelände (nicht auf Wasser, Berg, Moor, Fluss). Ausnahme: **Strandtürme** stehen nur auf Strand oder seichtem Wasser.
 
 ### 3.3 Sonderfelder
 Betreten (auch Durchlaufen) gibt einen Bonus für **3 eigene Züge**; der Zug der Aufnahme zählt nicht mit. Gleiches Feld erneut: Dauer beginnt von vorn. Ein Bewegungsbonus gilt erst ab dem nächsten Zug.
@@ -102,6 +102,7 @@ Alle Einheiten gibt es in männlicher, weiblicher und diverser Darstellung mit z
 | Schwimmer | Schwimmbad | 8 | 3 | 1 | 4 | 3 | 2 | 1 | – | 🏊 Wasser |
 | Tischtennisspieler | Tischtennishalle | 8 | 3 | 2 | 3 | 2 | 2 | 1 | – | 🏓 2 Angriffe pro Zug |
 | Physiotherapeut | Physiopraxis | 6 | – | 1 | 4 | 3 | 2 | – | – | ➕ Behandeln |
+| Rettungsschwimmer | Strandturm | 10 | – | 2 | 4 | 3 | 3 | 2 | – | 🏊 Wasser; 📣 Trillerpfeife; 🛟 trägt 1 Einheit |
 
 ### Fähigkeiten im Detail
 - **🔁 Jogger – mehrmals ziehen:** Restbewegungspunkte dürfen für weitere Züge genutzt werden. In einer Kontrollzone behält er die Punkte, darf aber nur genau zurück, woher er kam. Der **Tritt** (Angriff 1, Nachbarfeld) geht nur, bevor er sich bewegt hat.
@@ -113,6 +114,8 @@ Alle Einheiten gibt es in männlicher, weiblicher und diverser Darstellung mit z
 - **🧗 Bergsteiger – Klettern:** Hügel, hügeliger Wald, hügeliges Grasland und Berg kosten ihn 1 Punkt (Dünen normal). Auf einem Berg: Sicht +2 und nichts blockiert seinen Wurf. **Bergab** (Höhe Berg 2 > Hügel/Dünen 1 > Rest 0): Angriff +1 und Reichweite +1.
 - **🏊 Schwimmer:** einzige Einheit auf Fluss, See und Meer (1 Punkt); jedes Landfeld 2, Straße 1.
 - **🏓 Tischtennisspieler:** 2 Angriffe pro Zug (auch auf dasselbe Ziel); nach dem ersten Angriff kein Ziehen mehr.
+- **📣 Rettungsschwimmer – Trillerpfeife:** Angriff auf 2 Felder ohne Schaden; das Ziel ist im nächsten eigenen Zug angeschlagen (kein Angriff, halbe Bewegung). Der Physiotherapeut kann das aufheben.
+- **🛟 Rettungsschwimmer – Transport:** schwimmt wie der Schwimmer (Wasser 1, Land 2, Straße 1). Trägt **eine** eigene Einheit (keinen anderen Rettungsschwimmer): sie steigt von einem Nachbarfeld auf (ihre Bewegung endet, sie verschwindet von der Karte, kann weder angreifen noch angegriffen werden); der Rettungsschwimmer darf danach noch im selben Zug losschwimmen. **Aussteigen** ab dem nächsten Zug: genau 1 Feld auf ein freies Nachbarfeld, auf dem die Einheit stehen kann (nicht tiefes Wasser); danach ist ihre Bewegung zu Ende. Wird der Rettungsschwimmer besiegt, ertrinkt die Ladung in tiefem Wasser; im seichten Wasser oder an Land rettet sie sich auf sein Feld. Getragene Einheiten zählen für die Einheiten-Grenze. Bedienung: Einheit wählen, grün markierten Rettungsschwimmer antippen; zum Aussteigen Rettungsschwimmer wählen und grünes Feld antippen.
 - **➕ Physiotherapeut – Behandeln:** statt anzugreifen heilt er **eine** eigene Einheit auf einem Nachbarfeld um 3 HP (bis zum Maximum) und hebt „angeschlagen“ auf. Nicht nach dem Ziehen. Patienten sind grün markiert.
 
 ## 7. Sportstätten und Produktion
@@ -130,6 +133,7 @@ Alle Einheiten gibt es in männlicher, weiblicher und diverser Darstellung mit z
 | Outdoor-Geschäft | Bergsteiger | 1 |
 | Schwimmbad | Schwimmer | 1 |
 | Physiopraxis | Physiotherapeut | 1 |
+| Strandturm | Rettungsschwimmer | 2 |
 | Gebäude | – (nicht eroberbar, blockiert Schläge) | – |
 
 - **Erobern:** automatisch, wenn eine Einheit ihre Bewegung auf einer fremden Sportstätte beendet (auch beim Zugende, wenn sie dort schon stand). Laufende Produktion wird abgebrochen.
@@ -141,7 +145,7 @@ Alle Einheiten gibt es in männlicher, weiblicher und diverser Darstellung mit z
 
 - Maps sind JSON-Dateien (`maps/<id>.json`, `"format": 1`), Liste in `maps/index.json`.
 - **Mitgeliefert:** Insel-Duell (2), Vierland (4), Archipel (16), Die Erde (16), Philippinen (6), Mordor (4), Mars mit Ozean (6), Hawaii (5), Alpen (4).
-- Jede mitgelieferte Map enthält alle Sportstätten-Typen; Schwimmbäder stehen an der Küste.
+- Jede mitgelieferte Map enthält alle Sportstätten-Typen; Schwimmbäder stehen an der Küste, Strandtürme auf Strand oder seichtem Wasser.
 
 ### Map-Editor
 Neue Map (6–40 × 6–40), Pinsel je Schicht (Gelände, Straße, Bebauung, Sonderfeld, Startpunkt), Startaufstellung je Startpunkt, Sportstätten einem Start zuordnen. Seichtes Wasser wird automatisch gezogen. Export als Datei, Import über Dateiauswahl (fehlerhafte Dateien werden mit Meldung abgelehnt), Testspiel. Eigene Maps werden lokal gespeichert, neue/importierte Maps bekommen eine eindeutige ID.
@@ -149,7 +153,7 @@ Neue Map (6–40 × 6–40), Pinsel je Schicht (Gelände, Straße, Bebauung, Son
 ## 9. Bedienung (Spiel)
 
 - Tippen wählt aus, Wischen verschiebt, zwei Finger zoomen (Maus: Ziehen, Mausrad).
-- **Markierungen:** erreichbare Felder blau, Angriffsziele rot gestrichelt, Heilziele grün gestrichelt, gewählter Weg als gestrichelte Linie (Rammen rot).
+- **Markierungen:** erreichbare Felder blau, Angriffsziele rot gestrichelt, Heilziele und Rettungsschwimmer zum Einsteigen grün gestrichelt, Aussteigefelder grün, gewählter Weg als gestrichelte Linie (Rammen rot).
 - **„Nächste Einheit (n)“** oben springt zur nächsten Einheit, die noch nichts getan hat. Sind alle bewegt: „✓ Alle Einheiten bewegt“.
 - **Info-Feld** unten: Werte, Fähigkeiten, Zustände (Buffs, angeschlagen, Wegebau), Produktion bei Sportstätten, Aktionsknöpfe (Weg anlegen / abbrechen).
 - Kurze Meldungen bei Ereignissen (Treffer, Gegenschlag, erobert, entdeckt, Weg fertig …).
@@ -169,6 +173,7 @@ Kurz und schnell, Eingaben sind während einer Animation gesperrt. Die Spiellogi
 - **Treffer:** Ziel blinkt rot und wackelt, Schadenszahl („−3“) steigt auf. Gegenschlag folgt sichtbar danach.
 - **Rammen:** Anlauf, dann schiebt der Rugbyspieler das Ziel ein Feld weiter (oder prallt ab, wenn es nicht ausweichen kann).
 - **Behandeln:** kurzer Schritt zum Patienten, grünes „+3“ steigt auf.
+- **Trillerpfeife:** gelbes 📣 über dem Ziel. **Ein-/Aussteigen:** die Einheit gleitet auf den Rettungsschwimmer bzw. von ihm herunter.
 - Markierungen (Reichweite, Ziele, Weg) sind während der Animation ausgeblendet.
 
 ## 11. Offen / geplant

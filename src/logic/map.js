@@ -11,7 +11,11 @@ export function createEmptyMap({ id, name, author = '', width, height }) {
   return { meta: { format: FORMAT, id, name, author, width, height, players: { min: 2, max: 2 } }, tiles, starts: [] };
 }
 
-export const canPlace = (tile, buildingId) => !!TERRAIN[tile.terrain]?.buildable && !!BUILDINGS[buildingId];
+export const canPlace = (tile, buildingId) => {
+  const b = BUILDINGS[buildingId];
+  if (!b) return false;
+  return b.onlyOn ? b.onlyOn.includes(tile.terrain) : !!TERRAIN[tile.terrain]?.buildable;
+};
 
 const pos = ([c, r]) => key(c, r);
 

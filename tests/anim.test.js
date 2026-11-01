@@ -90,3 +90,20 @@ test('reduced motion and non-visual actions have duration 0', () => {
   const e = apply(s, { type: 'endTurn' });
   assert.equal(buildAnim(s, e.state, { type: 'endTurn' }, e.events, { size: S }).duration, 0);
 });
+test('board: unit walks onto the carrier (drawn as ghost), unload: steps off', () => {
+  const s = setup(['GWWWGGGG']); const t = place(s, 'tennis', 0, '0,0'); const l = place(s, 'lifeguard', 0, '1,0'); place(s, 'golfer', 1, '7,0');
+  const b = run(s, { type: 'board', unitId: t.id, carrierId: l.id });
+  assert.ok(b.anim.duration > 0);
+  const mid = b.anim.frame(b.anim.duration / 2);
+  assert.equal(mid.ghost.id, t.id); assert.ok(mid.pos[t.id].x > px('0,0').x && mid.pos[t.id].x < px('1,0').x);
+  let n = apply(b.next, { type: 'endTurn' }).state; n = apply(n, { type: 'endTurn' }).state;
+  n.tiles['2,0'].terrain = 'shallow';
+  const u = run(n, { type: 'unload', unitId: l.id, to: '2,0' });
+  close(u.anim.frame(u.anim.duration).pos[t.id], px('2,0'), 'stepped off');
+});
+test('whistle shows a yellow whistle mark on the target, no damage number', () => {
+  const s = setup(['GGGGGG']); const l = place(s, 'lifeguard', 0, '0,0'); const t = place(s, 'tennis', 1, '2,0');
+  const { anim } = run(s, { type: 'attack', unitId: l.id, targetId: t.id });
+  const texts = [...Array(30)].flatMap((_, i) => anim.frame(i * anim.duration / 30).texts);
+  assert.ok(texts.some(x => x.text === '📣')); assert.ok(!texts.some(x => x.text.startsWith('−')));
+});

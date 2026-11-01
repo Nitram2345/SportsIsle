@@ -47,6 +47,7 @@ export const BUILDINGS = {
   outdoor:     b('Outdoor-Geschäft', true, true, ['climber'], 1),
   pool:        b('Schwimmbad', true, true, ['swimmer'], 1),
   physio:      b('Physiopraxis', true, true, ['physio'], 1),
+  tower:       b('Strandturm', true, true, ['lifeguard'], 2),
 };
 for (const [id, v] of Object.entries(BUILDINGS)) v.svg = `facilities/${id}.svg`;
 
@@ -65,6 +66,7 @@ export const UNITS = {
   swimmer: u('Schwimmer', 8, 3, 1, 4, 3, 2, 1, [], null, 0),
   tabletennis: u('Tischtennisspieler', 8, 3, 2, 3, 2, 2, 1, [], null, 0),
   physio: u('Physiotherapeut', 6, 0, 1, 4, 3, 2, 0, [], null, 0),
+  lifeguard: u('Rettungsschwimmer', 10, 0, 2, 4, 3, 3, 2, [], null, 0),
 };
 for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // Special abilities:
@@ -81,6 +83,8 @@ for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // attacks    – number of attacks per turn (default 1).
 // heal       – instead of attacking: heals one adjacent own unit by this much, cures dazed.
 // roadBuild  – lays a road on its own tile (TERRAIN.roadTurns turns, locked meanwhile).
+// whistle    – its attack does no damage; the target is dazed next turn (no attack, half move).
+// carry      – transports this many own units (board from a neighbour tile, unload next turn).
 UNITS.jogger.multiMove = true;
 UNITS.jogger.roadBuild = true;
 UNITS.hockey.zoc = true;
@@ -93,6 +97,11 @@ UNITS.climber.climb = true;
 UNITS.swimmer.swim = true;
 UNITS.tabletennis.attacks = 2;
 UNITS.physio.heal = 3;
+UNITS.lifeguard.swim = true;
+UNITS.lifeguard.whistle = true;
+UNITS.lifeguard.carry = 1;
+// Beach towers stand only on beach or shallow water (overrides TERRAIN.buildable).
+BUILDINGS.tower.onlyOn = ['beach', 'shallow'];
 
 export const SPECIALS = {
   sprint: { name: 'Sprint', stat: 'move', amount: 2, turns: 3, icon: '⚡' },

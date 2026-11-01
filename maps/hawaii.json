@@ -65,8 +65,16 @@
    "type": "hockey"
   },
   {
+   "at": [15,2],
+   "type": "tower"
+  },
+  {
    "at": [0,3],
    "type": "house"
+  },
+  {
+   "at": [6,3],
+   "type": "tower"
   },
   {
    "at": [15,3],
@@ -87,6 +95,10 @@
   {
    "at": [19,5],
    "type": "tennis"
+  },
+  {
+   "at": [20,5],
+   "type": "tower"
   },
   {
    "at": [21,5],
@@ -119,6 +131,10 @@
   {
    "at": [27,13],
    "type": "dojo"
+  },
+  {
+   "at": [28,14],
+   "type": "tower"
   }
  ],
  "specials": [

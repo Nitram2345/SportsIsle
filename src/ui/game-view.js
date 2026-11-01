@@ -3,6 +3,7 @@ import { apply, productionTime, idleUnits } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
 import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
+import { boardTargets, unloadTargets } from '../logic/transport.js';
 import { visibleUnits, knownOwner, effective } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
 import { UNITS, BUILDINGS, SPECIALS, TERRAIN } from '../config.js';
@@ -59,6 +60,11 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'counter') out.push('🥋 Gegenschlag!');
       if (e.type === 'ram') out.push('🏉 Gerammt!');
       if (e.type === 'healed') out.push(`➕ Behandelt: +${e.amount} ❤`);
+      if (e.type === 'whistle') out.push('📣 Pfiff! Gegner angeschlagen');
+      if (e.type === 'boarded') out.push('🛟 Eingestiegen');
+      if (e.type === 'unloaded') out.push('🛟 Ausgestiegen');
+      if (e.type === 'drowned') out.push('Eine Einheit ist ertrunken');
+      if (e.type === 'rescued') out.push('Eine Einheit konnte sich retten');
       if (e.type === 'roadBuilt' && state.units[e.unitId]?.owner === state.current) out.push('🛤️ Weg fertig');
       if (e.type === 'pushed') out.push('Gegner zurückgedrängt');
       if (e.type === 'blocked') out.push('Gegner konnte nicht ausweichen');
@@ -99,7 +105,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
   // ---------- selection ----------
   function select(kind, id) {
     sel = kind ? { kind, id } : null; pending = null; rams = {};
-    view.reach = []; view.targets = []; view.heals = []; view.selected = null; view.path = null; view.pathColor = null;
+    view.reach = []; view.targets = []; view.heals = []; view.boards = []; view.unloads = []; view.selected = null; view.path = null; view.pathColor = null;
     if (kind === 'unit') {
       const u = state.units[id];
       view.selected = u.at;
@@ -109,6 +115,8 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
         rams = ramTargets(state, id);
         view.targets = [...view.targets, ...Object.keys(rams)];
         view.heals = healTargets(state, id);
+        view.boards = boardTargets(state, id);       // carriers to climb aboard (green)
+        view.unloads = unloadTargets(state, id);     // tiles where the cargo can step off (green)
       }
     }
     if (kind === 'facility') view.selected = id;
@@ -135,6 +143,9 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (cfg.swim) line.textContent += ' · 🏊 schwimmt; an Land langsam';
       if (cfg.attacks > 1) line.textContent += ` · 🏓 ${cfg.attacks} Angriffe pro Zug` + (mine && u.attacksUsed && !u.hasAttacked ? ` (noch ${cfg.attacks - u.attacksUsed})` : '');
       if (cfg.heal) line.textContent += ` · ➕ behandelt Nachbarn (+${cfg.heal} ❤)`;
+      if (cfg.whistle) line.textContent += ' · 📣 Trillerpfeife: kein Schaden, Ziel angeschlagen';
+      if (cfg.carry) line.textContent += u.cargo ? ` · 🛟 trägt ${UNITS[u.cargo.type].name}` + (u.cargo.justBoarded ? ' (Aussteigen nächsten Zug)' : ' – grünes Feld antippen zum Aussteigen') : ' · 🛟 kann eine Einheit tragen';
+      if (mine && boardTargets(state, u.id).length) line.textContent += ' · grünen Rettungsschwimmer antippen zum Einsteigen';
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = rams && Object.values(rams).some(p => p[p.length - 1] === pending) ? 'Nochmal tippen zum Rammen' : 'Nochmal tippen zum Bewegen'; div.append(b); }
@@ -188,6 +199,16 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     const me = sel?.kind === 'unit' ? state.units[sel.id] : null;
     const mine = me && me.owner === state.current;
 
+    if (mine && view.boards.includes(seenUnit?.id)) {
+      const ev = act({ type: 'board', unitId: me.id, carrierId: seenUnit.id });
+      if (ev) select('unit', seenUnit.id);
+      return;
+    }
+    if (mine && view.unloads.includes(k) && !seenUnit) {
+      const ev = act({ type: 'unload', unitId: me.id, to: k });
+      if (ev) select('unit', me.id);
+      return;
+    }
     if (mine && view.heals.includes(seenUnit?.id)) {
       const ev = act({ type: 'heal', unitId: me.id, targetId: seenUnit.id });
       if (ev) select('unit', me.id);

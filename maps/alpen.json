@@ -79,6 +79,10 @@
    "type": "rugby"
   },
   {
+   "at": [10,1],
+   "type": "tower"
+  },
+  {
    "at": [10,2],
    "type": "golf"
   },

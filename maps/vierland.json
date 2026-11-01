@@ -104,6 +104,10 @@
  ],
  "buildings": [
   {
+   "at": [10,1],
+   "type": "tower"
+  },
+  {
    "at": [11,2],
    "type": "soccer"
   },
@@ -198,6 +202,10 @@
   {
    "at": [11,15],
    "type": "dojo"
+  },
+  {
+   "at": [11,16],
+   "type": "tower"
   }
  ],
  "specials": [

@@ -55,12 +55,20 @@
  ],
  "buildings": [
   {
+   "at": [12,0],
+   "type": "tower"
+  },
+  {
    "at": [13,0],
    "type": "pool"
   },
   {
    "at": [16,0],
    "type": "park"
+  },
+  {
+   "at": [27,3],
+   "type": "tower"
   },
   {
    "at": [28,4],
@@ -77,6 +85,10 @@
   {
    "at": [6,7],
    "type": "outdoor"
+  },
+  {
+   "at": [14,7],
+   "type": "tower"
   },
   {
    "at": [16,7],
@@ -137,6 +149,10 @@
   {
    "at": [20,15],
    "type": "golf"
+  },
+  {
+   "at": [21,15],
+   "type": "tower"
   }
  ],
  "specials": [
