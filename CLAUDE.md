@@ -5,6 +5,7 @@ A data-driven, turn-based strategy game (TBS) for mobile (PWA) on a hex grid, co
 
 **Design spec (binding):** `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 **Implementation plan:** `docs/superpowers/plans/2026-10-28-sports-battle-isle-mvp.md`
+**Current requirements (living doc, German):** `anforderungen.md` – update it in the same commit whenever rules, units, terrain, maps or controls change.
 
 ## Tech Stack
 - **Frontend:** HTML5 Canvas, Vanilla JavaScript (ES modules), CSS3. No framework, no build step.
