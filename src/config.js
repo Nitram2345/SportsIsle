@@ -139,3 +139,15 @@ export const PLAYER_COLORS = [
 ];
 
 export const RULES = { unitCap: 50, slowdownFrom: 30, slowdownStep: 5, maxPlayers: 16 };
+
+// Ranks: produced units start at rank 0; two of the same kind and rank side by side
+// can be promoted (button) into one of the next rank. hp and attack x1.4 per rank
+// (computed from the base value, rounded); move, defence, range, sight unchanged.
+export const RANKS = [
+  { short: 'Freizeit', name: 'Freizeitspieler', badge: '' },
+  { short: 'Club', name: 'Fortgeschrittene Clubspieler', badge: '★' },
+  { short: 'National', name: 'Nationale Spitzenamateure', badge: '★★' },
+  { short: 'Profi', name: 'Profi', badge: '🏆' },
+];
+export const RANK_FACTOR = 1.4;
+for (const t of ['tennis', 'soccer', 'golfer', 'karate', 'swimmer', 'hockey', 'rugby', 'climber', 'tabletennis']) UNITS[t].ranked = true;

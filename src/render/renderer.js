@@ -1,7 +1,7 @@
 // Canvas renderer. Reads state + viewer's sight; never changes state.
 import { parseKey, hexToPixel } from '../logic/hex.js';
-import { visibleTiles, visibleUnits } from '../logic/vision.js';
-import { BUILDINGS, UNITS, SPECIALS, PLAYER_COLORS } from '../config.js';
+import { visibleTiles, visibleUnits, maxHp } from '../logic/vision.js';
+import { BUILDINGS, UNITS, SPECIALS, PLAYER_COLORS, RANKS } from '../config.js';
 import { paintTerrain, hexPath, addHex } from './terrain.js';
 import { getUnitSprite, getFacilitySprite, onSpriteReady } from './sprites.js';
 
@@ -107,16 +107,23 @@ export function createRenderer(canvas) {
         if (heals.has(u.id)) { hexPath(ctx, p.x, p.y, HEX_SIZE, 1.04); ctx.setLineDash([5, 3]); ctx.strokeStyle = '#34c759'; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]); }
         ctx.fillStyle = 'rgba(0,0,0,.38)'; ctx.beginPath(); ctx.ellipse(p.x, feet, 11 * k, 3.2 * k, 0, 0, 6.2832); ctx.fill();
         const img = getUnitSprite(u.type, color, u.skin);
+        if (u.rank === 3) {   // profi: golden glow behind the figure
+          ctx.save(); ctx.shadowColor = '#ffd700'; ctx.shadowBlur = 10; ctx.fillStyle = 'rgba(255,215,0,.35)';
+          ctx.beginPath(); ctx.ellipse(p.x, feet - 22 * k, 12 * k, 23 * k, 0, 0, 6.2832); ctx.fill(); ctx.restore();
+        }
         if (img) ctx.drawImage(img, p.x - 24 * k, feet - 48 * k, 48 * k, 52 * k);  // svg viewBox -24 -48 48 52
         else { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(p.x, feet - 18 * k, 10 * k, 0, 6.2832); ctx.fill(); ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5; ctx.stroke();
           ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.round(11 * k)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(UNITS[u.type].name[0], p.x, feet - 18 * k); }
         const fl = fx?.flash[u.id];
         if (fl) { ctx.save(); ctx.globalAlpha = fl.alpha; ctx.fillStyle = fl.color; ctx.beginPath(); ctx.ellipse(p.x, feet - 22 * k, 13 * k, 24 * k, 0, 0, 6.2832); ctx.fill(); ctx.restore(); }
-        const hp = u.hp / UNITS[u.type].hp, bw = 22 * k / 1.08;
+        const hp = u.hp / maxHp(u), bw = 22 * k / 1.08;
         ctx.fillStyle = '#222'; ctx.fillRect(p.x - bw / 2, feet + 3, bw, 4);
         ctx.fillStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffcc00' : '#ff3b30'; ctx.fillRect(p.x - bw / 2, feet + 3, bw * hp, 4);
         const icons = u.buffs.map(b => SPECIALS[b.special].icon).join('') + (u.dazed || u.dazedNow ? '🤕' : '') + (u.building ? '🛤️' : '') + (u.cargo ? '🛟' : '');
         if (icons) { ctx.font = `${Math.round(HEX_SIZE * 0.4)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icons, p.x + HEX_SIZE * 0.55, feet - HEX_SIZE * 1.1); }
+        // rank badge: gold stars / trophy at the top left of the figure
+        const badge = UNITS[u.type].ranked ? RANKS[u.rank ?? 0].badge : '';
+        if (badge) { ctx.font = `bold ${Math.round(HEX_SIZE * 0.42)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.strokeText(badge, p.x - HEX_SIZE * 0.62, feet - HEX_SIZE * 1.62); ctx.fillStyle = '#ffd700'; ctx.fillText(badge, p.x - HEX_SIZE * 0.62, feet - HEX_SIZE * 1.62); }
         if (u.owner === state.current && fog && !u.hasMoved && !u.hasAttacked) { ctx.fillStyle = '#ffd700'; ctx.beginPath(); ctx.arc(p.x - HEX_SIZE * 0.5, feet - HEX_SIZE * 1.1, 3.5, 0, 6.2832); ctx.fill(); }
       }
     }

@@ -4,10 +4,10 @@ import { reachable } from '../logic/movement.js';
 import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
 import { boardTargets, unloadTargets } from '../logic/transport.js';
-import { mergeTargets } from '../logic/canoe.js';
-import { visibleUnits, knownOwner, effective } from '../logic/vision.js';
+import { mergeTargets, promoteTargets } from '../logic/merge.js';
+import { visibleUnits, knownOwner, effective, maxHp } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
-import { UNITS, BUILDINGS, SPECIALS, TERRAIN } from '../config.js';
+import { UNITS, BUILDINGS, SPECIALS, TERRAIN, RANKS } from '../config.js';
 import { HEX_SIZE } from '../render/renderer.js';
 import { createCamera, screenToWorld, zoomAt, centerOn } from '../render/camera.js';
 import { saveGame, clearGame } from '../storage.js';
@@ -64,6 +64,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'whistle') out.push('📣 Pfiff! Gegner angeschlagen');
       if (e.type === 'boarded') out.push('🛟 Eingestiegen');
       if (e.type === 'merged') out.push(`🛶 ${UNITS[e.newType].name}!`);
+      if (e.type === 'promoted') out.push(`⬆️ Aufgestiegen: ${RANKS[e.rank].name}`);
       if (e.type === 'unloaded') out.push('🛟 Ausgestiegen');
       if (e.type === 'drowned') out.push('Eine Einheit ist ertrunken');
       if (e.type === 'rescued') out.push('Eine Einheit konnte sich retten');
@@ -135,8 +136,11 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       const u = state.units[sel.id], cfg = UNITS[u.type], mine = u.owner === state.current;
       const buffs = u.buffs.map(b => `${SPECIALS[b.special].icon}${b.turns}`).join(' ');
       const range = effective(u, 'range');
-      title.textContent = cfg.name + (mine ? '' : ` (${state.players[u.owner].name})`);
-      line.textContent = `❤ ${u.hp}/${cfg.hp} · ⚔ ${effective(u, 'atk')} · 🛡 ${effective(u, 'def')} · 👟 ${mine ? u.movesLeft + '/' : ''}${effective(u, 'move')}${range ? ` · 🎯 ${range}` : ''} ${buffs}`;
+      // ranked units: "Tennisspieler · ★ Club" with the long rank name as tooltip
+      const rank = cfg.ranked ? RANKS[u.rank ?? 0] : null;
+      title.textContent = cfg.name + (rank ? ` · ${rank.badge ? rank.badge + ' ' : ''}${rank.short}` : '') + (mine ? '' : ` (${state.players[u.owner].name})`);
+      if (rank) title.title = rank.name;
+      line.textContent = `❤ ${u.hp}/${maxHp(u)} · ⚔ ${effective(u, 'atk')} · 🛡 ${effective(u, 'def')} · 👟 ${mine ? u.movesLeft + '/' : ''}${effective(u, 'move')}${range ? ` · 🎯 ${range}` : ''} ${buffs}`;
       if (cfg.multiMove) line.textContent += ' · 🔁 kann mehrmals ziehen';
       if (cfg.zoc) line.textContent += ' · 🧱 blockiert Nachbarfelder';
       if (cfg.counter) line.textContent += ' · 🥋 schlägt zurück';
@@ -151,16 +155,18 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
       if (mine && pending) { const b = document.createElement('b'); b.textContent = rams && Object.values(rams).some(p => p[p.length - 1] === pending) ? 'Nochmal tippen zum Rammen' : 'Nochmal tippen zum Bewegen'; div.append(b); }
-      // canoe merge: button arms the mode, then tap a green partner canoe
-      if (cfg.mergeInto && mine) {
-        const partners = mergeTargets(state, u.id);
-        if (u.mergeLock) line.textContent += ' · 🛶 wird umgebaut – diese Runde unbeweglich';
+      // merge (canoes) / promote (ranked units): button arms the mode, then tap a green partner
+      if ((cfg.mergeInto || cfg.ranked) && mine) {
+        const kind = cfg.mergeInto ? 'merge' : 'promote';
+        const partners = kind === 'merge' ? mergeTargets(state, u.id) : promoteTargets(state, u.id);
+        const into = kind === 'merge' ? UNITS[cfg.mergeInto].name : RANKS[(u.rank ?? 0) + 1]?.short;
+        if (u.mergeLock) line.textContent += kind === 'merge' ? ' · 🛶 wird umgebaut – diese Runde unbeweglich' : ' · 🏋️ Trainingslager – diese Runde unbeweglich';
         else if (partners.length) {
           const btn = document.createElement('button'); btn.className = 'chip' + (merging ? ' on' : '');
-          btn.textContent = merging ? 'Partner-Kanu antippen …' : `🛶 Zusammenlegen → ${UNITS[cfg.mergeInto].name}`;
+          btn.textContent = merging ? 'Partner antippen …' : `${kind === 'merge' ? '🛶' : '⬆️'} Zusammenlegen → ${into}`;
           btn.onclick = () => {
             merging = !merging;
-            if (merging && partners.length === 1) { if (act({ type: 'merge', unitId: u.id, withId: partners[0] })) select('unit', partners[0]); merging = false; return; }
+            if (merging && partners.length === 1) { if (act({ type: kind, unitId: u.id, withId: partners[0] })) select('unit', partners[0]); merging = false; return; }
             view.boards = merging ? partners : []; info(); redraw();
           };
           div.append(btn);
@@ -218,7 +224,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
 
     if (mine && merging && view.boards.includes(seenUnit?.id)) {
       merging = false;
-      const ev = act({ type: 'merge', unitId: me.id, withId: seenUnit.id });
+      const ev = act({ type: UNITS[me.type].mergeInto ? 'merge' : 'promote', unitId: me.id, withId: seenUnit.id });
       if (ev) select('unit', seenUnit.id);
       return;
     }

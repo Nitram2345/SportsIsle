@@ -1,5 +1,5 @@
 // Offline cache. ponytail: SHELL is maintained by hand; tests/pwa.test.js fails when it drifts. Bump CACHE on every release.
-const CACHE = 'sbi-v14';
+const CACHE = 'sbi-v15';
 const SHELL = [
   './',
   'index.html',
@@ -9,11 +9,11 @@ const SHELL = [
   'src/config.js',
   'src/main.js',
   'src/storage.js',
-  'src/logic/canoe.js',
   'src/logic/combat.js',
   'src/logic/game.js',
   'src/logic/hex.js',
   'src/logic/map.js',
+  'src/logic/merge.js',
   'src/logic/movement.js',
   'src/logic/ram.js',
   'src/logic/rng.js',

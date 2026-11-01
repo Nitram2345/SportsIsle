@@ -75,9 +75,9 @@ export function buildAnim(before, after, action, events, { size, reduced = false
       if (ev) { const a = P(ev.from), b = P(at(ev.carrierId)); seq(STEP_MS * 1.5, (u, out) => { out.pos[ev.unitId] = lerp(a, b, ease(u)); out.ghost = { id: ev.unitId, unit: before.units[ev.unitId], p: lerp(a, b, ease(u)) }; }); }
       break;
     }
-    case 'merge': {
-      const ev = events.find(e => e.type === 'merged');
-      if (ev) { const a = P(ev.from), b = P(ev.to); seq(STEP_MS * 1.5, (u, out) => { out.ghost = { id: ev.unitId, unit: before.units[ev.unitId], p: lerp(a, b, ease(u)) }; out.pos[ev.unitId] = lerp(a, b, ease(u)); }); pop(ev.intoId, ev.to, '🛶', '#ffcc00'); }
+    case 'merge': case 'promote': {
+      const ev = events.find(e => e.type === 'merged' || e.type === 'promoted');
+      if (ev) { const a = P(ev.from), b = P(ev.to); seq(STEP_MS * 1.5, (u, out) => { out.ghost = { id: ev.unitId, unit: before.units[ev.unitId], p: lerp(a, b, ease(u)) }; out.pos[ev.unitId] = lerp(a, b, ease(u)); }); pop(ev.intoId, ev.to, ev.type === 'merged' ? '🛶' : '⬆️', '#ffcc00'); }
       break;
     }
     case 'unload': {

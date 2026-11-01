@@ -1,9 +1,15 @@
 // Fog of sight: what a player sees now, and what they remember.
-import { UNITS, BUILDINGS, TERRAIN } from '../config.js';
+import { UNITS, BUILDINGS, TERRAIN, RANK_FACTOR } from '../config.js';
 import { hexesInRange } from './hex.js';
 
+// Base value scaled by rank (hp and attack only), plus buffs.
+const ranked = (unit, stat) => {
+  const base = UNITS[unit.type][stat];
+  return (stat === 'hp' || stat === 'atk') && unit.rank ? Math.round(base * RANK_FACTOR ** unit.rank) : base;
+};
 export const effective = (unit, stat) =>
-  UNITS[unit.type][stat] + unit.buffs.reduce((sum, b) => sum + (b.stat === stat ? b.amount : 0), 0);
+  ranked(unit, stat) + unit.buffs.reduce((sum, b) => sum + (b.stat === stat ? b.amount : 0), 0);
+export const maxHp = unit => ranked(unit, 'hp');
 
 export function visibleTiles(state, pid) {
   const seen = new Set(), { width, height } = state;

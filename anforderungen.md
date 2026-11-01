@@ -5,7 +5,7 @@ Lebendes Dokument: beschreibt den **aktuellen** Stand des Spiels. Bei jeder Änd
 - Ursprüngliches Design (MVP): `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 - Spielwerte: Quelle der Wahrheit ist `src/config.js`. Die Tabellen hier sind ein Abbild davon.
 
-Stand: 2026-11-01 (Kanu)
+Stand: 2026-11-01 (Stufen)
 
 ---
 
@@ -108,6 +108,21 @@ Alle Einheiten gibt es in männlicher, weiblicher und diverser Darstellung mit z
 | 4er-Kanu | (2 × 2er) | 12 | 6 | 2 | 7 | 3 | – | – | – | wie oben |
 | 8er-Kanu | (2 × 4er) | 16 | 8 | 2 | 8 | 3 | – | – | – | wie oben, größte Stufe |
 
+### Stufen (Aufsteigen)
+Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger und Tischtennis haben 4 Stufen. Hergestellt wird immer die erste.
+
+| Stufe | Name | Abzeichen | HP / Angriff |
+|---|---|---|---|
+| 1 | Freizeitspieler | – | Grundwert |
+| 2 | Fortgeschrittene Clubspieler | ★ | × 1,4 |
+| 3 | Nationale Spitzenamateure | ★★ | × 1,4² |
+| 4 | Profi | 🏆 + Goldschein | × 1,4³ |
+
+- Werte werden vom Grundwert aus gerechnet und gerundet (Tennis: HP 10/14/20/27, Angriff 5/7/10/14). Bewegung, Verteidigung, Reichweite und Sicht bleiben gleich.
+- **Aufsteigen:** zwei eigene Einheiten gleicher Sportart und gleicher Stufe nebeneinander, die in diesem Zug noch nichts getan haben, werden per Knopf „Zusammenlegen“ zu einer Einheit der nächsten Stufe (auf dem Feld des Partners, Schaden anteilig erhalten). Sie ist in diesem und im nächsten eigenen Zug unbeweglich („Trainingslager“). Bei mehreren Partnern wird der Partner angetippt (grün markiert).
+- Im Info-Feld steht die Kurzform (Freizeit · Club · National · Profi), der volle Name als Tooltip.
+- Helfer (Jogger, Physiotherapeut, Rettungsschwimmer) haben noch keine Stufen (geplant: eigener Bonus statt Angriff).
+
 ### Fähigkeiten im Detail
 - **🔁 Jogger – mehrmals ziehen:** Restbewegungspunkte dürfen für weitere Züge genutzt werden. In einer Kontrollzone behält er die Punkte, darf aber nur genau zurück, woher er kam. Der **Tritt** (Angriff 1, Nachbarfeld) geht nur, bevor er sich bewegt hat.
 - **🛤️ Jogger – Wege anlegen:** baut auf seinem eigenen Feld eine Straße. Dauer siehe Gelände-Tabelle (Berg 7, Hügel/hügeliger Wald/Dünen 4, Wald 3, sonst 2 Runden). Währenddessen weder ziehen noch angreifen. „Bau abbrechen“ verwirft den Fortschritt. Nicht auf Wasser, vorhandenen Straßen oder Gebäuden. Die fertige Straße gilt für alle Spieler.
@@ -181,7 +196,7 @@ Kurz und schnell, Eingaben sind während einer Animation gesperrt. Die Spiellogi
 - **Treffer:** Ziel blinkt rot und wackelt, Schadenszahl („−3“) steigt auf. Gegenschlag folgt sichtbar danach.
 - **Rammen:** Anlauf, dann schiebt der Rugbyspieler das Ziel ein Feld weiter (oder prallt ab, wenn es nicht ausweichen kann).
 - **Behandeln:** kurzer Schritt zum Patienten, grünes „+3“ steigt auf.
-- **Zusammenlegen:** das erste Kanu gleitet auf das zweite, darüber 🛶.
+- **Zusammenlegen/Aufsteigen:** die erste Einheit gleitet auf die zweite, darüber 🛶 bzw. ⬆️.
 - **Trillerpfeife:** gelbes 📣 über dem Ziel. **Ein-/Aussteigen:** die Einheit gleitet auf den Rettungsschwimmer bzw. von ihm herunter.
 - Markierungen (Reichweite, Ziele, Weg) sind während der Animation ausgeblendet.
 
@@ -190,4 +205,5 @@ Kurz und schnell, Eingaben sind während einer Animation gesperrt. Die Spiellogi
 - Sportstätten bauen, Wirtschaft.
 - Online-Multiplayer über Server (Aktionen sind bereits als `apply(state, action)` gekapselt).
 - Weitere Einheiten (Ideen: Trainer, Radfahrer, Schiedsrichter).
+- Stufen für Helfer (Jogger: schneller Wege bauen, Physio: mehr heilen, Rettungsschwimmer: weiter pfeifen).
 - Startpunkte beim neuen Spiel von Hand wählen; eigene Maps löschen.

@@ -1,7 +1,7 @@
 // Combat: range, line of fire, damage.
 import { UNITS, TERRAIN, BUILDINGS } from '../config.js';
 import { distance, lineBetween } from './hex.js';
-import { visibleUnits, effective } from './vision.js';
+import { visibleUnits, effective, maxHp } from './vision.js';
 import { dropCargo } from './transport.js';
 
 export function attackRange(state, unit, targetAt) {
@@ -72,7 +72,7 @@ export function healTargets(state, unitId) {
   if (!UNITS[unit.type].heal || unit.hasMoved || unit.hasAttacked) return [];
   return Object.values(state.units)
     .filter(t => t.owner === unit.owner && t.id !== unit.id && distance(unit.at, t.at) === 1
-      && (t.hp < UNITS[t.type].hp || t.dazed || t.dazedNow))
+      && (t.hp < maxHp(t) || t.dazed || t.dazedNow))
     .map(t => t.id);
 }
 
@@ -82,7 +82,7 @@ export function doHeal(state, unit, targetId, events) {
   if (unit.hasMoved || unit.hasAttacked) throw new Error('Behandeln geht nur einmal pro Zug und nicht nach dem Ziehen.');
   if (!healTargets(state, unit.id).includes(targetId)) throw new Error('Diese Einheit kann hier nicht behandelt werden.');
   const t = state.units[targetId], before = t.hp;
-  t.hp = Math.min(UNITS[t.type].hp, t.hp + UNITS[unit.type].heal);
+  t.hp = Math.min(maxHp(t), t.hp + UNITS[unit.type].heal);
   t.dazed = false; t.dazedNow = false;
   unit.hasAttacked = true; unit.movesLeft = 0;
   events.push({ type: 'healed', unitId: targetId, amount: t.hp - before });

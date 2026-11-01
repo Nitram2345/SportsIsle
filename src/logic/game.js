@@ -7,7 +7,7 @@ import { doMove, moveCost } from './movement.js';
 import { doAttack, doHeal } from './combat.js';
 import { doRam } from './ram.js';
 import { doBoard, doUnload } from './transport.js';
-import { doMerge } from './canoe.js';
+import { doMerge, doPromote } from './merge.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
 
@@ -18,7 +18,7 @@ export function spawnUnit(state, type, owner, at) {
     tone: Math.floor(random(state) * SKINS.tones.length),
     hair: Math.floor(random(state) * SKINS.hairPerVariant),
   };
-  const unit = { id, type, owner, at, hp: UNITS[type].hp, movesLeft: UNITS[type].move, hasMoved: false, hasAttacked: false, skin, buffs: [], building: null };
+  const unit = { id, type, owner, at, rank: 0, hp: UNITS[type].hp, movesLeft: UNITS[type].move, hasMoved: false, hasAttacked: false, skin, buffs: [], building: null };
   state.units[id] = unit;
   return unit;
 }
@@ -200,6 +200,7 @@ export function apply(state, action) {
     case 'cancelRoad': doCancelRoad(s, getUnit(s, action.unitId)); break;
     case 'board': doBoard(s, getUnit(s, action.unitId), action.carrierId, events); break;
     case 'merge': doMerge(s, getUnit(s, action.unitId), action.withId, events); break;
+    case 'promote': doPromote(s, getUnit(s, action.unitId), action.withId, events); break;
     case 'unload': {
       const c = getUnit(s, action.unitId);
       doUnload(s, c, action.to, events);

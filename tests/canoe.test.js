@@ -4,7 +4,7 @@ import { UNITS, BUILDINGS } from '../src/config.js';
 import { apply } from '../src/logic/game.js';
 import { reachable } from '../src/logic/movement.js';
 import { ramTargets } from '../src/logic/ram.js';
-import { mergeTargets } from '../src/logic/canoe.js';
+import { mergeTargets } from '../src/logic/merge.js';
 import { canPlace } from '../src/logic/map.js';
 import { gameFrom, place, exploreAll } from './helpers.js';
 
