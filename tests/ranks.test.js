@@ -16,7 +16,8 @@ test('config: four ranks with names and x1.4 per rank', () => {
   assert.deepEqual(RANKS.map(r => r.short), ['Freizeit', 'Club', 'National', 'Profi']);
   assert.deepEqual(RANKS.map(r => r.name), ['Freizeitspieler', 'Fortgeschrittene Clubspieler', 'Nationale Spitzenamateure', 'Profi']);
   for (const t of RANKED) assert.ok(UNITS[t].ranked, t);
-  for (const t of ['jogger', 'physio', 'lifeguard', 'canoe1']) assert.ok(!UNITS[t].ranked, t);
+  for (const t of ['jogger', 'physio', 'lifeguard']) assert.ok(UNITS[t].ranked && UNITS[t].helper, t);   // helpers: own bonuses
+  assert.ok(!UNITS.canoe1.ranked);   // canoes grow by merging sizes instead
 });
 test('rank scales max hp and attack (rounded from the base), not move/def/range', () => {
   const s = setup(['GGGG']); const t = place(s, 'tennis', 0, '0,0');
@@ -61,12 +62,12 @@ test('profi is the top rank', () => {
   const { s, a } = two('karate', 3);
   assert.deepEqual(promoteTargets(s, a.id), []);
 });
-test('no promote: different type, not adjacent, after acting, helpers', () => {
+test('no promote: different type, not adjacent, after acting, canoes', () => {
   const s = setup(['GGGGGGGG']); place(s, 'golfer', 1, '7,0');
   const a = place(s, 'tennis', 0, '0,0'), g = place(s, 'golfer', 0, '1,0'), far = place(s, 'tennis', 0, '3,0');
   assert.deepEqual(promoteTargets(s, a.id), []); assert.ok(g && far);
-  const j1 = place(s, 'jogger', 0, '4,0'), j2 = place(s, 'jogger', 0, '5,0');
-  assert.deepEqual(promoteTargets(s, j1.id), []); assert.ok(j2);
+  const c1 = place(s, 'canoe1', 0, '4,0'), c2 = place(s, 'canoe1', 0, '5,0');
+  assert.deepEqual(promoteTargets(s, c1.id), []); assert.ok(c2);   // canoes merge, they do not promote
   const x = place(s, 'tennis', 0, '6,0'.replace('6', '2')); x.hasMoved = true;
   assert.deepEqual(promoteTargets(s, far.id), []);
 });

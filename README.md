@@ -39,7 +39,7 @@ Dann `http://localhost:8080` öffnen.
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.
 
-**Stufen:** Zwei gleiche Sportler gleicher Stufe lassen sich zusammenlegen: Freizeit → ★ Club → ★★ National → 🏆 Profi, jeweils HP und Angriff × 1,4.
+**Stufen:** Zwei gleiche Sportler gleicher Stufe lassen sich zusammenlegen: Freizeit → ★ Club → ★★ National → 🏆 Profi, jeweils HP und Angriff × 1,4. Helfer (Jogger, Physio, Rettungsschwimmer) bekommen statt mehr Angriff eigene Boni (siehe ).
 
 **Seichtes Wasser:** umgibt jedes Land mit 1 Feld. Alle können hineinwaten, dort endet die Bewegung; heraus geht es genau 1 Feld weit. Schwimmer werden nicht gebremst.
 

@@ -1,11 +1,11 @@
 // Hot-seat game screen: hand-over, map interaction, HUD, production, victory.
-import { apply, productionTime, idleUnits } from '../logic/game.js';
+import { apply, productionTime, idleUnits, roadTurns } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
 import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
-import { boardTargets, unloadTargets } from '../logic/transport.js';
+import { boardTargets, unloadTargets, cargoOf, seats } from '../logic/transport.js';
 import { mergeTargets, promoteTargets } from '../logic/merge.js';
-import { visibleUnits, knownOwner, effective, maxHp } from '../logic/vision.js';
+import { visibleUnits, knownOwner, effective, maxHp, bonus } from '../logic/vision.js';
 import { parseKey, hexToPixel, pixelToHex } from '../logic/hex.js';
 import { UNITS, BUILDINGS, SPECIALS, TERRAIN, RANKS } from '../config.js';
 import { HEX_SIZE } from '../render/renderer.js';
@@ -64,7 +64,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'whistle') out.push('📣 Pfiff! Gegner angeschlagen');
       if (e.type === 'boarded') out.push('🛟 Eingestiegen');
       if (e.type === 'merged') out.push(`🛶 ${UNITS[e.newType].name}!`);
-      if (e.type === 'promoted') out.push(`⬆️ Aufgestiegen: ${RANKS[e.rank].name}`);
+      if (e.type === 'promoted') out.push(`⬆️ Aufgestiegen: ${RANKS[e.rank].name}` + (e.gift && e.rank === 2 ? ` – gibt jetzt ${SPECIALS[e.gift].icon} ${SPECIALS[e.gift].name} mit` : ''));
       if (e.type === 'unloaded') out.push('🛟 Ausgestiegen');
       if (e.type === 'drowned') out.push('Eine Einheit ist ertrunken');
       if (e.type === 'rescued') out.push('Eine Einheit konnte sich retten');
@@ -148,9 +148,18 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (cfg.climb) line.textContent += ' · 🧗 klettert; auf dem Berg +2 Sicht; bergab +1 Angriff/Reichweite';
       if (cfg.swim) line.textContent += ' · 🏊 schwimmt; an Land langsam';
       if (cfg.attacks > 1) line.textContent += ` · 🏓 ${cfg.attacks} Angriffe pro Zug` + (mine && u.attacksUsed && !u.hasAttacked ? ` (noch ${cfg.attacks - u.attacksUsed})` : '');
-      if (cfg.heal) line.textContent += ` · ➕ behandelt Nachbarn (+${cfg.heal} ❤)`;
-      if (cfg.whistle) line.textContent += ' · 📣 Trillerpfeife: kein Schaden, Ziel angeschlagen';
-      if (cfg.carry) line.textContent += u.cargo ? ` · 🛟 trägt ${UNITS[u.cargo.type].name}` + (u.cargo.justBoarded ? ' (Aussteigen nächsten Zug)' : ' – grünes Feld antippen zum Aussteigen') : ' · 🛟 kann eine Einheit tragen';
+      if (cfg.heal) {
+        const per = 1 + bonus(u, 'treats'), done = (u.treated ?? []).length;
+        line.textContent += ` · ➕ behandelt Nachbarn (+${cfg.heal + bonus(u, 'heal')} ❤` + (per > 1 ? `, ${per} pro Zug` : '') + ')';
+        if (u.gift && bonus(u, 'gift')) line.textContent += ` · gibt ${SPECIALS[u.gift].icon} ${SPECIALS[u.gift].name} mit`;
+        if (mine && done && done < per && !u.hasAttacked) line.textContent += ` · noch ${per - done} Behandlung`;
+      }
+      if (cfg.whistle) line.textContent += ' · 📣 Trillerpfeife: kein Schaden, Ziel angeschlagen' + (bonus(u, 'hurtAdjacent') ? ' (direkt daneben: 1 Schaden)' : '');
+      if (cfg.carry) {
+        const load = cargoOf(u), free = seats(u) - load.length;
+        line.textContent += load.length ? ` · 🛟 trägt ${load.map(c => UNITS[c.type].name).join(' + ')}` + (load.some(c => !c.justBoarded) ? ' – grünes Feld antippen zum Aussteigen' : ' (Aussteigen nächsten Zug)') : '';
+        line.textContent += free > 0 ? ` · 🛟 ${free} ${free === 1 ? 'Platz' : 'Plätze'} frei` : '';
+      }
       if (mine && boardTargets(state, u.id).length) line.textContent += ' · grünen Rettungsschwimmer antippen zum Einsteigen';
       if (u.dazedNow || u.dazed) line.textContent += u.dazedNow ? ' · 🤕 angeschlagen: kein Angriff, halbe Bewegung' : ' · 🤕 nächste Runde angeschlagen';
       if (u.retreatTo && mine) line.textContent += ' · nur zurück möglich';
@@ -174,7 +183,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       }
       // jogger road work
       if (cfg.roadBuild && mine) {
-        const tile = state.tiles[u.at], turns = TERRAIN[tile.terrain].roadTurns;
+        const tile = state.tiles[u.at], turns = roadTurns(u, tile);
         const btn = document.createElement('button'); btn.className = 'chip';
         if (u.building) {
           line.textContent += ` · 🛤️ baut Weg: noch ${u.building.left} ${u.building.left === 1 ? 'Runde' : 'Runden'}`;
@@ -182,7 +191,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
           btn.onclick = () => { if (act({ type: 'cancelRoad', unitId: u.id })) select('unit', u.id); };
           div.append(btn);
         } else if (turns && !tile.road && !tile.building && !u.hasMoved && !u.hasAttacked && !u.attacksUsed) {
-          btn.textContent = `🛤️ Weg anlegen (${turns} Runden)`;
+          btn.textContent = `🛤️ Weg anlegen (${turns} ${turns === 1 ? "Runde" : "Runden"})`;
           btn.onclick = () => { if (act({ type: 'buildRoad', unitId: u.id })) select('unit', u.id); };
           div.append(btn);
         }

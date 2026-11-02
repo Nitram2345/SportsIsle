@@ -4,6 +4,7 @@ import { visibleTiles, visibleUnits, maxHp } from '../logic/vision.js';
 import { BUILDINGS, UNITS, SPECIALS, PLAYER_COLORS, RANKS } from '../config.js';
 import { paintTerrain, hexPath, addHex } from './terrain.js';
 import { getUnitSprite, getFacilitySprite, onSpriteReady } from './sprites.js';
+import { cargoOf } from '../logic/transport.js';
 
 export const HEX_SIZE = 32;
 const NEUTRAL = '#d8d8d8';
@@ -119,7 +120,7 @@ export function createRenderer(canvas) {
         const hp = u.hp / maxHp(u), bw = 22 * k / 1.08;
         ctx.fillStyle = '#222'; ctx.fillRect(p.x - bw / 2, feet + 3, bw, 4);
         ctx.fillStyle = hp > 0.6 ? '#4cd964' : hp > 0.3 ? '#ffcc00' : '#ff3b30'; ctx.fillRect(p.x - bw / 2, feet + 3, bw * hp, 4);
-        const icons = u.buffs.map(b => SPECIALS[b.special].icon).join('') + (u.dazed || u.dazedNow ? '🤕' : '') + (u.building ? '🛤️' : '') + (u.cargo ? '🛟' : '');
+        const icons = u.buffs.map(b => SPECIALS[b.special].icon).join('') + (u.dazed || u.dazedNow ? '🤕' : '') + (u.building ? '🛤️' : '') + '🛟'.repeat(cargoOf(u).length);
         if (icons) { ctx.font = `${Math.round(HEX_SIZE * 0.4)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(icons, p.x + HEX_SIZE * 0.55, feet - HEX_SIZE * 1.1); }
         // rank badge: gold stars / trophy at the top left of the figure
         const badge = UNITS[u.type].ranked ? RANKS[u.rank ?? 0].badge : '';

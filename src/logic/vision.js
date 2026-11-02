@@ -1,12 +1,24 @@
 // Fog of sight: what a player sees now, and what they remember.
-import { UNITS, BUILDINGS, TERRAIN, RANK_FACTOR } from '../config.js';
+import { UNITS, BUILDINGS, TERRAIN, RANK_FACTOR, RANK_BONUS } from '../config.js';
 import { hexesInRange } from './hex.js';
 
-// Base value scaled by rank (hp and attack only), plus buffs.
+// Base value scaled by rank (hp always, attack only for non-helpers), plus rank bonuses
+// for helpers (move/sight/range from RANK_BONUS), plus buffs.
 const ranked = (unit, stat) => {
   const base = UNITS[unit.type][stat];
-  return (stat === 'hp' || stat === 'atk') && unit.rank ? Math.round(base * RANK_FACTOR ** unit.rank) : base;
+  const scale = stat === 'hp' || (stat === 'atk' && !UNITS[unit.type].helper);
+  return (scale && unit.rank ? Math.round(base * RANK_FACTOR ** unit.rank) : base) + (stat === 'hp' || stat === 'atk' ? 0 : bonus(unit, stat));
 };
+// Rank bonus up to the unit's rank: numbers add up, flags (true) switch on.
+export function bonus(unit, key) {
+  let sum = 0;
+  for (const level of (RANK_BONUS[unit.type] ?? []).slice(0, (unit.rank ?? 0) + 1)) {
+    const v = level[key];
+    if (v === true) return true;
+    if (typeof v === 'number') sum += v;
+  }
+  return sum;
+}
 export const effective = (unit, stat) =>
   ranked(unit, stat) + unit.buffs.reduce((sum, b) => sum + (b.stat === stat ? b.amount : 0), 0);
 export const maxHp = unit => ranked(unit, 'hp');

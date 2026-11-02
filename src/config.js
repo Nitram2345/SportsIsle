@@ -151,3 +151,12 @@ export const RANKS = [
 ];
 export const RANK_FACTOR = 1.4;
 for (const t of ['tennis', 'soccer', 'golfer', 'karate', 'swimmer', 'hockey', 'rugby', 'climber', 'tabletennis']) UNITS[t].ranked = true;
+
+// Helpers have ranks too: hp x1.4 per rank (no attack), plus their own bonus per rank.
+// RANK_BONUS[type][rank] adds up from rank 0 to the unit's rank (numbers add, true switches on).
+for (const t of ['jogger', 'physio', 'lifeguard']) { UNITS[t].ranked = true; UNITS[t].helper = true; }
+export const RANK_BONUS = {
+  jogger: [{}, { sight: 1, move: 1 }, { roadHills: -1 }, { roadAll: -1, move: 1 }],
+  physio: [{}, { heal: 1 }, { gift: true }, { treats: 1 }],          // treats: extra patients per turn
+  lifeguard: [{}, { range: 1 }, { carry: 1 }, { range: 1, hurtAdjacent: 1 }],   // carry: extra seats
+};

@@ -54,7 +54,7 @@ test('board: own unit next to an empty lifeguard climbs aboard and disappears fr
   assert.deepEqual(boardTargets(s, t.id), [l.id]);
   const n = act(s, { type: 'board', unitId: t.id, carrierId: l.id });
   assert.equal(n.units[t.id], undefined);
-  assert.equal(n.units[l.id].cargo.id, t.id);
+  assert.equal(n.units[l.id].cargo[0].id, t.id);
   assert.ok(!visibleUnits(n, 0).some(u => u.id === t.id));
   assert.ok(!visibleUnits(n, 1).some(u => u.id === t.id));
 });
@@ -62,7 +62,7 @@ test('lifeguard carries the cargo across deep water in the same turn', () => {
   const { s, t, l } = ferry();
   let n = act(s, { type: 'board', unitId: t.id, carrierId: l.id });
   n = act(n, { type: 'move', unitId: l.id, path: ['2,0', '3,0'] });
-  assert.equal(n.units[l.id].at, '3,0'); assert.equal(n.units[l.id].cargo.id, t.id);
+  assert.equal(n.units[l.id].at, '3,0'); assert.equal(n.units[l.id].cargo[0].id, t.id);
 });
 test('no boarding: full carrier, not adjacent, enemy carrier, lifeguard onto lifeguard, after moving', () => {
   const { s, t, l } = ferry();
@@ -87,7 +87,7 @@ test('unload: not in the boarding turn; next turn one tile onto land/shallow, th
   assert.deepEqual(unloadTargets(n, l.id), ['4,0']);        // deep water 2,0 is not allowed
   const r = apply(n, { type: 'unload', unitId: l.id, to: '4,0' }); n = r.state;
   assert.equal(n.units[t.id].at, '4,0'); assert.equal(n.units[t.id].movesLeft, 0); assert.equal(n.units[t.id].hasMoved, true);
-  assert.equal(n.units[l.id].cargo, null);
+  assert.deepEqual(n.units[l.id].cargo, []);
   assert.ok(r.events.some(e => e.type === 'unloaded' && e.to === '4,0'));
 });
 test('cargo is not idle, but counts for the unit cap; state survives JSON', () => {

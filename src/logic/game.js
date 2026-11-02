@@ -2,11 +2,11 @@
 import { UNITS, BUILDINGS, SKINS, TERRAIN, RULES } from '../config.js';
 import { distance, neighbors } from './hex.js';
 import { random } from './rng.js';
-import { effective, updateMemory } from './vision.js';
+import { effective, updateMemory, bonus } from './vision.js';
 import { doMove, moveCost } from './movement.js';
 import { doAttack, doHeal } from './combat.js';
 import { doRam } from './ram.js';
-import { doBoard, doUnload } from './transport.js';
+import { doBoard, doUnload, cargoOf } from './transport.js';
 import { doMerge, doPromote } from './merge.js';
 
 const pick = (state, list) => list[Math.floor(random(state) * list.length)];
@@ -83,8 +83,8 @@ export function startTurn(state, pid, events) {
     // dazed (hit since last turn) -> this turn: half move, no attack
     u.dazedNow = !!u.dazed; u.dazed = false;
     u.movesLeft = u.dazedNow ? Math.floor(move / 2) : move;
-    u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null; u.attacksUsed = 0;
-    if (u.cargo) { u.cargo.justBoarded = false; u.cargo.dazed = false; }
+    u.hasMoved = false; u.hasAttacked = false; u.retreatTo = null; u.attacksUsed = 0; u.treated = [];
+    for (const c of cargoOf(u)) { c.justBoarded = false; c.dazed = false; }
     // freshly merged canoe: the whole next own turn it cannot act
     if (u.locked) { u.locked = 0; lockForRoad(u); u.mergeLock = true; } else u.mergeLock = false;
     if (u.building) {
@@ -100,13 +100,20 @@ export function startTurn(state, pid, events) {
   updateMemory(state, pid);
 }
 
+// Road build time for this jogger on this tile (rank: National -1 on hills/dunes/mountains, Profi -1 everywhere; min 1).
+export function roadTurns(unit, tile) {
+  const t = TERRAIN[tile.terrain];
+  if (!t.roadTurns) return null;
+  return Math.max(1, t.roadTurns + (t.height > 0 ? bonus(unit, 'roadHills') : 0) + bonus(unit, 'roadAll'));
+}
+
 const lockForRoad = u => { u.movesLeft = 0; u.hasMoved = true; u.hasAttacked = true; };
 
 function doBuildRoad(state, unit) {
   if (unit.owner !== state.current) throw new Error('Diese Einheit gehört nicht dir.');
   if (!UNITS[unit.type].roadBuild) throw new Error('Nur der Jogger kann Wege anlegen.');
   if (unit.hasMoved || unit.hasAttacked || unit.attacksUsed || unit.building) throw new Error('Einen Weg anlegen geht nur zu Beginn des Zuges.');
-  const tile = state.tiles[unit.at], turns = TERRAIN[tile.terrain].roadTurns;
+  const tile = state.tiles[unit.at], turns = roadTurns(unit, tile);
   if (!turns) throw new Error('Hier kann kein Weg angelegt werden.');
   if (tile.road || tile.building) throw new Error('Hier gibt es schon einen Weg.');
   unit.building = { at: unit.at, left: turns };
@@ -120,7 +127,7 @@ function doCancelRoad(state, unit) {
 }
 
 // carried units count too
-const countUnits = (state, pid) => Object.values(state.units).reduce((n, u) => n + (u.owner === pid ? 1 + (u.cargo ? 1 : 0) : 0), 0);
+const countUnits = (state, pid) => Object.values(state.units).reduce((n, u) => n + (u.owner === pid ? 1 + cargoOf(u).length : 0), 0);
 
 export function productionTime(state, pid, unitType) {
   const n = countUnits(state, pid);

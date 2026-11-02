@@ -1,7 +1,7 @@
 // Combat: range, line of fire, damage.
-import { UNITS, TERRAIN, BUILDINGS } from '../config.js';
+import { UNITS, TERRAIN, BUILDINGS, SPECIALS } from '../config.js';
 import { distance, lineBetween } from './hex.js';
-import { visibleUnits, effective, maxHp } from './vision.js';
+import { visibleUnits, effective, maxHp, bonus } from './vision.js';
 import { dropCargo } from './transport.js';
 
 export function attackRange(state, unit, targetAt) {
@@ -57,21 +57,26 @@ export function doAttack(state, unit, targetId, events) {
   unit.movesLeft = 0;
   if (unit.attacksUsed >= (UNITS[unit.type].attacks ?? 1)) unit.hasAttacked = true;
   if (UNITS[unit.type].whistle) {
-    // whistle: no damage, target is dazed for its next turn
+    // whistle: no damage, target is dazed for its next turn; a Profi lifeguard's whistle
+    // also hurts an adjacent target (1 damage – it hurts the ears)
     target.dazed = true;
     events.push({ type: 'whistle', unitId: unit.id, targetId });
+    const hurt = bonus(unit, 'hurtAdjacent');
+    if (hurt && distance(unit.at, target.at) === 1) wound(state, target, hurt, events);
     return;
   }
   hit(state, unit, target, events);
   counterStrike(state, unit, target, events);
 }
 
-// Physio: own units on neighbouring tiles that are hurt or dazed.
+// Physio: own units on neighbouring tiles that are hurt or dazed, not treated this turn.
+// Treatments per turn: 1 (+1 as Profi); from National on, patients also get its gift buff.
 export function healTargets(state, unitId) {
   const unit = state.units[unitId];
   if (!UNITS[unit.type].heal || unit.hasMoved || unit.hasAttacked) return [];
   return Object.values(state.units)
     .filter(t => t.owner === unit.owner && t.id !== unit.id && distance(unit.at, t.at) === 1
+      && !(unit.treated ?? []).includes(t.id)
       && (t.hp < maxHp(t) || t.dazed || t.dazedNow))
     .map(t => t.id);
 }
@@ -82,10 +87,19 @@ export function doHeal(state, unit, targetId, events) {
   if (unit.hasMoved || unit.hasAttacked) throw new Error('Behandeln geht nur einmal pro Zug und nicht nach dem Ziehen.');
   if (!healTargets(state, unit.id).includes(targetId)) throw new Error('Diese Einheit kann hier nicht behandelt werden.');
   const t = state.units[targetId], before = t.hp;
-  t.hp = Math.min(maxHp(t), t.hp + UNITS[unit.type].heal);
+  t.hp = Math.min(maxHp(t), t.hp + UNITS[unit.type].heal + bonus(unit, 'heal'));
   t.dazed = false; t.dazedNow = false;
-  unit.hasAttacked = true; unit.movesLeft = 0;
   events.push({ type: 'healed', unitId: targetId, amount: t.hp - before });
+  if (unit.gift && bonus(unit, 'gift')) {
+    const sp = SPECIALS[unit.gift];
+    t.buffs = t.buffs.filter(b => b.special !== unit.gift);
+    t.buffs.push({ special: unit.gift, stat: sp.stat, amount: sp.amount, turns: sp.turns, fresh: true });
+    events.push({ type: 'buff', unitId: targetId, special: unit.gift });
+  }
+  unit.treated = [...(unit.treated ?? []), targetId];
+  unit.movesLeft = 0;
+  if (unit.treated.length >= 1 + bonus(unit, 'treats')) unit.hasAttacked = true;
+  else unit.attacksUsed = (unit.attacksUsed ?? 0) + 1;   // started treating: no more moving
 }
 
 // Active defence: survivor with counter strikes back at an adjacent attacker (free, once).
@@ -97,7 +111,11 @@ export function counterStrike(state, attacker, target, events) {
 }
 
 export function hit(state, attacker, target, events) {
-  const amount = damage(state, attacker, target);
+  wound(state, target, damage(state, attacker, target), events);
+}
+
+// Apply damage: event, knock-out (drops cargo), soccer daze.
+function wound(state, target, amount, events) {
   target.hp -= amount;
   events.push({ type: 'damage', targetId: target.id, amount });
   if (target.hp <= 0) { delete state.units[target.id]; events.push({ type: 'killed', unitId: target.id }); dropCargo(state, target, events); return; }

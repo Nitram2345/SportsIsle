@@ -5,7 +5,7 @@ Lebendes Dokument: beschreibt den **aktuellen** Stand des Spiels. Bei jeder Änd
 - Ursprüngliches Design (MVP): `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 - Spielwerte: Quelle der Wahrheit ist `src/config.js`. Die Tabellen hier sind ein Abbild davon.
 
-Stand: 2026-11-01 (Stufen)
+Stand: 2026-11-02 (Stufen der Helfer)
 
 ---
 
@@ -121,7 +121,15 @@ Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger und Tischt
 - Werte werden vom Grundwert aus gerechnet und gerundet (Tennis: HP 10/14/20/27, Angriff 5/7/10/14). Bewegung, Verteidigung, Reichweite und Sicht bleiben gleich.
 - **Aufsteigen:** zwei eigene Einheiten gleicher Sportart und gleicher Stufe nebeneinander, die in diesem Zug noch nichts getan haben, werden per Knopf „Zusammenlegen“ zu einer Einheit der nächsten Stufe (auf dem Feld des Partners, Schaden anteilig erhalten). Sie ist in diesem und im nächsten eigenen Zug unbeweglich („Trainingslager“). Bei mehreren Partnern wird der Partner angetippt (grün markiert).
 - Im Info-Feld steht die Kurzform (Freizeit · Club · National · Profi), der volle Name als Tooltip.
-- Helfer (Jogger, Physiotherapeut, Rettungsschwimmer) haben noch keine Stufen (geplant: eigener Bonus statt Angriff).
+- **Helfer** (Jogger, Physiotherapeut, Rettungsschwimmer) haben dieselben 4 Stufen. Ihre HP steigen × 1,4 je Stufe, ihr Angriff nicht; dafür bekommen sie eigene Boni (addieren sich):
+
+| Helfer | Club (2) | National (3) | Profi (4) |
+|---|---|---|---|
+| Jogger | Sicht +1, Bewegung +1 | Wegebau auf Hügel, hügeligem Grasland, hügeligem Wald, Dünen und Berg −1 Runde | Wegebau überall −1 Runde, Bewegung +1 (min. 1 Runde) |
+| Physiotherapeut | heilt +1 HP (also 4) | würfelt beim Aufstieg eine zufällige Kraft (wie Sonderfelder ⚡/💪/🛡️), die er jedem behandelten Patienten für 3 Züge mitgibt | behandelt 2 verschiedene Einheiten pro Zug |
+| Rettungsschwimmer | Trillerpfeife +1 Reichweite (3) | trägt 2 Einheiten | Trillerpfeife +1 Reichweite (4); direkt daneben macht der Pfiff zusätzlich 1 Schaden |
+
+- Zwei Rettungsschwimmer mit Ladung können nur zusammengelegt werden, wenn alle Passagiere in den aufgestiegenen passen. Wird ein Rettungsschwimmer mit 2 Passagieren an Land/im seichten Wasser besiegt, rettet sich der zweite auf ein freies Nachbarfeld (sonst ertrinkt er).
 
 ### Fähigkeiten im Detail
 - **🔁 Jogger – mehrmals ziehen:** Restbewegungspunkte dürfen für weitere Züge genutzt werden. In einer Kontrollzone behält er die Punkte, darf aber nur genau zurück, woher er kam. Der **Tritt** (Angriff 1, Nachbarfeld) geht nur, bevor er sich bewegt hat.
@@ -205,5 +213,4 @@ Kurz und schnell, Eingaben sind während einer Animation gesperrt. Die Spiellogi
 - Sportstätten bauen, Wirtschaft.
 - Online-Multiplayer über Server (Aktionen sind bereits als `apply(state, action)` gekapselt).
 - Weitere Einheiten (Ideen: Trainer, Radfahrer, Schiedsrichter).
-- Stufen für Helfer (Jogger: schneller Wege bauen, Physio: mehr heilen, Rettungsschwimmer: weiter pfeifen).
 - Startpunkte beim neuen Spiel von Hand wählen; eigene Maps löschen.
