@@ -13,6 +13,7 @@ import { createCamera, screenToWorld, zoomAt, centerOn } from '../render/camera.
 import { saveGame, clearGame } from '../storage.js';
 import { attachInput } from './input.js';
 import { buildAnim } from '../render/anim.js';
+import { nextInQueue } from './next-queue.js';
 
 // respect the OS setting 'reduce motion'
 const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -20,7 +21,7 @@ const REDUCED = typeof matchMedia === 'function' && matchMedia('(prefers-reduced
 const $ = id => document.getElementById(id);
 
 export function startGameView(initial, { renderer, canvas, show, onExit }) {
-  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '', rams = {}, busy = false, merging = false;
+  let state = initial, sel = null, pending = null, detach = null, eliminatedNote = '', rams = {}, busy = false, merging = false, skippedQueue = [];
   const camera = createCamera();
   const view = { camera, state, viewer: null, selected: null, reach: [], targets: [] };
 
@@ -41,11 +42,12 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     if (list.length) $('hud-next').textContent = `Nächste (${list.length})`;
   }
   function nextUnit() {
-    const list = todo();
-    if (!list.length) return;
-    const after = sel ? list.findIndex(x => x.kind === sel.kind && x.id === sel.id) + 1 : 0;
-    const next = list[after % list.length];
-    const [c, r] = parseKey(next.at), p = hexToPixel(c, r, HEX_SIZE);
+    const list = todo(), key = x => `${x.kind}:${x.id}`;
+    const r = nextInQueue(list.map(key), skippedQueue, sel ? `${sel.kind}:${sel.id}` : null);
+    skippedQueue = r.skipped;
+    const next = list.find(x => key(x) === r.pick);
+    if (!next) return;
+    const [c, row] = parseKey(next.at), p = hexToPixel(c, row, HEX_SIZE);
     centerOn(camera, p.x, p.y, canvas.clientWidth, canvas.clientHeight);
     select(next.kind, next.id);
   }
@@ -321,6 +323,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
 
   function beginTurn() {
     show('game');
+    skippedQueue = [];   // skips only last for the current turn
     const p = state.players[state.current];
     $('hud-dot').style.background = p.color;
     $('hud-name').textContent = p.name;

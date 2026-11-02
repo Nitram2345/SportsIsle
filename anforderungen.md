@@ -5,7 +5,7 @@ Lebendes Dokument: beschreibt den **aktuellen** Stand des Spiels. Bei jeder Änd
 - Ursprüngliches Design (MVP): `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 - Spielwerte: Quelle der Wahrheit ist `src/config.js`. Die Tabellen hier sind ein Abbild davon.
 
-Stand: 2026-11-02 (Pause in Sportstätten)
+Stand: 2026-11-02 (Übersprungene ans Ende)
 
 ---
 
@@ -189,7 +189,7 @@ Neue Map (6–40 × 6–40), Pinsel je Schicht (Gelände, Straße, Bebauung, Son
 
 - Tippen wählt aus, Wischen verschiebt, zwei Finger zoomen (Maus: Ziehen, Mausrad).
 - **Markierungen:** erreichbare Felder blau, Angriffsziele rot gestrichelt, Heilziele und Rettungsschwimmer zum Einsteigen grün gestrichelt, Aussteigefelder grün, gewählter Weg als gestrichelte Linie (Rammen rot).
-- **„Nächste (n)“** oben springt zur nächsten Einheit, die noch nichts getan hat, danach zu eigenen Sportstätten ohne Produktion. Ist alles erledigt: „✓ Alles erledigt“.
+- **„Nächste (n)“** oben springt zur nächsten Einheit, die noch nichts getan hat, danach zu eigenen Sportstätten ohne Produktion. Ist alles erledigt: „✓ Alles erledigt“. Drückt man den Knopf, während die gewählte Einheit/Sportstätte noch zu tun hat, gilt sie als übersprungen und wandert ans Ende der Liste (gilt bis Zugende, auch wenn man zwischendurch andere Einheiten bewegt).
 - **Gewählte Einheit** wippt sanft auf der Stelle, damit man sie leicht findet.
 - **Eigene Sportstätten** des Spielers am Zug: ohne Produktion ein pulsierendes 💤 oben rechts, mit Produktion ein blauer Fortschrittsbalken darunter, pausiert ein kleines graues ⏸. Bei fremden Sportstätten wird nichts davon angezeigt.
 - **⏸ Pause** in jeder Sportstätte: hält die Produktion bewusst an (z. B. kurz vor der Einheiten-Grenze, damit nur die Lieblingssportstätten weiterbauen). Pausierte Sportstätten zeigen kein 💤 und zählen nicht bei „Nächste“. Eine Einheit wählen beendet die Pause; beim Erobern ist sie ebenfalls weg. (Ersetzt den früheren Knopf „Stopp“.)
