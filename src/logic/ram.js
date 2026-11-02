@@ -1,7 +1,7 @@
 // Ram (rugby): charge along a path into a visible enemy, push it one tile on, take its place.
 import { UNITS, SPECIALS } from '../config.js';
 import { neighbors, extend } from './hex.js';
-import { reachable } from './movement.js';
+import { reachable, landing } from './movement.js';
 import { visibleUnits, updateMemory } from './vision.js';
 import { hit, counterStrike } from './combat.js';
 import { isPassable } from './game.js';
@@ -59,7 +59,7 @@ export function doRam(state, unit, path, events) {
 
   hit(state, unit, target, events);
   // a boat cannot follow its target onto land: it pushes but stays on the water
-  const canTake = isPassable(state, targetAt, unit);
+  const canTake = isPassable(state, targetAt, unit) || landing(state, unit, targetAt);   // boats may land on a shore facility
   if (!state.units[target.id]) { if (canTake) unit.at = targetAt; }          // knocked out: take the tile
   else if (canGiveWay) {
     target.at = behind; if (canTake) unit.at = targetAt;
