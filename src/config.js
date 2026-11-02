@@ -49,6 +49,7 @@ export const BUILDINGS = {
   physio:      b('Physiopraxis', true, true, ['physio'], 1),
   tower:       b('Strandturm', true, true, ['lifeguard'], 2),
   boathouse:   b('Bootshaus', true, true, ['canoe1'], 1),
+  stadium:     b('Leichtathletikstadion', true, true, ['shotput'], 1),
 };
 for (const [id, v] of Object.entries(BUILDINGS)) v.svg = `facilities/${id}.svg`;
 
@@ -69,6 +70,7 @@ export const UNITS = {
   physio: u('Physiotherapeut', 6, 0, 1, 4, 3, 2, 0, [], null, 0),
   lifeguard: u('Rettungsschwimmer', 10, 0, 2, 4, 3, 3, 2, [], null, 0),
   canoe1: u('1er-Kanu', 6, 3, 2, 5, 3, 2, 0, [], null, 0),
+  shotput: u('Kugelstoßer', 14, 6, 2, 2, 2, 3, 1, [], null, 0),
 };
 for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // Special abilities:
@@ -88,6 +90,7 @@ for (const [id, v] of Object.entries(UNITS)) v.svg = `units/${id}.svg`;
 // whistle    – its attack does no damage; the target is dazed next turn (no attack, half move).
 // carry      – transports this many own units (board from a neighbour tile, unload next turn).
 // boat       – moves only on water (all water tiles cost 1).
+// splash     – also hits the enemy on the tile right behind the target with this share of its attack.
 // mergeInto  – two equal canoes side by side merge into this type (button, locked one turn).
 UNITS.jogger.multiMove = true;
 UNITS.jogger.roadBuild = true;
@@ -104,6 +107,7 @@ UNITS.physio.heal = 3;
 UNITS.lifeguard.swim = true;
 UNITS.lifeguard.whistle = true;
 UNITS.lifeguard.carry = 1;
+UNITS.shotput.splash = 0.5;
 // Beach towers stand only on beach or shallow water (overrides TERRAIN.buildable).
 BUILDINGS.tower.onlyOn = ['beach', 'shallow'];
 BUILDINGS.boathouse.onlyOn = ['beach', 'shallow'];
@@ -150,7 +154,7 @@ export const RANKS = [
   { short: 'Profi', name: 'Profi', badge: '🏆' },
 ];
 export const RANK_FACTOR = 1.4;
-for (const t of ['tennis', 'soccer', 'golfer', 'karate', 'swimmer', 'hockey', 'rugby', 'climber', 'tabletennis']) UNITS[t].ranked = true;
+for (const t of ['tennis', 'soccer', 'golfer', 'karate', 'swimmer', 'hockey', 'rugby', 'climber', 'tabletennis', 'shotput']) UNITS[t].ranked = true;
 
 // Helpers have ranks too: hp x1.4 per rank (no attack), plus their own bonus per rank.
 // RANK_BONUS[type][rank] adds up from rank 0 to the unit's rank (numbers add, true switches on).

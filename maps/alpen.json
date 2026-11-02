@@ -103,6 +103,10 @@
    "type": "soccer"
   },
   {
+   "at": [20,3],
+   "type": "stadium"
+  },
+  {
    "at": [23,3],
    "type": "soccer"
   },
@@ -185,6 +189,10 @@
   {
    "at": [0,12],
    "type": "tennis"
+  },
+  {
+   "at": [20,12],
+   "type": "stadium"
   },
   {
    "at": [26,12],

@@ -35,6 +35,7 @@ Dann `http://localhost:8080` öffnen.
 | Tischtennisspieler | 1 | wenig Schaden, aber 🏓 2 Angriffe pro Zug |
 | Physiotherapeut | – | kämpft nicht; ➕ behandelt eine eigene Einheit daneben (+3 HP, hebt „angeschlagen“ auf) |
 | Rettungsschwimmer | 2 | 🏊 schwimmt; 📣 Trillerpfeife (kein Schaden, Ziel angeschlagen); 🛟 trägt eine Einheit übers Wasser; aus dem Strandturm |
+| Kugelstoßer | 1 | langsam, viele HP; 💥 die Kugel trifft auch den Gegner dahinter mit halber Kraft; aus dem Leichtathletikstadion |
 | Kanu (1er/2er/4er/8er) | – | nur Wasser; 🏉 rammt wie der Rugbyspieler (Ziele im Wasser oder am Ufer); zwei gleich große Kanus lassen sich zusammenlegen (Bewegung +1, HP/Angriff × 1,4); aus dem Bootshaus |
 
 Steht das Ziel auf einer Straße, reicht der Schlag 1 Feld weiter.

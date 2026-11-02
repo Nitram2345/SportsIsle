@@ -117,8 +117,16 @@
    "type": "tower"
   },
   {
+   "at": [18,15],
+   "type": "stadium"
+  },
+  {
    "at": [12,16],
    "type": "golf"
+  },
+  {
+   "at": [16,16],
+   "type": "stadium"
   },
   {
    "at": [11,17],

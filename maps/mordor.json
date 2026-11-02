@@ -164,6 +164,10 @@
    "type": "dojo"
   },
   {
+   "at": [17,8],
+   "type": "stadium"
+  },
+  {
    "at": [13,9],
    "type": "house"
   },
@@ -286,6 +290,10 @@
   {
    "at": [14,21],
    "type": "house"
+  },
+  {
+   "at": [17,21],
+   "type": "stadium"
   },
   {
    "at": [0,22],

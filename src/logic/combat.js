@@ -1,6 +1,6 @@
 // Combat: range, line of fire, damage.
 import { UNITS, TERRAIN, BUILDINGS, SPECIALS } from '../config.js';
-import { distance, lineBetween } from './hex.js';
+import { distance, lineBetween, extend } from './hex.js';
 import { visibleUnits, effective, maxHp, bonus } from './vision.js';
 import { dropCargo } from './transport.js';
 
@@ -65,8 +65,19 @@ export function doAttack(state, unit, targetId, events) {
     if (hurt && distance(unit.at, target.at) === 1) wound(state, target, hurt, events);
     return;
   }
+  const behind = UNITS[unit.type].splash ? extend(unit.at, target.at) : null;
   hit(state, unit, target, events);
   counterStrike(state, unit, target, events);
+  // shot put: the enemy right behind the target (straight line) takes a share of the attack
+  if (behind && state.units[unit.id]) {
+    const back = Object.values(state.units).find(u => u.at === behind && u.owner !== unit.owner);
+    if (back) {
+      const atk = Math.floor(effective(unit, 'atk') * UNITS[unit.type].splash);
+      const amount = Math.max(1, atk - (effective(back, 'def') + TERRAIN[state.tiles[back.at].terrain].def));
+      events.push({ type: 'splash', unitId: unit.id, targetId: back.id });
+      wound(state, back, amount, events);
+    }
+  }
 }
 
 // Physio: own units on neighbouring tiles that are hurt or dazed, not treated this turn.

@@ -146,6 +146,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (cfg.zoc) line.textContent += ' · 🧱 blockiert Nachbarfelder';
       if (cfg.counter) line.textContent += ' · 🥋 schlägt zurück';
       if (cfg.ram) line.textContent += ' · 🏉 rammt (mind. 2 Felder Anlauf)';
+      if (cfg.splash) line.textContent += ' · 💥 Kugel trifft auch den Gegner dahinter (halbe Kraft)';
       if (cfg.climb) line.textContent += ' · 🧗 klettert; auf dem Berg +2 Sicht; bergab +1 Angriff/Reichweite';
       if (cfg.swim) line.textContent += ' · 🏊 schwimmt; an Land langsam';
       if (cfg.attacks > 1) line.textContent += ` · 🏓 ${cfg.attacks} Angriffe pro Zug` + (mine && u.attacksUsed && !u.hasAttacked ? ` (noch ${cfg.attacks - u.attacksUsed})` : '');

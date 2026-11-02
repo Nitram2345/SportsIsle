@@ -67,6 +67,14 @@
  ],
  "buildings": [
   {
+   "at": [15,0],
+   "type": "stadium"
+  },
+  {
+   "at": [33,0],
+   "type": "stadium"
+  },
+  {
    "at": [11,2],
    "type": "tower"
   },
@@ -319,6 +327,10 @@
    "type": "park"
   },
   {
+   "at": [21,31],
+   "type": "stadium"
+  },
+  {
    "at": [32,31],
    "type": "dojo"
   },
@@ -345,6 +357,10 @@
   {
    "at": [10,33],
    "type": "tower"
+  },
+  {
+   "at": [29,34],
+   "type": "stadium"
   }
  ],
  "specials": [

@@ -41,7 +41,7 @@ test('every bundled map offers soccer field, dojo, rugby field and outdoor shop'
     assert.ok(types.includes('dojo'), `${e.id}: Dojo fehlt`);
     assert.ok(types.includes('rugby'), `${e.id}: Rugbyplatz fehlt`);
     assert.ok(types.includes('outdoor'), `${e.id}: Outdoor-Geschäft fehlt`);
-    for (const b of ['pool', 'physio', 'tabletennis', 'tower', 'boathouse']) assert.ok(types.includes(b), `${e.id}: ${b} fehlt`);
+    for (const b of ['pool', 'physio', 'tabletennis', 'tower', 'boathouse', 'stadium']) assert.ok(types.includes(b), `${e.id}: ${b} fehlt`);
   }
 });
 test('every pool is on the coast (next to water) so swimmers can reach it', async () => {

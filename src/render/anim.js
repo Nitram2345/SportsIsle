@@ -59,13 +59,15 @@ export function buildAnim(before, after, action, events, { size, reduced = false
     }
     case 'attack': {
       // first damage = the attack itself; a damage after 'counter' = the counter strike
-      let striker = action.unitId, victimFallback = action.targetId;
+      let striker = action.unitId, victimFallback = action.targetId, splash = false;
       for (const e of events) {
         if (e.type === 'counter') { striker = e.unitId; victimFallback = e.targetId; }
+        if (e.type === 'splash') splash = true;    // shot put rolls on: no second throw
         if (e.type === 'whistle') pop(e.targetId, before.units[e.targetId].at, '📣', '#ffcc00');
         if (e.type === 'damage') {
-          strike(striker, before.units[striker].at, before.units[e.targetId]?.at ?? at(victimFallback));
+          if (!splash) strike(striker, before.units[striker].at, before.units[e.targetId]?.at ?? at(victimFallback));
           pop(e.targetId, before.units[e.targetId].at, `−${e.amount}`, RED);
+          splash = false;
         }
       }
       break;

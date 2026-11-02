@@ -163,6 +163,10 @@
    "type": "house"
   },
   {
+   "at": [27,3],
+   "type": "stadium"
+  },
+  {
    "at": [18,4],
    "type": "tower"
   },
@@ -185,6 +189,10 @@
   {
    "at": [37,5],
    "type": "boathouse"
+  },
+  {
+   "at": [3,6],
+   "type": "stadium"
   },
   {
    "at": [10,6],
@@ -291,8 +299,16 @@
    "type": "golf"
   },
   {
+   "at": [4,18],
+   "type": "stadium"
+  },
+  {
    "at": [7,18],
    "type": "park"
+  },
+  {
+   "at": [10,18],
+   "type": "stadium"
   },
   {
    "at": [12,18],

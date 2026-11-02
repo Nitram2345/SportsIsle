@@ -5,7 +5,7 @@ Lebendes Dokument: beschreibt den **aktuellen** Stand des Spiels. Bei jeder Änd
 - Ursprüngliches Design (MVP): `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 - Spielwerte: Quelle der Wahrheit ist `src/config.js`. Die Tabellen hier sind ein Abbild davon.
 
-Stand: 2026-11-02 (alle Stufen direkt herstellen)
+Stand: 2026-11-02 (Kugelstoßer)
 
 ---
 
@@ -103,13 +103,14 @@ Alle Einheiten gibt es in männlicher, weiblicher und diverser Darstellung mit z
 | Tischtennisspieler | Tischtennishalle | 8 | 3 | 2 | 3 | 2 | 2 | 1 | – | 🏓 2 Angriffe pro Zug |
 | Physiotherapeut | Physiopraxis | 6 | – | 1 | 4 | 3 | 2 | – | – | ➕ Behandeln |
 | Rettungsschwimmer | Strandturm | 10 | – | 2 | 4 | 3 | 3 | 2 | – | 🏊 Wasser; 📣 Trillerpfeife; 🛟 trägt 1 Einheit |
+| Kugelstoßer | Leichtathletikstadion | 14 | 6 | 2 | 2 | 2 | 3 | 1 | – | 💥 trifft auch den Gegner dahinter |
 | 1er-Kanu | Bootshaus | 6 | 3 | 2 | 5 | 3 | 2 | – | – | 🛶 nur Wasser; 🏉 Rammen; Zusammenlegen |
 | 2er-Kanu | (2 × 1er) | 8 | 4 | 2 | 6 | 3 | – | – | – | wie oben |
 | 4er-Kanu | (2 × 2er) | 12 | 6 | 2 | 7 | 3 | – | – | – | wie oben |
 | 8er-Kanu | (2 × 4er) | 16 | 8 | 2 | 8 | 3 | – | – | – | wie oben, größte Stufe |
 
 ### Stufen (Aufsteigen)
-Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger und Tischtennis haben 4 Stufen. Hergestellt wird immer die erste.
+Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger, Tischtennis und Kugelstoßer haben 4 Stufen. Hergestellt wird immer die erste.
 
 | Stufe | Name | Abzeichen | HP / Angriff |
 |---|---|---|---|
@@ -144,6 +145,7 @@ Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger und Tischt
 - **🏓 Tischtennisspieler:** 2 Angriffe pro Zug (auch auf dasselbe Ziel); nach dem ersten Angriff kein Ziehen mehr.
 - **📣 Rettungsschwimmer – Trillerpfeife:** Angriff auf 2 Felder ohne Schaden; das Ziel ist im nächsten eigenen Zug angeschlagen (kein Angriff, halbe Bewegung). Der Physiotherapeut kann das aufheben.
 - **🛟 Rettungsschwimmer – Transport:** schwimmt wie der Schwimmer (Wasser 1, Land 2, Straße 1). Trägt **eine** eigene Einheit (keinen anderen Rettungsschwimmer): sie steigt von einem Nachbarfeld auf (ihre Bewegung endet, sie verschwindet von der Karte, kann weder angreifen noch angegriffen werden); der Rettungsschwimmer darf danach noch im selben Zug losschwimmen. **Aussteigen** ab dem nächsten Zug: genau 1 Feld auf ein freies Nachbarfeld, auf dem die Einheit stehen kann (nicht tiefes Wasser); danach ist ihre Bewegung zu Ende. Wird der Rettungsschwimmer besiegt, ertrinkt die Ladung in tiefem Wasser; im seichten Wasser oder an Land rettet sie sich auf sein Feld. Getragene Einheiten zählen für die Einheiten-Grenze. Bedienung: Einheit wählen, grün markierten Rettungsschwimmer antippen; zum Aussteigen Rettungsschwimmer wählen und grünes Feld antippen.
+- **💥 Kugelstoßer:** greift nur das Nachbarfeld an; die Kugel trifft zusätzlich den Gegner auf dem Feld direkt dahinter (gerade Linie vom Kugelstoßer aus) mit halber Angriffskraft (Geländeverteidigung zählt, kann ausschalten). Eigene Einheiten dahinter werden nicht getroffen. Langsam (Bewegung 2), viele HP. Hat die 4 Stufen.
 - **🛶 Kanu:** fährt nur auf Wasser (tief, seicht, Fluss: je 1 Punkt; seichtes Wasser bremst es nicht), kann nicht an Land. Im Bootshaus entsteht immer ein 1er-Kanu.
 - **🛶 Kanu – Zusammenlegen:** zwei eigene Kanus gleicher Größe nebeneinander, die in diesem Zug noch nichts getan haben, werden per Knopf „Zusammenlegen“ zum nächstgrößeren (1er → 2er → 4er → 8er). Jede Stufe: Bewegung +1, HP und Angriff × 1,4 (gerundet, vom 1er gerechnet), Verteidigung gleich. Das neue Kanu steht auf dem Feld des Partners, Schaden bleibt anteilig erhalten. Es ist in diesem und im nächsten eigenen Zug unbeweglich. Nach dem ersten von Hand zusammengelegten 2er/4er/8er-Kanu kann das Bootshaus diese Größe direkt bauen (Bauzeit × 2/× 4/× 8, sofort einsatzbereit). Gibt es mehrere Partner, wird nach dem Knopf der Partner angetippt (grün markiert). Die Größe sieht man an der Zahl der Paddler.
 - **🏉 Kanu – Rammen:** wie beim Rugbyspieler (mind. 2 Felder Anlauf, Ziel wird 1 Feld weggedrückt). Ziele im tiefen oder seichten Wasser und an Land direkt am Wasser. Bei Zielen an Land bleibt das Kanu im Wasser stehen.
@@ -166,6 +168,7 @@ Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger und Tischt
 | Physiopraxis | Physiotherapeut | 1 |
 | Strandturm | Rettungsschwimmer | 2 |
 | Bootshaus | 1er-Kanu | 1 |
+| Leichtathletikstadion | Kugelstoßer | 1 |
 | Gebäude | – (nicht eroberbar, blockiert Schläge) | – |
 
 - **Erobern:** automatisch, wenn eine Einheit ihre Bewegung auf einer fremden Sportstätte beendet (auch beim Zugende, wenn sie dort schon stand). Laufende Produktion wird abgebrochen.

@@ -99,6 +99,10 @@
    "type": "tabletennis"
   },
   {
+   "at": [10,8],
+   "type": "stadium"
+  },
+  {
    "at": [25,8],
    "type": "boathouse"
   },
@@ -145,6 +149,10 @@
   {
    "at": [17,12],
    "type": "soccer"
+  },
+  {
+   "at": [11,13],
+   "type": "stadium"
   },
   {
    "at": [10,14],
