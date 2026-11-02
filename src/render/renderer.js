@@ -49,6 +49,8 @@ export function createRenderer(canvas) {
 
   function render() {
     const { camera: cam, state, viewer } = view;
+    const now = performance.now();
+    animating = false;      // set by idle markers / bobbing unit; keeps a light redraw loop running
     const tiles = map.tiles, fog = state && viewer !== null && viewer !== undefined;
     const seen = fog ? visibleTiles(state, viewer) : null;
     const explored = fog ? state.explored[viewer] : null;
@@ -60,6 +62,7 @@ export function createRenderer(canvas) {
     ctx.drawImage(terrain, 0, 0);
 
     // buildings (inner ring in owner colour for capturable ones)
+    const facMarks = [];
     for (const [k, t] of Object.entries(tiles)) {
       if (!t.building || (fog && !explored[k])) continue;
       const { x, y } = px(k), b = BUILDINGS[t.building];
@@ -73,6 +76,9 @@ export function createRenderer(canvas) {
       const img = getFacilitySprite(t.building), s = HEX_SIZE * 2.33;  // svg viewBox 56 for hex radius 24
       if (img) ctx.drawImage(img, x - s / 2, y - s / 2, s, s);
       else { ctx.fillStyle = '#d9d2c3'; ctx.fillRect(x - 12, y - 9, 24, 18); ctx.fillStyle = '#333'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(b.name.slice(0, 3), x, y + 4); }
+      // own facilities of the active player: remembered here, drawn on top of the units below
+      const f = state?.facilities[k];
+      if (fog && f?.owner === viewer && viewer === state.current && b.produces.length) facMarks.push({ x, y, f });
     }
 
     // fog
@@ -101,6 +107,11 @@ export function createRenderer(canvas) {
       const units = (fog ? visibleUnits(state, viewer, seen) : Object.values(state.units))
         .concat(fx?.ghost ? [fx.ghost.unit] : [])   // unit climbing aboard is gone from the state already
         .map(u => ({ u, p: fx?.pos[u.id] ?? px(u.at) })).sort((a, b) => a.p.y - b.p.y);
+      // the selected own unit bobs gently on its tile so it is easy to spot
+      if (!fx && view.selected) for (const it of units) if (it.u.at === view.selected && it.u.owner === state.current) {
+        it.p = { x: it.p.x, y: it.p.y - Math.abs(Math.sin(now / 260)) * 3 };
+        animating = true;
+      }
       const targets = new Set(fx ? [] : view.targets ?? []), heals = new Set(fx ? [] : [...(view.heals ?? []), ...(view.boards ?? [])]);
       for (const { u, p } of units) {
         const color = state.players[u.owner].color, feet = p.y + HEX_SIZE * 0.55, k = HEX_SIZE / 19 * 1.08;
@@ -129,6 +140,23 @@ export function createRenderer(canvas) {
       }
     }
 
+    // facility markers on top of units: 💤 when idle (pulsing, top right), progress bar when producing
+    for (const { x, y, f } of facMarks) {
+      if (!f.producing) {
+        const pulse = 1 + 0.12 * Math.sin(now / 300);
+        ctx.save(); ctx.translate(x + HEX_SIZE * 0.62, y - HEX_SIZE * 0.75); ctx.scale(pulse, pulse);
+        ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.beginPath(); ctx.arc(0, 0, HEX_SIZE * 0.34, 0, 6.2832); ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.font = `${Math.round(HEX_SIZE * 0.42)}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#000'; ctx.fillText('💤', 0, 1); ctx.restore();
+        animating = true;
+      } else if (f.needed) {
+        const bw = HEX_SIZE * 1.1, by = y + HEX_SIZE * 0.62, pr = Math.min(1, f.progress / f.needed);
+        ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x - bw / 2 - 1, by - 1, bw + 2, 6);
+        ctx.fillStyle = '#5ac8fa'; ctx.fillRect(x - bw / 2, by, bw * pr, 4);
+      }
+    }
+
     // animation overlays: projectiles and floating numbers
     if (fx) {
       for (const s of fx.shots) {
@@ -152,7 +180,10 @@ export function createRenderer(canvas) {
       ctx.fillText(String(i + 1), x, y + 1);
       for (const f of s.facilities) { const q = px(f); hexPath(ctx, q.x, q.y, HEX_SIZE, 0.84); ctx.strokeStyle = PLAYER_COLORS[i % PLAYER_COLORS.length]; ctx.lineWidth = 3.4; ctx.stroke(); }
     });
+    // idle markers / bobbing unit: keep redrawing at ~30 fps while needed (not during play())
+    if (animating && !anim && !idleTimer) idleTimer = setTimeout(() => { idleTimer = null; draw(view); }, 33);
   }
+  let animating = false, idleTimer = null;
 
   // play(animation): redraw every frame until it ends, then resolve
   let anim = null;

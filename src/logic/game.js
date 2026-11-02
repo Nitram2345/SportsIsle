@@ -267,3 +267,8 @@ export function checkElimination(state, events) {
 export const idleUnits = state => Object.values(state.units)
   .filter(u => u.owner === state.current && !u.hasMoved && !u.hasAttacked && !u.attacksUsed)
   .map(u => u.id);
+
+// Own facilities of the current player that could produce something but are idle.
+export const idleFacilities = state => Object.entries(state.facilities)
+  .filter(([, f]) => f.owner === state.current && !f.producing && BUILDINGS[f.type].produces.length)
+  .map(([k]) => k);

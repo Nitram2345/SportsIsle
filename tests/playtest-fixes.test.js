@@ -29,3 +29,13 @@ test('idleUnits lists own units that have neither moved nor attacked', () => {
   s = apply(s, { type: 'endTurn' }).state;
   assert.deepEqual(idleUnits(s), [e.id]);
 });
+
+test('idleFacilities: own facilities that can produce but have no production', async () => {
+  const { idleFacilities } = await import('../src/logic/game.js');
+  let s = gameFrom(['GGGGGGGG'], { buildings: { '1,0': 'tennis', '3,0': 'golf', '5,0': 'tennis' } });
+  s.facilities['1,0'].owner = 0; s.facilities['3,0'].owner = 0; s.facilities['5,0'].owner = 1;
+  place(s, 'jogger', 1, '7,0');
+  assert.deepEqual(idleFacilities(s), ['1,0', '3,0']);
+  s = apply(s, { type: 'produce', at: '1,0', unitType: 'tennis' }).state;
+  assert.deepEqual(idleFacilities(s), ['3,0']);
+});

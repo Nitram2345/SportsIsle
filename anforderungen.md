@@ -5,7 +5,7 @@ Lebendes Dokument: beschreibt den **aktuellen** Stand des Spiels. Bei jeder Änd
 - Ursprüngliches Design (MVP): `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 - Spielwerte: Quelle der Wahrheit ist `src/config.js`. Die Tabellen hier sind ein Abbild davon.
 
-Stand: 2026-11-02 (Kugelstoßer)
+Stand: 2026-11-02 (Leerlauf-Anzeige)
 
 ---
 
@@ -189,7 +189,9 @@ Neue Map (6–40 × 6–40), Pinsel je Schicht (Gelände, Straße, Bebauung, Son
 
 - Tippen wählt aus, Wischen verschiebt, zwei Finger zoomen (Maus: Ziehen, Mausrad).
 - **Markierungen:** erreichbare Felder blau, Angriffsziele rot gestrichelt, Heilziele und Rettungsschwimmer zum Einsteigen grün gestrichelt, Aussteigefelder grün, gewählter Weg als gestrichelte Linie (Rammen rot).
-- **„Nächste Einheit (n)“** oben springt zur nächsten Einheit, die noch nichts getan hat. Sind alle bewegt: „✓ Alle Einheiten bewegt“.
+- **„Nächste (n)“** oben springt zur nächsten Einheit, die noch nichts getan hat, danach zu eigenen Sportstätten ohne Produktion. Ist alles erledigt: „✓ Alles erledigt“.
+- **Gewählte Einheit** wippt sanft auf der Stelle, damit man sie leicht findet.
+- **Eigene Sportstätten** des Spielers am Zug: ohne Produktion ein pulsierendes 💤 oben rechts, mit Produktion ein blauer Fortschrittsbalken darunter. Bei fremden Sportstätten wird beides nicht angezeigt.
 - **Info-Feld** unten: Werte, Fähigkeiten, Zustände (Buffs, angeschlagen, Wegebau), Produktion bei Sportstätten, Aktionsknöpfe (Weg anlegen / abbrechen).
 - Kurze Meldungen bei Ereignissen (Treffer, Gegenschlag, erobert, entdeckt, Weg fertig …).
 - Menü: Weiterspielen, Hauptmenü (Spiel bleibt gespeichert), Spiel aufgeben.

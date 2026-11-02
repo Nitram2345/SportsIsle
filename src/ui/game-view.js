@@ -1,5 +1,5 @@
 // Hot-seat game screen: hand-over, map interaction, HUD, production, victory.
-import { apply, idleUnits, roadTurns, productionOptions } from '../logic/game.js';
+import { apply, idleUnits, idleFacilities, roadTurns, productionOptions } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
 import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
@@ -31,20 +31,23 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
 
   // "Next unit": cycles through own units that have not acted yet; when none is left the
   // button gives way to a "all moved" note.
+  // "Next": cycles through idle units first, then idle facilities (💤)
+  const todo = () => [...idleUnits(state).map(id => ({ kind: 'unit', id, at: state.units[id].at })),
+    ...idleFacilities(state).map(k => ({ kind: 'facility', id: k, at: k }))];
   function updateNext() {
-    const idle = idleUnits(state);
-    $('hud-next').hidden = !idle.length;
-    $('hud-done').hidden = !!idle.length;
-    if (idle.length) $('hud-next').textContent = `Nächste Einheit (${idle.length})`;
+    const list = todo();
+    $('hud-next').hidden = !list.length;
+    $('hud-done').hidden = !!list.length;
+    if (list.length) $('hud-next').textContent = `Nächste (${list.length})`;
   }
   function nextUnit() {
-    const idle = idleUnits(state);
-    if (!idle.length) return;
-    const after = sel?.kind === 'unit' ? idle.indexOf(sel.id) + 1 : 0;
-    const id = idle[after % idle.length];
-    const [c, r] = parseKey(state.units[id].at), p = hexToPixel(c, r, HEX_SIZE);
+    const list = todo();
+    if (!list.length) return;
+    const after = sel ? list.findIndex(x => x.kind === sel.kind && x.id === sel.id) + 1 : 0;
+    const next = list[after % list.length];
+    const [c, r] = parseKey(next.at), p = hexToPixel(c, r, HEX_SIZE);
     centerOn(camera, p.x, p.y, canvas.clientWidth, canvas.clientHeight);
-    select('unit', id);
+    select(next.kind, next.id);
   }
 
   function toast(text) {
