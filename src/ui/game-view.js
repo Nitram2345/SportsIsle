@@ -209,7 +209,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     if (!mine) line.textContent = owner === null ? 'Neutral – mit einer Einheit erobern' : `Gehört ${state.players[owner].name}`;
     else if (!b.produces.length) line.textContent = 'Stellt im Moment nichts her';
     else {
-      line.textContent = f.producing ? `Baut ${UNITS[f.producing].name}${f.rank ? ' · ' + RANKS[f.rank].short : ''}: ${f.progress}/${f.needed}` : 'Keine Produktion';
+      line.textContent = f.producing ? `Baut ${UNITS[f.producing].name}${f.rank ? ' · ' + RANKS[f.rank].short : ''}: ${f.progress}/${f.needed}` : f.paused ? 'Pausiert – Einheit wählen, um weiterzumachen' : 'Keine Produktion';
       const chips = document.createElement('div'); chips.className = 'chips';
       // Freizeit always; higher ranks / canoe sizes once reached by merging manually
       for (const { unitType: type, rank, time: t } of productionOptions(state, state.current, sel.id)) {
@@ -220,11 +220,12 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
         c.onclick = () => { act({ type: 'produce', at: sel.id, unitType: type, rank }); select('facility', sel.id); };
         chips.append(c);
       }
-      if (f.producing) {
-        const stop = document.createElement('button'); stop.className = 'chip'; stop.textContent = 'Stopp';
-        stop.onclick = () => { act({ type: 'produce', at: sel.id, unitType: null }); select('facility', sel.id); };
-        chips.append(stop);
-      }
+      // pause: deliberately idle (e.g. near the unit cap) – no 💤, skipped by 'Nächste'
+      const pause = document.createElement('button'); pause.className = 'chip' + (f.paused ? ' on' : '');
+      pause.textContent = f.paused ? '⏸ Pausiert' : '⏸ Pause';
+      pause.disabled = !!f.paused;
+      pause.onclick = () => { act({ type: 'pause', at: sel.id }); select('facility', sel.id); };
+      chips.append(pause);
       div.append(chips);
     }
   }

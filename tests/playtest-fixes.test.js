@@ -39,3 +39,20 @@ test('idleFacilities: own facilities that can produce but have no production', a
   s = apply(s, { type: 'produce', at: '1,0', unitType: 'tennis' }).state;
   assert.deepEqual(idleFacilities(s), ['3,0']);
 });
+
+test('paused facilities are not idle; choosing a unit or capture ends the pause', async () => {
+  const { idleFacilities } = await import('../src/logic/game.js');
+  let s = gameFrom(['GGGGGGGG'], { buildings: { '1,0': 'tennis', '3,0': 'golf' } });
+  s.facilities['1,0'].owner = 0; s.facilities['3,0'].owner = 0; place(s, 'jogger', 1, '7,0');
+  s = apply(s, { type: 'pause', at: '1,0' }).state;
+  assert.equal(s.facilities['1,0'].paused, true);
+  assert.deepEqual(idleFacilities(s), ['3,0']);
+  s = apply(s, { type: 'produce', at: '1,0', unitType: 'tennis' }).state;
+  assert.equal(s.facilities['1,0'].paused, false);
+  s = apply(s, { type: 'pause', at: '1,0' }).state;          // pausing stops a running production
+  assert.equal(s.facilities['1,0'].producing, null); assert.equal(s.facilities['1,0'].paused, true);
+  assert.throws(() => apply(s, { type: 'pause', at: '3,0'.replace('3', '5') }));
+  const j = place(s, 'jogger', 1, '0,0'); s.current = 1;
+  s = apply(s, { type: 'move', unitId: j.id, path: ['1,0'] }).state;
+  assert.equal(s.facilities['1,0'].owner, 1); assert.ok(!s.facilities['1,0'].paused);
+});

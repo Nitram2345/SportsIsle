@@ -178,7 +178,7 @@ function tickProduction(state, at, f, events) {
 function capture(state, at, pid, events) {
   const f = state.facilities[at];
   if (!f || f.owner === pid) return;
-  Object.assign(f, { owner: pid, producing: null, progress: 0, needed: 0, rank: 0 });
+  Object.assign(f, { owner: pid, producing: null, progress: 0, needed: 0, rank: 0, paused: false });
   events.push({ type: 'captured', at, player: pid });
   updateMemory(state, pid);
 }
@@ -191,7 +191,14 @@ function doProduce(state, at, unitType, rank = 0) {
   if (!fam(unitType)) throw new Error('Diese Sportstätte stellt das nicht her.');
   if (!productionOptions(state, f.owner, at).some(o => o.unitType === unitType && o.rank === rank)) throw new Error('Diese Stufe ist noch nicht freigeschaltet.');
   if (f.producing === unitType && (f.rank ?? 0) === rank) return;
-  Object.assign(f, { producing: unitType, rank, progress: 0, needed: productionTime(state, f.owner, unitType, rank) ?? 0 });
+  Object.assign(f, { producing: unitType, rank, progress: 0, needed: productionTime(state, f.owner, unitType, rank) ?? 0, paused: false });
+}
+
+// Deliberately idle (e.g. near the unit cap): stops production, not counted by 'Nächste'.
+function doPause(state, at) {
+  const f = state.facilities[at];
+  if (!f || f.owner !== state.current) throw new Error('Das ist nicht deine Sportstätte.');
+  Object.assign(f, { producing: null, progress: 0, needed: 0, rank: 0, paused: true });
 }
 
 function endTurn(state, events) {
@@ -226,6 +233,7 @@ export function apply(state, action) {
       break;
     }
     case 'produce': doProduce(s, action.at, action.unitType, action.rank ?? 0); break;
+    case 'pause': doPause(s, action.at); break;
     case 'endTurn': endTurn(s, events); break;
     case 'attack': doAttack(s, getUnit(s, action.unitId), action.targetId, events); break;
     case 'heal': doHeal(s, getUnit(s, action.unitId), action.targetId, events); break;
@@ -270,5 +278,5 @@ export const idleUnits = state => Object.values(state.units)
 
 // Own facilities of the current player that could produce something but are idle.
 export const idleFacilities = state => Object.entries(state.facilities)
-  .filter(([, f]) => f.owner === state.current && !f.producing && BUILDINGS[f.type].produces.length)
+  .filter(([, f]) => f.owner === state.current && !f.producing && !f.paused && BUILDINGS[f.type].produces.length)
   .map(([k]) => k);

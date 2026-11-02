@@ -142,7 +142,12 @@ export function createRenderer(canvas) {
 
     // facility markers on top of units: 💤 when idle (pulsing, top right), progress bar when producing
     for (const { x, y, f } of facMarks) {
-      if (!f.producing) {
+      if (f.paused) {   // deliberately idle: small grey pause sign, no pulsing
+        ctx.save(); ctx.translate(x + HEX_SIZE * 0.62, y - HEX_SIZE * 0.75);
+        ctx.fillStyle = 'rgba(240,240,240,.85)'; ctx.beginPath(); ctx.arc(0, 0, HEX_SIZE * 0.28, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = '#777'; ctx.fillRect(-HEX_SIZE * 0.11, -HEX_SIZE * 0.13, HEX_SIZE * 0.07, HEX_SIZE * 0.26); ctx.fillRect(HEX_SIZE * 0.04, -HEX_SIZE * 0.13, HEX_SIZE * 0.07, HEX_SIZE * 0.26);
+        ctx.restore();
+      } else if (!f.producing) {
         const pulse = 1 + 0.12 * Math.sin(now / 300);
         ctx.save(); ctx.translate(x + HEX_SIZE * 0.62, y - HEX_SIZE * 0.75); ctx.scale(pulse, pulse);
         ctx.fillStyle = 'rgba(255,255,255,.92)'; ctx.beginPath(); ctx.arc(0, 0, HEX_SIZE * 0.34, 0, 6.2832); ctx.fill();
