@@ -29,6 +29,8 @@ export function promoteTargets(state, unitId) {
   return partners(state, u, o => o.type === u.type && (o.rank ?? 0) === (u.rank ?? 0) && fits(o));
 }
 
+const unlock = (state, pid, type, value) => { state.unlocked = { ...state.unlocked, [pid]: { ...state.unlocked?.[pid], [type]: value } }; };
+
 function combine(state, unit, other, changes) {
   const share = (unit.hp + other.hp) / (maxHp(unit) + maxHp(other));
   delete state.units[unit.id];
@@ -43,6 +45,10 @@ export function doMerge(state, unit, withId, events) {
   if (!mergeTargets(state, unit.id).includes(withId)) throw new Error('Diese Kanus können nicht zusammengelegt werden.');
   const other = state.units[withId];
   combine(state, unit, other, { type: UNITS[unit.type].mergeInto });
+  if (!state.unlocked?.[other.owner]?.[other.type]) {
+    unlock(state, other.owner, other.type, true);
+    events.push({ type: 'unlocked', player: other.owner, unitType: other.type, rank: 0 });
+  }
   events.push({ type: 'merged', unitId: unit.id, intoId: withId, from: unit.at, to: other.at, newType: other.type });
 }
 
@@ -57,10 +63,11 @@ export function doPromote(state, unit, withId, events) {
     const keys = Object.keys(SPECIALS);
     other.gift = keys[Math.floor(random(state) * keys.length)];
   }
-  // first Club unit of this type: facilities may now produce Club directly
-  if (other.rank === 1 && !state.unlocked?.[other.owner]?.[other.type]) {
-    state.unlocked = { ...state.unlocked, [other.owner]: { ...state.unlocked?.[other.owner], [other.type]: true } };
-    events.push({ type: 'unlocked', player: other.owner, unitType: other.type });
+  // first unit of this type at this rank: facilities may now produce that rank directly
+  const had = state.unlocked?.[other.owner]?.[other.type];
+  if ((had === true ? 1 : had ?? 0) < other.rank) {
+    unlock(state, other.owner, other.type, other.rank);
+    events.push({ type: 'unlocked', player: other.owner, unitType: other.type, rank: other.rank });
   }
   events.push({ type: 'promoted', unitId: unit.id, intoId: withId, from: unit.at, to: other.at, rank: other.rank, gift: other.gift });
 }

@@ -1,5 +1,5 @@
 // Hot-seat game screen: hand-over, map interaction, HUD, production, victory.
-import { apply, productionTime, idleUnits, roadTurns, canProduceRank } from '../logic/game.js';
+import { apply, idleUnits, roadTurns, productionOptions } from '../logic/game.js';
 import { reachable } from '../logic/movement.js';
 import { attackTargets, healTargets } from '../logic/combat.js';
 import { ramTargets } from '../logic/ram.js';
@@ -64,7 +64,7 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
       if (e.type === 'whistle') out.push('📣 Pfiff! Gegner angeschlagen');
       if (e.type === 'boarded') out.push('🛟 Eingestiegen');
       if (e.type === 'merged') out.push(`🛶 ${UNITS[e.newType].name}!`);
-      if (e.type === 'unlocked') out.push(`🔓 ${UNITS[e.unitType].name} · Club jetzt direkt herstellbar`);
+      if (e.type === 'unlocked') out.push(`🔓 ${UNITS[e.unitType].name}${e.rank ? ' · ' + RANKS[e.rank].short : ''} jetzt direkt herstellbar`);
       if (e.type === 'promoted') out.push(`⬆️ Aufgestiegen: ${RANKS[e.rank].name}` + (e.gift && e.rank === 2 ? ` – gibt jetzt ${SPECIALS[e.gift].icon} ${SPECIALS[e.gift].name} mit` : ''));
       if (e.type === 'unloaded') out.push('🛟 Ausgestiegen');
       if (e.type === 'drowned') out.push('Eine Einheit ist ertrunken');
@@ -207,17 +207,14 @@ export function startGameView(initial, { renderer, canvas, show, onExit }) {
     else {
       line.textContent = f.producing ? `Baut ${UNITS[f.producing].name}${f.rank ? ' · ' + RANKS[f.rank].short : ''}: ${f.progress}/${f.needed}` : 'Keine Produktion';
       const chips = document.createElement('div'); chips.className = 'chips';
-      for (const type of b.produces) {
-        // Freizeit always; Club once unlocked by promoting this unit type
-        for (const rank of [0, 1].filter(r => canProduceRank(state, state.current, type, r))) {
-          const t = productionTime(state, state.current, type, rank);
-          const label = UNITS[type].name + (rank ? ` · ${RANKS[1].badge} ${RANKS[1].short}` : '');
-          const c = document.createElement('button'); c.className = 'chip' + (f.producing === type && (f.rank ?? 0) === rank ? ' on' : '');
-          c.textContent = t === null ? `${label} (Limit)` : `${label} · ${t} Züge`;
-          c.disabled = t === null;
-          c.onclick = () => { act({ type: 'produce', at: sel.id, unitType: type, rank }); select('facility', sel.id); };
-          chips.append(c);
-        }
+      // Freizeit always; higher ranks / canoe sizes once reached by merging manually
+      for (const { unitType: type, rank, time: t } of productionOptions(state, state.current, sel.id)) {
+        const label = UNITS[type].name + (rank ? ` · ${RANKS[rank].badge} ${RANKS[rank].short}` : '');
+        const c = document.createElement('button'); c.className = 'chip' + (f.producing === type && (f.rank ?? 0) === rank ? ' on' : '');
+        c.textContent = t === null ? `${label} (Limit)` : `${label} · ${t} Züge`;
+        c.disabled = t === null;
+        c.onclick = () => { act({ type: 'produce', at: sel.id, unitType: type, rank }); select('facility', sel.id); };
+        chips.append(c);
       }
       if (f.producing) {
         const stop = document.createElement('button'); stop.className = 'chip'; stop.textContent = 'Stopp';

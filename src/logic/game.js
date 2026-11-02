@@ -1,5 +1,5 @@
 // Game state and the single entry point for changes: apply(state, action).
-import { UNITS, BUILDINGS, SKINS, TERRAIN, RULES } from '../config.js';
+import { UNITS, BUILDINGS, SKINS, TERRAIN, RULES, RANKS } from '../config.js';
 import { distance, neighbors } from './hex.js';
 import { random } from './rng.js';
 import { effective, updateMemory, bonus, maxHp } from './vision.js';
@@ -129,17 +129,35 @@ function doCancelRoad(state, unit) {
 // carried units count too
 const countUnits = (state, pid) => Object.values(state.units).reduce((n, u) => n + (u.owner === pid ? 1 + cargoOf(u).length : 0), 0);
 
-// rank 1 (Club) doubles the base build time; the slowdown for many units comes on top
+// Units worth 2^k base units take 2^k times as long: rank r -> x2^r, a canoe of n paddlers -> xn.
+// The slowdown for many units simply comes on top.
+const worth = (unitType, rank) => UNITS[unitType].paddlers ?? 2 ** rank;
 export function productionTime(state, pid, unitType, rank = 0) {
   const n = countUnits(state, pid);
   if (n >= RULES.unitCap) return null;
   const extra = n < RULES.slowdownFrom ? 0 : Math.floor((n - RULES.slowdownFrom) / RULES.slowdownStep) + 1;
-  return UNITS[unitType].build * (rank ? 2 : 1) + extra;
+  const base = UNITS[unitType].paddlers ? UNITS.canoe1.build : UNITS[unitType].build;
+  return base * worth(unitType, rank) + extra;
 }
 
-// Club units can be produced directly once the player has promoted that unit type once.
-export const canProduceRank = (state, pid, unitType, rank) =>
-  rank === 0 || (rank === 1 && !!UNITS[unitType]?.ranked && !!state.unlocked?.[pid]?.[unitType]);
+// state.unlocked[pid][type] = highest rank this player has reached by merging manually
+// (true in old saves = 1); canoes: unlocked[pid][canoeN] = true after the first manual merge.
+const unlockedRank = (state, pid, type) => { const v = state.unlocked?.[pid]?.[type]; return v === true ? 1 : v ?? 0; };
+export const canProduceRank = (state, pid, unitType, rank = 0) =>
+  rank === 0 ? (!UNITS[unitType]?.paddlers || UNITS[unitType].paddlers === 1 || !!state.unlocked?.[pid]?.[unitType])
+    : !!UNITS[unitType]?.ranked && rank <= unlockedRank(state, pid, unitType);
+
+// What a facility can build for this player right now: [{ unitType, rank, time }].
+export function productionOptions(state, pid, at) {
+  const out = [];
+  for (const type of BUILDINGS[state.facilities[at].type].produces) {
+    if (UNITS[type].mergeInto || UNITS[type].paddlers) {
+      // canoe yard: every unlocked size
+      for (let t = type; t; t = UNITS[t].mergeInto) if (canProduceRank(state, pid, t)) out.push({ unitType: t, rank: 0, time: productionTime(state, pid, t) });
+    } else for (let r = 0; r < RANKS.length; r++) if (canProduceRank(state, pid, type, r)) out.push({ unitType: type, rank: r, time: productionTime(state, pid, type, r) });
+  }
+  return out;
+}
 
 function tickProduction(state, at, f, events) {
   if (!f.producing) return;
@@ -169,8 +187,9 @@ function doProduce(state, at, unitType, rank = 0) {
   const f = state.facilities[at];
   if (!f || f.owner !== state.current) throw new Error('Das ist nicht deine Sportstätte.');
   if (unitType === null) { Object.assign(f, { producing: null, progress: 0, needed: 0, rank: 0 }); return; }
-  if (!BUILDINGS[f.type].produces.includes(unitType)) throw new Error('Diese Sportstätte stellt das nicht her.');
-  if (!canProduceRank(state, f.owner, unitType, rank)) throw new Error('Diese Stufe ist noch nicht freigeschaltet.');
+  const fam = t => { for (const p of BUILDINGS[f.type].produces) for (let x = p; x; x = UNITS[x].mergeInto) if (x === t) return true; return false; };
+  if (!fam(unitType)) throw new Error('Diese Sportstätte stellt das nicht her.');
+  if (!productionOptions(state, f.owner, at).some(o => o.unitType === unitType && o.rank === rank)) throw new Error('Diese Stufe ist noch nicht freigeschaltet.');
   if (f.producing === unitType && (f.rank ?? 0) === rank) return;
   Object.assign(f, { producing: unitType, rank, progress: 0, needed: productionTime(state, f.owner, unitType, rank) ?? 0 });
 }
