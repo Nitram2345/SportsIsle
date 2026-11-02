@@ -2,7 +2,7 @@
 import { UNITS, BUILDINGS, SKINS, TERRAIN, RULES } from '../config.js';
 import { distance, neighbors } from './hex.js';
 import { random } from './rng.js';
-import { effective, updateMemory, bonus } from './vision.js';
+import { effective, updateMemory, bonus, maxHp } from './vision.js';
 import { doMove, moveCost } from './movement.js';
 import { doAttack, doHeal } from './combat.js';
 import { doRam } from './ram.js';
@@ -129,16 +129,21 @@ function doCancelRoad(state, unit) {
 // carried units count too
 const countUnits = (state, pid) => Object.values(state.units).reduce((n, u) => n + (u.owner === pid ? 1 + cargoOf(u).length : 0), 0);
 
-export function productionTime(state, pid, unitType) {
+// rank 1 (Club) doubles the base build time; the slowdown for many units comes on top
+export function productionTime(state, pid, unitType, rank = 0) {
   const n = countUnits(state, pid);
   if (n >= RULES.unitCap) return null;
   const extra = n < RULES.slowdownFrom ? 0 : Math.floor((n - RULES.slowdownFrom) / RULES.slowdownStep) + 1;
-  return UNITS[unitType].build + extra;
+  return UNITS[unitType].build * (rank ? 2 : 1) + extra;
 }
+
+// Club units can be produced directly once the player has promoted that unit type once.
+export const canProduceRank = (state, pid, unitType, rank) =>
+  rank === 0 || (rank === 1 && !!UNITS[unitType]?.ranked && !!state.unlocked?.[pid]?.[unitType]);
 
 function tickProduction(state, at, f, events) {
   if (!f.producing) return;
-  if (!f.needed) { f.needed = productionTime(state, f.owner, f.producing); if (f.needed === null) { f.needed = 0; return; } }
+  if (!f.needed) { f.needed = productionTime(state, f.owner, f.producing, f.rank ?? 0); if (f.needed === null) { f.needed = 0; return; } }
   if (countUnits(state, f.owner) >= RULES.unitCap) return;
   if (f.progress < f.needed) f.progress++;
   if (f.progress < f.needed) return;
@@ -146,26 +151,28 @@ function tickProduction(state, at, f, events) {
   const spot = [at, ...neighbors(at, state.width, state.height)].find(k => !occupied.has(k) && isPassable(state, k, { type: f.producing }));
   if (!spot) return;  // wait, progress stays
   const u = spawnUnit(state, f.producing, f.owner, spot);
+  if (f.rank) { u.rank = f.rank; u.hp = maxHp(u); }   // produced Club unit: full hp, no training lock
   events.push({ type: 'produced', unitId: u.id, at: spot });
   f.progress = 0;
-  f.needed = productionTime(state, f.owner, f.producing) ?? 0;
+  f.needed = productionTime(state, f.owner, f.producing, f.rank ?? 0) ?? 0;
 }
 
 function capture(state, at, pid, events) {
   const f = state.facilities[at];
   if (!f || f.owner === pid) return;
-  Object.assign(f, { owner: pid, producing: null, progress: 0, needed: 0 });
+  Object.assign(f, { owner: pid, producing: null, progress: 0, needed: 0, rank: 0 });
   events.push({ type: 'captured', at, player: pid });
   updateMemory(state, pid);
 }
 
-function doProduce(state, at, unitType) {
+function doProduce(state, at, unitType, rank = 0) {
   const f = state.facilities[at];
   if (!f || f.owner !== state.current) throw new Error('Das ist nicht deine Sportstätte.');
-  if (unitType === null) { Object.assign(f, { producing: null, progress: 0, needed: 0 }); return; }
+  if (unitType === null) { Object.assign(f, { producing: null, progress: 0, needed: 0, rank: 0 }); return; }
   if (!BUILDINGS[f.type].produces.includes(unitType)) throw new Error('Diese Sportstätte stellt das nicht her.');
-  if (f.producing === unitType) return;
-  Object.assign(f, { producing: unitType, progress: 0, needed: productionTime(state, f.owner, unitType) ?? 0 });
+  if (!canProduceRank(state, f.owner, unitType, rank)) throw new Error('Diese Stufe ist noch nicht freigeschaltet.');
+  if (f.producing === unitType && (f.rank ?? 0) === rank) return;
+  Object.assign(f, { producing: unitType, rank, progress: 0, needed: productionTime(state, f.owner, unitType, rank) ?? 0 });
 }
 
 function endTurn(state, events) {
@@ -199,7 +206,7 @@ export function apply(state, action) {
       capture(s, u.at, u.owner, events);
       break;
     }
-    case 'produce': doProduce(s, action.at, action.unitType); break;
+    case 'produce': doProduce(s, action.at, action.unitType, action.rank ?? 0); break;
     case 'endTurn': endTurn(s, events); break;
     case 'attack': doAttack(s, getUnit(s, action.unitId), action.targetId, events); break;
     case 'heal': doHeal(s, getUnit(s, action.unitId), action.targetId, events); break;

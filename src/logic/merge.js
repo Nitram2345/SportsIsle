@@ -57,5 +57,10 @@ export function doPromote(state, unit, withId, events) {
     const keys = Object.keys(SPECIALS);
     other.gift = keys[Math.floor(random(state) * keys.length)];
   }
+  // first Club unit of this type: facilities may now produce Club directly
+  if (other.rank === 1 && !state.unlocked?.[other.owner]?.[other.type]) {
+    state.unlocked = { ...state.unlocked, [other.owner]: { ...state.unlocked?.[other.owner], [other.type]: true } };
+    events.push({ type: 'unlocked', player: other.owner, unitType: other.type });
+  }
   events.push({ type: 'promoted', unitId: unit.id, intoId: withId, from: unit.at, to: other.at, rank: other.rank, gift: other.gift });
 }

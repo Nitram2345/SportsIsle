@@ -5,7 +5,7 @@ Lebendes Dokument: beschreibt den **aktuellen** Stand des Spiels. Bei jeder Änd
 - Ursprüngliches Design (MVP): `docs/superpowers/specs/2026-10-28-sports-battle-isle-mvp-design.md`
 - Spielwerte: Quelle der Wahrheit ist `src/config.js`. Die Tabellen hier sind ein Abbild davon.
 
-Stand: 2026-11-02 (Stufen der Helfer)
+Stand: 2026-11-02 (Club direkt herstellen)
 
 ---
 
@@ -121,6 +121,7 @@ Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger und Tischt
 - Werte werden vom Grundwert aus gerechnet und gerundet (Tennis: HP 10/14/20/27, Angriff 5/7/10/14). Bewegung, Verteidigung, Reichweite und Sicht bleiben gleich.
 - **Aufsteigen:** zwei eigene Einheiten gleicher Sportart und gleicher Stufe nebeneinander, die in diesem Zug noch nichts getan haben, werden per Knopf „Zusammenlegen“ zu einer Einheit der nächsten Stufe (auf dem Feld des Partners, Schaden anteilig erhalten). Sie ist in diesem und im nächsten eigenen Zug unbeweglich („Trainingslager“). Bei mehreren Partnern wird der Partner angetippt (grün markiert).
 - Im Info-Feld steht die Kurzform (Freizeit · Club · National · Profi), der volle Name als Tooltip.
+- **Club direkt herstellen:** Sobald ein Spieler die erste Einheit einer Sportart auf Club zusammengelegt hat, kann er in allen eigenen Sportstätten dieser Sportart zusätzlich „★ Club“ herstellen (gilt pro Spieler und pro Sportart, auch für Helfer). Bauzeit doppelt so lang (die Verzögerung ab 30 Einheiten kommt obendrauf), dafür ist die Einheit sofort einsatzbereit (kein Trainingslager) und hat volle HP. Höhere Stufen lassen sich nicht direkt herstellen. Wird eine Sportstätte erobert, startet die Produktion beim neuen Besitzer neu.
 - **Helfer** (Jogger, Physiotherapeut, Rettungsschwimmer) haben dieselben 4 Stufen. Ihre HP steigen × 1,4 je Stufe, ihr Angriff nicht; dafür bekommen sie eigene Boni (addieren sich):
 
 | Helfer | Club (2) | National (3) | Profi (4) |
@@ -168,7 +169,7 @@ Tennis, Fußball, Golf, Karate, Schwimmer, Hockey, Rugby, Bergsteiger und Tischt
 | Gebäude | – (nicht eroberbar, blockiert Schläge) | – |
 
 - **Erobern:** automatisch, wenn eine Einheit ihre Bewegung auf einer fremden Sportstätte beendet (auch beim Zugende, wenn sie dort schon stand). Laufende Produktion wird abgebrochen.
-- **Herstellen:** Einheitentyp wählen; eine Produktion gleichzeitig, wiederholt sich automatisch. Fertige Einheit erscheint auf der Sportstätte oder einem freien Nachbarfeld (Schwimmer auch auf Wasser); ist alles belegt, wartet sie.
+- **Herstellen:** Einheitentyp (und ggf. Stufe Club, s. Stufen) wählen; eine Produktion gleichzeitig, wiederholt sich automatisch. Fertige Einheit erscheint auf der Sportstätte oder einem freien Nachbarfeld (Schwimmer auch auf Wasser); ist alles belegt, wartet sie.
 - **Grenze:** max. 50 Einheiten pro Spieler. Ab 30 Einheiten +1 Runde Bauzeit, ab 35 +2, ab 40 +3, ab 45 +4.
 - Eigene Sportstätten geben Sicht im angegebenen Umkreis.
 
